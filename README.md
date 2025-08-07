@@ -54,10 +54,24 @@ airbotix-website/
 
 ## 🚀 Getting Started
 
+### Quick Start
+```bash
+# Clone and setup
+git clone https://github.com/your-username/airbotix-website.git
+cd airbotix-website
+npm install
+
+# Start development
+npm run dev
+
+# Build for production
+npm run build
+```
+
 ### Prerequisites
-- Node.js 18+ 
-- npm or yarn package manager
-- Git
+- **Node.js 20+** - Download from [nodejs.org](https://nodejs.org/)
+- **npm or yarn** - npm comes with Node.js, or install yarn: `npm install -g yarn`
+- **Git** - Download from [git-scm.com](https://git-scm.com/)
 
 ### Installation
 
@@ -74,6 +88,8 @@ airbotix-website/
    yarn install
    ```
 
+### Development
+
 3. **Start development server**
    ```bash
    npm run dev
@@ -82,17 +98,53 @@ airbotix-website/
    ```
 
 4. **Open in browser**
-   Visit [http://localhost:3000](http://localhost:3000)
+   Visit [http://localhost:5173](http://localhost:5173) (Vite's default port)
+
+### Building for Production
+
+5. **Build the project**
+   ```bash
+   npm run build
+   # or
+   yarn build
+   ```
+   This creates a `dist/` folder with optimized production files.
+
+6. **Preview production build locally**
+   ```bash
+   npm run preview
+   # or
+   yarn preview
+   ```
+   This serves the built files locally for testing before deployment.
+
+### Code Quality
+
+7. **Run linting**
+   ```bash
+   npm run lint
+   # or
+   yarn lint
+   ```
+   Checks code quality and formatting with ESLint.
 
 ## 📜 Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with hot reload |
-| `npm run build` | Build production-ready static files |
-| `npm run preview` | Preview production build locally |
-| `npm run lint` | Run ESLint for code quality checks |
-| `npm run deploy` | Deploy to GitHub Pages |
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `npm run dev` | Start development server with hot reload | `npm run dev` |
+| `npm run build` | Build production-ready static files | `npm run build` |
+| `npm run preview` | Preview production build locally | `npm run preview` |
+| `npm run lint` | Run ESLint for code quality checks | `npm run lint` |
+| `npm run deploy` | Deploy to GitHub Pages | `npm run deploy` |
+
+### Script Details
+
+- **`dev`**: Starts Vite dev server with hot module replacement (HMR)
+- **`build`**: Compiles TypeScript and builds optimized production bundle
+- **`preview`**: Serves the built files locally for testing
+- **`lint`**: Runs ESLint with TypeScript support for code quality
+- **`deploy`**: Automatically builds and deploys to GitHub Pages
 
 ## 🚢 Deployment
 
@@ -179,6 +231,49 @@ We welcome contributions! Please see our [rules.md](./rules.md) for development 
 - **Website**: [airbotix.github.io/airbotix-website](https://airbotix.github.io/airbotix-website/)
 - **LinkedIn**: [linkedin.com/company/airbotix-ai](https://www.linkedin.com/company/airbotix-ai)
 - **Email**: info@airbotix.com
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Port already in use**
+```bash
+# If port 5173 is busy, Vite will automatically try the next available port
+# Or specify a custom port:
+npm run dev -- --port 3000
+```
+
+**Build fails**
+```bash
+# Clear node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+```
+
+**TypeScript errors**
+```bash
+# Check TypeScript configuration
+npx tsc --noEmit
+```
+
+**Linting issues**
+```bash
+# Auto-fix linting issues
+npm run lint -- --fix
+```
+
+### Environment Setup
+
+**Node.js version**
+```bash
+# Check your Node.js version
+node --version  # Should be 20+
+
+# Use nvm to manage Node.js versions
+nvm install 20
+nvm use 20
+```
 
 ## 📄 License
 
