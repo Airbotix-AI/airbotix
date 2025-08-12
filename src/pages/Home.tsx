@@ -14,12 +14,12 @@ const Home = () => {
               Interactive workshops, hands-on learning, and future-ready skills.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="btn-primary text-lg px-8 py-3">
+              <a href="/book" className="btn-primary text-lg px-8 py-3">
                 Book a Workshop
-              </button>
-              <button className="btn-outline text-lg px-8 py-3">
+              </a>
+              <a href="/workshops" className="btn-outline text-lg px-8 py-3">
                 Learn More
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -80,6 +80,111 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Gallery Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Workshop Gallery</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Moments from our AI and Robotics workshops — hands-on learning, teamwork, and lots of fun.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[
+              {
+                src: 'https://images.unsplash.com/photo-1581091014534-7f3c2b3a2f9b?q=80&w=1200&auto=format&fit=crop',
+                alt: 'Student programming a robot',
+              },
+              {
+                src: 'https://images.unsplash.com/photo-1555255707-c07966088b7b?q=80&w=1200&auto=format&fit=crop',
+                alt: 'Robotics workshop table',
+              },
+              {
+                src: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop',
+                alt: 'AI and coding session',
+              },
+              {
+                src: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1200&auto=format&fit=crop',
+                alt: 'Teamwork on a challenge',
+              },
+              {
+                src: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=1200&auto=format&fit=crop',
+                alt: 'Electronics and prototyping',
+              },
+              {
+                src: 'https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=1200&auto=format&fit=crop',
+                alt: 'Computer vision demo',
+              },
+              {
+                src: 'https://images.unsplash.com/photo-1526378722484-bd91ca387e72?q=80&w=1200&auto=format&fit=crop',
+                alt: 'Classroom presentation',
+              },
+              {
+                src: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1200&auto=format&fit=crop',
+                alt: 'Coding activity',
+              },
+            ].map((img) => (
+              <div key={img.src} className="relative overflow-hidden rounded-xl aspect-[4/3] bg-gray-100">
+                <img
+                  src={img.src}
+                  alt={img.alt}
+                  loading="lazy"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">What Educators Say</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Feedback from schools and communities we partner with across Australia.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[ 
+              {
+                quote:
+                  'Our students were absolutely engaged. The hands-on activities made complex AI concepts accessible and exciting.',
+                name: 'Sarah Williams',
+                role: 'STEM Coordinator, Riverdale Primary',
+              },
+              {
+                quote:
+                  'The workshop aligned perfectly with our curriculum and inspired several new lunchtime robotics clubs.',
+                name: 'James O’Connor',
+                role: 'Deputy Principal, Northview College',
+              },
+              {
+                quote:
+                  'Professional, well-structured, and fun. Students developed real confidence with coding and robotics.',
+                name: 'Emily Zhang',
+                role: 'Digital Technologies Lead, Eastside High',
+              },
+            ].map((t) => (
+              <div key={t.name} className="p-6 border border-gray-200 rounded-2xl shadow-sm bg-white">
+                <div className="flex items-start gap-3 mb-4">
+                  <svg className="w-6 h-6 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M7.17 6A3.17 3.17 0 004 9.17V16h6V9.17A3.17 3.17 0 006.83 6H7.17zm8 0A3.17 3.17 0 0012 9.17V16h6V9.17A3.17 3.17 0 0014.83 6h.34z" />
+                  </svg>
+                  <p className="text-gray-700 leading-7">{t.quote}</p>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900">{t.name}</div>
+                  <div className="text-sm text-gray-600">{t.role}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 bg-primary-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -89,9 +194,9 @@ const Home = () => {
           <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
             Join thousands of students across Australia who are already learning the skills of tomorrow.
           </p>
-          <button className="bg-white text-primary-600 hover:bg-gray-50 font-semibold text-lg px-8 py-3 rounded-lg transition-colors duration-200">
+          <a href="/book" className="bg-white text-primary-600 hover:bg-gray-50 font-semibold text-lg px-8 py-3 rounded-lg transition-colors duration-200">
             Book Your Workshop Today
-          </button>
+          </a>
         </div>
       </section>
     </div>

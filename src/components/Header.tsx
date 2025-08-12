@@ -40,9 +40,9 @@ const Header = () => {
 
           {/* CTA Button */}
           <div className="hidden md:flex">
-            <button className="btn-primary">
+            <Link to="/book" className="btn-primary">
               Book Workshop
-            </button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -79,9 +79,9 @@ const Header = () => {
                 Contact
               </Link>
               <div className="pt-2">
-                <button className="btn-primary w-full">
+                <Link to="/book" className="btn-primary w-full">
                   Book Workshop
-                </button>
+                </Link>
               </div>
             </div>
           </div>

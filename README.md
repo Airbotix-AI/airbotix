@@ -146,6 +146,25 @@ npm run build
 - **`lint`**: Runs ESLint with TypeScript support for code quality
 - **`deploy`**: Automatically builds and deploys to GitHub Pages
 
+## ✉️ Contact Form Setup
+
+You can enable the contact form on `/contact` in two ways:
+
+### Option A: Formspree (recommended)
+1. Create a form at `https://formspree.io` and copy your form ID (e.g., `xayzabcd`).
+2. Create a `.env` file at the project root and add:
+   ```bash
+   VITE_FORMSPREE_ID=your_form_id
+   ```
+3. Restart the dev server.
+
+### Option B: Mailto fallback
+1. Create a `.env` file at the project root and add:
+   ```bash
+   VITE_CONTACT_EMAIL=contact@example.com
+   ```
+2. When no Formspree ID is provided, submitting the form will open the user's email client pre-filled with the message.
+
 ## 🚢 Deployment
 
 ### GitHub Pages Deployment

@@ -14,6 +14,17 @@ export interface Workshop {
   isAvailable: boolean
 }
 
+export interface WorkshopSection {
+  title: string
+  topics: string[]
+}
+
+export interface WorkshopDetail extends Workshop {
+  outcomes: string[]
+  outline: WorkshopSection[]
+  gallery: string[]
+}
+
 export interface Instructor {
   id: string
   name: string
