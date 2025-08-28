@@ -1,303 +1,189 @@
-# Airbotix Website
+# Airbotix - AI and Robotics Education Platform
 
-🚀 **Modern static website for Airbotix** - Australia's premier EdTech company bringing AI and Robotics education to K-12 students.
+A comprehensive monorepo for the Airbotix platform, providing AI and robotics education for K-12 students through interactive workshops and partnerships with schools and organizations.
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Airbotix-blue?style=flat&logo=linkedin)](https://www.linkedin.com/company/airbotix-ai)
-[![Website](https://img.shields.io/badge/Website-Live-green?style=flat)](https://airbotix.github.io/airbotix-website/)
-
-## 🎯 Project Overview
-
-Airbotix is dedicated to empowering Australia's next generation with cutting-edge AI and Robotics education. This website serves as our digital presence, showcasing our workshops, services, and educational impact.
-
-### Key Goals
-- 🏠 **Homepage**: Fast, responsive, and internationalized landing page
-- 🎓 **Workshops**: Showcase our AI & Robotics educational programs
-- 📸 **Media Gallery**: Display workshop photos, videos, and student achievements  
-- 🛒 **Future Integration**: Ready for booking and e-commerce modules
-- 🌐 **International**: Built for future multi-language support
-
-## 🛠️ Tech Stack
-
-- **Framework**: [React 18](https://reactjs.org/) with [TypeScript](https://www.typescriptlang.org/)
-- **Build Tool**: [Vite](https://vitejs.dev/) for lightning-fast development
-- **Styling**: [TailwindCSS](https://tailwindcss.com/) for modern, responsive design
-- **Routing**: [React Router](https://reactrouter.com/) for client-side navigation
-- **Code Quality**: ESLint + Prettier for consistent code formatting
-- **Deployment**: GitHub Pages with automated CI/CD
-
-## 🏗️ Project Structure
+## 🏗️ Monorepo Structure
 
 ```
-airbotix-website/
-├── public/                 # Static assets
+/
+├── src/              # 🌐 Public Site (React + Vite + Tailwind)
+├── public/
+├── package.json
+├── vite.config.ts
+├── .env.example
+└── README.md
+
+/admin/               # 🔧 Admin Dashboard (React + Vite + Tailwind)
 ├── src/
-│   ├── components/         # Reusable UI components
-│   │   ├── Header.tsx      # Navigation header
-│   │   ├── Footer.tsx      # Site footer
-│   │   └── Layout.tsx      # Main layout wrapper
-│   ├── pages/              # Page components
-│   │   └── Home.tsx        # Homepage
-│   ├── assets/             # Images, icons, media
-│   ├── hooks/              # Custom React hooks
-│   ├── utils/              # Utility functions
-│   ├── types/              # TypeScript type definitions
-│   ├── App.tsx             # Main app component
-│   ├── main.tsx            # App entry point
-│   └── index.css           # Global styles
-├── docs/                   # Documentation
-├── package.json            # Dependencies and scripts
-├── vite.config.ts          # Vite configuration
-├── tailwind.config.js      # TailwindCSS configuration
-├── tsconfig.json           # TypeScript configuration
-└── README.md               # This file
+├── public/
+├── package.json
+├── vite.config.ts
+├── .env.admin.example
+└── README.md
+
+/docs/db/            # 🗄️ Database Artifacts
+├── schema.sql
+├── rls.sql
+├── seed.sql
+└── README-db.md
 ```
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
-### Quick Start
+### Public Site (Root Directory)
 ```bash
-# Clone and setup
-git clone https://github.com/your-username/airbotix-website.git
-cd airbotix-website
+# Install dependencies
 npm install
 
-# Start development
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Deploy to GitHub Pages
+npm run deploy
+```
+
+### Admin Dashboard
+```bash
+# Navigate to admin directory
+cd admin
+
+# Install dependencies
+npm install
+
+# Start development server (runs on port 3001)
 npm run dev
 
 # Build for production
 npm run build
 ```
 
-### Prerequisites
-- **Node.js 20+** - Download from [nodejs.org](https://nodejs.org/)
-- **npm or yarn** - npm comes with Node.js, or install yarn: `npm install -g yarn`
-- **Git** - Download from [git-scm.com](https://git-scm.com/)
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/airbotix-website.git
-   cd airbotix-website
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-### Development
-
-3. **Start development server**
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   ```
-
-4. **Open in browser**
-   Visit [http://localhost:5173](http://localhost:5173) (Vite's default port)
-
-### Building for Production
-
-5. **Build the project**
-   ```bash
-   npm run build
-   # or
-   yarn build
-   ```
-   This creates a `dist/` folder with optimized production files.
-
-6. **Preview production build locally**
-   ```bash
-   npm run preview
-   # or
-   yarn preview
-   ```
-   This serves the built files locally for testing before deployment.
-
-### Code Quality
-
-7. **Run linting**
-   ```bash
-   npm run lint
-   # or
-   yarn lint
-   ```
-   Checks code quality and formatting with ESLint.
-
-## 📜 Available Scripts
-
-| Command | Description | Usage |
-|---------|-------------|-------|
-| `npm run dev` | Start development server with hot reload | `npm run dev` |
-| `npm run build` | Build production-ready static files | `npm run build` |
-| `npm run preview` | Preview production build locally | `npm run preview` |
-| `npm run lint` | Run ESLint for code quality checks | `npm run lint` |
-| `npm run deploy` | Deploy to GitHub Pages | `npm run deploy` |
-
-### Script Details
-
-- **`dev`**: Starts Vite dev server with hot module replacement (HMR)
-- **`build`**: Compiles TypeScript and builds optimized production bundle
-- **`preview`**: Serves the built files locally for testing
-- **`lint`**: Runs ESLint with TypeScript support for code quality
-- **`deploy`**: Automatically builds and deploys to GitHub Pages
-
-## ✉️ Contact Form Setup
-
-You can enable the contact form on `/contact` in two ways:
-
-### Option A: Formspree (recommended)
-1. Create a form at `https://formspree.io` and copy your form ID (e.g., `xayzabcd`).
-2. Create a `.env` file at the project root and add:
-   ```bash
-   VITE_FORMSPREE_ID=your_form_id
-   ```
-3. Restart the dev server.
-
-### Option B: Mailto fallback
-1. Create a `.env` file at the project root and add:
-   ```bash
-   VITE_CONTACT_EMAIL=contact@example.com
-   ```
-2. When no Formspree ID is provided, submitting the form will open the user's email client pre-filled with the message.
-
-## 🚢 Deployment
-
-### GitHub Pages Deployment
-
-This project is configured for automatic deployment to GitHub Pages using the `gh-pages` branch method.
-
-#### Automatic Deployment (Recommended)
-
-1. **Push to main branch** - Deployment happens automatically via GitHub Actions
-2. **Manual deployment**:
-   ```bash
-   npm run deploy
-   ```
-
-#### Setup Steps
-
-1. **Configure repository settings**:
-   - Go to repository Settings → Pages
-   - Source: Deploy from a branch
-   - Branch: `gh-pages` / `/ (root)`
-
-2. **Update base path** (if needed):
-   ```typescript
-   // vite.config.ts
-   export default defineConfig({
-     base: '/your-repo-name/', // Update this to match your repository name
-   })
-   ```
-
-3. **Update basename in routing**:
-   ```tsx
-   // src/main.tsx
-   <BrowserRouter basename="/your-repo-name">
-   ```
-
-#### Custom Domain (Optional)
-
-1. Add `CNAME` file to `public/` directory:
-   ```
-   your-domain.com
-   ```
-
-2. Configure DNS settings with your domain provider
-
-## 🎨 Customization
-
-### Colors & Branding
-Edit the color palette in `tailwind.config.js`:
-```javascript
-theme: {
-  extend: {
-    colors: {
-      primary: { /* Your primary colors */ },
-      secondary: { /* Your secondary colors */ }
-    }
-  }
-}
+### Database Setup
+```bash
+# 1. Set up Supabase project at https://supabase.com
+# 2. Run the SQL files in order:
+#    - docs/db/schema.sql
+#    - docs/db/rls.sql
+#    - docs/db/seed.sql (optional, for development)
+# 3. Configure environment variables in both apps
 ```
 
-### Components
-- **Header**: Update navigation links in `src/components/Header.tsx`
-- **Footer**: Modify company info in `src/components/Footer.tsx`
-- **Homepage**: Customize content in `src/pages/Home.tsx`
+## 🎯 Features
 
-### Adding New Pages
-1. Create component in `src/pages/`
-2. Add route in `src/App.tsx`
-3. Update navigation in `src/components/Header.tsx`
+### Public Site
+- **Home Page**: Hero section with mission and featured workshops
+- **Workshops**: Browse and view detailed workshop information
+- **Partners**: Showcase of educational partners and collaboration opportunities
+- **About**: Information about Airbotix and our mission
+- **Contact**: Contact form and partnership inquiries
+- **HashRouter**: GitHub Pages compatible routing
+
+### Admin Dashboard
+- **Dashboard**: Overview of workshops, partners, and registrations
+- **Workshop Management**: Create and manage workshop content
+- **Partner Management**: Manage educational partnerships
+- **User Management**: Handle user roles and permissions
+- **Content Management**: Update site content and media
+- **Supabase Auth**: Secure authentication (coming soon)
+
+### Database
+- **User Management**: Role-based access control
+- **Workshop System**: Complete workshop and session management
+- **Partner Network**: Partner organization management
+- **Registration System**: Workshop registration and attendance tracking
+- **Content Management**: Dynamic content and media management
+- **Security**: Row-level security with Supabase RLS
+
+## 🛠️ Technology Stack
+
+### Frontend
+- **React 18**: Modern React with hooks and functional components
+- **TypeScript**: Type-safe development
+- **Vite**: Fast build tool and development server
+- **Tailwind CSS**: Utility-first CSS framework
+- **React Router**: Client-side routing (HashRouter for public, BrowserRouter for admin)
+
+### Backend & Database
+- **Supabase**: PostgreSQL database with real-time subscriptions
+- **Row Level Security**: Fine-grained access control
+- **Authentication**: Supabase Auth (to be integrated in admin)
+
+### Deployment
+- **Public Site**: GitHub Pages (static hosting)
+- **Admin Dashboard**: Vercel/Netlify (to be configured)
+- **Database**: Supabase (managed PostgreSQL)
+
+## 📋 Development Scripts
+
+### Root (Public Site)
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npm run deploy` - Deploy to GitHub Pages
+
+### Admin Dashboard
+- `npm run dev` - Start development server on port 3001
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build on port 3001
+- `npm run lint` - Run ESLint
+
+## 🌱 Environment Variables
+
+### Public Site (`.env`)
+```env
+VITE_SITE_NAME="Airbotix"
+VITE_SITE_URL="https://airbotix.github.io"
+VITE_CONTACT_EMAIL="info@airbotix.com"
+VITE_CONTACT_PHONE="+1-555-0123"
+```
+
+### Admin Dashboard (`.env`)
+```env
+VITE_APP_NAME="Airbotix Admin"
+VITE_SUPABASE_URL="your_supabase_project_url"
+VITE_SUPABASE_ANON_KEY="your_supabase_anon_key"
+VITE_API_BASE_URL="https://api.airbotix.com"
+```
+
+## 🚀 Deployment
+
+### Public Site → GitHub Pages
+1. Push to main branch
+2. Run `npm run deploy`
+3. Site will be available at your GitHub Pages URL
+
+### Admin Dashboard → Vercel/Netlify
+1. Connect your repository to Vercel or Netlify
+2. Set build directory to `admin`
+3. Configure environment variables
+4. Deploy automatically on push
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [rules.md](./rules.md) for development guidelines.
-
-### Development Workflow
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
 5. Open a Pull Request
-
-## 📞 Support & Contact
-
-- **Website**: [airbotix.github.io/airbotix-website](https://airbotix.github.io/airbotix-website/)
-- **LinkedIn**: [linkedin.com/company/airbotix-ai](https://www.linkedin.com/company/airbotix-ai)
-- **Email**: info@airbotix.com
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-**Port already in use**
-```bash
-# If port 5173 is busy, Vite will automatically try the next available port
-# Or specify a custom port:
-npm run dev -- --port 3000
-```
-
-**Build fails**
-```bash
-# Clear node_modules and reinstall
-rm -rf node_modules package-lock.json
-npm install
-npm run build
-```
-
-**TypeScript errors**
-```bash
-# Check TypeScript configuration
-npx tsc --noEmit
-```
-
-**Linting issues**
-```bash
-# Auto-fix linting issues
-npm run lint -- --fix
-```
-
-### Environment Setup
-
-**Node.js version**
-```bash
-# Check your Node.js version
-node --version  # Should be 20+
-
-# Use nvm to manage Node.js versions
-nvm install 20
-nvm use 20
-```
 
 ## 📄 License
 
-This project is proprietary to Airbotix. All rights reserved.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
----
+## 🆘 Support
 
-**Built with ❤️ by the Airbotix team** 🤖✨
+- 📧 Email: info@airbotix.com
+- 🐛 Issues: [GitHub Issues](https://github.com/airbotix/airbotix-website/issues)
+- 📖 Documentation: See individual README files in each directory
+
+## 🗺️ Roadmap
+
+- [ ] Complete Supabase Auth integration in admin dashboard
+- [ ] Add real-time features with Supabase subscriptions
+- [ ] Implement workshop registration system
+- [ ] Add payment processing for workshops
+- [ ] Mobile app for workshop participants
+- [ ] Advanced analytics and reporting

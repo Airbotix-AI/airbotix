@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import Workshops from './pages/Workshops'
 import About from './pages/About'
 import Contact from './pages/Contact'
+import Partners from './pages/Partners'
 import WorkshopDetail from './pages/WorkshopDetail'
 import Book from './pages/Book'
 
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/workshops" element={<Workshops />} />
         <Route path="/workshops/:id" element={<WorkshopDetail />} />
+        <Route path="/partners" element={<Partners />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/book" element={<Book />} />
