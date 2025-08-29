@@ -1,446 +1,478 @@
 # Airbotix Super Admin Management System
 ## Product Requirements Document (PRD)
 
-**Version**: 1.0  
-**Date**: 27 August 2025  
-**Author**: Yanzhuo Liu
-**Status**: Draft  
+---
+
+## 📋 Product Overview
+
+### What We're Building
+A web-based admin dashboard for Airbotix internal staff to manage educational operations: content, users, students, workshops, courses, and teachers. This replaces current spreadsheet-based workflows with a centralized management system.
+
+### Current Pain Points
+- Workshop content scattered across Google Drive folders
+- Student enrollment managed via Excel sheets
+- Teacher scheduling through WhatsApp, WeChat and email coordination
+- Course materials inconsistently organized
+- No unified user access control system
+
+### Success Goals
+- Centralize all educational content in one searchable system
+- Streamline workshop booking and teacher assignment workflow
+- Maintain comprehensive student records and progress tracking
+- Standardize course delivery across all programs
 
 ---
 
-## 📋 Executive Summary
+## 🎯 Core User Journey
 
-### Product Vision
-The Super Admin Management System is the central command center for Airbotix's K-12 AI and Robotics education platform. This system enables comprehensive management of educational content, user permissions, business operations, and revenue streams across all three core business areas: workshops, self-developed hardware, and robotics distribution.
+### Primary Users: Airbotix Admin Team
 
-### Business Alignment
-This system directly supports Airbotix's triple revenue model by:
-- **Service Revenue**: Managing workshop bookings, teacher assignments, and student progress
-- **Product Revenue**: Handling inventory, sales tracking, and hardware distribution
-- **Distribution Revenue**: Managing partner relationships and commission tracking
-
----
-
-## 🎯 Problem Statement
-
-### Current Challenges
-1. **Fragmented Operations**: No unified system to manage workshops, courses, and product distribution
-2. **Manual Processes**: Heavy reliance on spreadsheets and manual coordination
-3. **Limited Scalability**: Difficulty scaling educational services across multiple schools
-4. **Revenue Tracking**: Inconsistent tracking across different revenue streams
-5. **User Management**: Complex permission requirements for different stakeholders (students, teachers, school admins, partners)
-
-### Success Metrics
-- **Operational Efficiency**: 70% reduction in manual administrative tasks
-- **Revenue Visibility**: Real-time tracking of all revenue streams
-- **User Satisfaction**: 90%+ satisfaction rate from internal staff
-- **Scalability**: Support for 10x growth in managed workshops and students
+**Daily Operations:**
+1. **Content Management**: Update lesson plans, upload new materials
+2. **Workshop Coordination**: Review bookings, assign teachers, prepare materials
+3. **Student Tracking**: Manage enrollments, track attendance and progress
+4. **Teacher Scheduling**: Coordinate availability and workshop assignments
+5. **Course Oversight**: Ensure consistent curriculum delivery
 
 ---
 
-## 👥 User Personas & Stakeholders
+## 🏗️ Functional Modules
 
-### Primary Users
-1. **Super Administrators** (Internal Airbotix Staff)
-   - Full system access and control
-   - Business intelligence and reporting needs
-   - User and permission management
+### Module 1: Content Management System (CMS)
+**Purpose**: Centralized repository for all educational materials and content
 
-2. **Business Development Team**
-   - Workshop scheduling and management
-   - Partner relationship tracking
-   - Revenue and sales analytics
+**Core Functions:**
+- **Content Library**: Store and organize lesson plans by age group (K-12)
+- **Resource Management**: Upload videos, handouts, assessment sheets, project templates
+- **Material Database**: Track workshop supplies, robotics kits, software requirements
+- **Content Organization**: Categorize by difficulty level, duration, learning objectives
+- **Search & Filter**: Find content by keywords, age group, topic, or duration
 
-3. **Education Team**
-   - Course content management
-   - Teacher assignment and tracking
-   - Student progress monitoring
+**User Workflow:**
+1. Admin uploads new lesson plan with metadata (age, topic, duration, materials)
+2. System automatically categorizes and makes searchable
+3. Teacher accesses relevant materials when preparing for workshop
+4. Content can be linked to specific workshops and courses
 
-### Secondary Users
-4. **Finance Team**
-   - Revenue reporting and analysis
-   - Inventory cost tracking
-   - Commission calculations
-
-5. **Technical Support**
-   - User account management
-   - System troubleshooting
-   - Data maintenance
+**Key Outputs:**
+- Organized content library with 100% of current materials uploaded
+- Material checklists automatically generated for each workshop type
+- Teachers can find relevant resources within 2 clicks
 
 ---
 
-## 🏗️ System Architecture Overview
+### Module 2: Identity & Access Management (IAM + RBAC)
+**Purpose**: Secure user authentication with role-based access and basic change tracking
 
-### Core Modules
+**User Roles & Permissions:**
+- **Super Admin**: Full system access - can create/edit/delete all content
+- **Content Manager**: CMS and courses (full access), other modules (read-only)
+- **Operations Coordinator**: Students, workshops, teachers (full access), CMS (read-only)
+- **Teacher**: Assigned workshops only (read), student progress (update only)
+
+**Core Functions:**
+- **User Authentication**: Supabase Auth with email magic links
+- **Role Assignment**: Assign and modify user roles via profiles.role field
+- **Access Control**: Module visibility based on user role
+- **Session Management**: Automatic logout after inactivity
+- **Change Tracking**: Basic logging of critical data changes (student info updates, workshop modifications)
+
+**Business Rules:**
+- Only Super Admin can create new user accounts
+- Teachers can only see workshops they're assigned to
+- Role changes require Super Admin approval
+- Student information changes logged with user ID and timestamp for security compliance
+
+**Data Protection:**
+Given the educational context involving student information, minimal change tracking is essential:
+- **Student Updates**: Log who modified student records and when
+- **Workshop Changes**: Track capacity and enrollment modifications  
+- **Critical Actions**: Record user actions affecting student safety or privacy
+
+**Implementation**: Use simple `change_logs` table with user_id, table_name, record_id, action, and timestamp. This provides accountability without full audit complexity.
+
+---
+
+### Module 3: Student Management
+**Purpose**: Comprehensive student records and enrollment tracking
+
+**Core Functions:**
+- **Student Profiles**: Store name, age, grade, school, parent contact, learning preferences
+- **Enrollment Processing**: Register students for workshops and courses
+- **Attendance Tracking**: Mark present/absent during workshops
+- **Progress Recording**: Teacher observations, skill development notes, achievements
+- **Communication Log**: Parent updates, feedback, and correspondence history
+
+**Key Workflows:**
+1. **New Student**: Create profile → assign to workshop → generate materials list
+2. **Workshop Day**: Check attendance → update progress notes → record achievements
+3. **Course Tracking**: Monitor multi-session progress → issue certificates upon completion
+4. **Parent Communication**: Generate progress reports → send updates
+
+**Business Requirements:**
+- Support minimum 200 student profiles
+- Track attendance across multiple workshops per student
+- Generate parent reports showing learning progression
+- Maintain student privacy with restricted teacher access
+
+---
+
+### Module 4: Workshop Management
+**Purpose**: End-to-end workshop planning, scheduling, and execution with concurrency protection
+
+**Core Functions:**
+- **Workshop Planning**: Define workshop details (title, age group, capacity, materials)
+- **Calendar Scheduling**: Visual calendar with drag-and-drop workshop placement
+- **Teacher Assignment**: Match available teachers to workshops based on expertise
+- **Student Enrollment**: Manage workshop capacity and waitlists with atomic operations
+- **Resource Planning**: Generate material checklists and setup instructions
+- **Session Tracking**: Record attendance, notes, and outcomes
+
+**Workshop Lifecycle:**
+1. **Create Workshop**: Select template → set date/time → assign teacher → open enrollment
+2. **Pre-Workshop**: Generate student list → prepare materials → confirm teacher
+3. **Workshop Day**: Check attendance → conduct session → collect feedback
+4. **Post-Workshop**: Update student records → archive session notes → plan follow-up
+
+**Business Rules:**
+- Maximum capacity enforcement with automatic waitlist
+- Teacher conflict prevention (no double-booking)
+- Material requirements calculated based on enrolled student count
+- Workshop templates ensure consistent delivery standards
+
+**Concurrency & Data Integrity:**
+Given multiple admin staff may simultaneously manage enrollments, critical operations must handle race conditions:
+
+- **Enrollment Protection**: Use Supabase database functions or transactions to ensure atomic enrollment checks (verify capacity → enroll student → update count)
+- **Teacher Assignment**: Implement optimistic locking to prevent double-booking when two admins assign same teacher simultaneously
+- **Capacity Management**: Real-time enrollment counts with database-level constraints to prevent over-enrollment
+- **Conflict Detection**: Server-side validation for all scheduling operations with immediate user feedback
+
+**Implementation Notes:**
+- **Database Constraints**: Workshop capacity limits enforced at database level
+- **Real-time Updates**: Supabase real-time subscriptions notify all users of enrollment changes
+- **Error Handling**: Clear user messages when enrollment fails due to capacity or conflicts
+- **Retry Logic**: Automatic retry for failed operations due to concurrent access
+
+---
+
+### Module 5: Course Management
+**Purpose**: Multi-session program organization and progress tracking
+
+**Core Functions:**
+- **Course Design**: Create multi-session courses with learning progression
+- **Session Planning**: Define individual workshops within course sequence  
+- **Enrollment Management**: Register students for complete course programs
+- **Progress Tracking**: Monitor student advancement through course levels
+- **Certification**: Issue completion certificates based on attendance and assessment
+
+**Course Types:**
+- **Taster Sessions**: Single workshop introductions
+- **Short Courses**: 3-4 sessions over consecutive weeks
+- **Term Programs**: 8-12 sessions over school semester
+- **Holiday Intensives**: Daily sessions during school breaks
+
+**Key Workflows:**
+1. **Course Setup**: Define session sequence → set learning objectives → create assessment criteria
+2. **Student Enrollment**: Register for full course → automatic workshop assignments
+3. **Progress Monitoring**: Track session attendance → record skill development → assess completion
+4. **Certification**: Verify completion criteria → generate certificates → update student records
+
+---
+
+### Module 6: Teacher Management
+**Purpose**: Teacher scheduling, assignment, and performance tracking
+
+**Core Functions:**
+- **Teacher Profiles**: Contact info, qualifications, expertise areas, availability
+- **Schedule Management**: Track availability, assign workshops, prevent conflicts
+- **Skill Matching**: Match teacher expertise to workshop requirements
+- **Performance Tracking**: Collect feedback, monitor workshop quality, identify training needs
+- **Resource Coordination**: Manage equipment allocation and travel planning
+
+**Key Workflows:**
+1. **Teacher Onboarding**: Create profile → assess skills → set availability → assign first workshop
+2. **Workshop Assignment**: Check availability → match skills → confirm assignment → send details
+3. **Workshop Delivery**: Provide materials access → track attendance → collect feedback
+4. **Performance Review**: Analyze feedback → identify development areas → plan training
+
+**Business Requirements:**
+- Support minimum 10 teacher profiles with varying availability
+- Prevent scheduling conflicts across all teachers
+- Match teacher skills (AI vs Robotics) to workshop requirements
+- Track teacher utilization and performance metrics
+
+---
+
+## 🔗 Module Integration Requirements
+
+### Cross-Module Data Flow
+- **CMS ↔ Workshops**: Lesson plans automatically linked to workshop types
+- **Workshops ↔ Students**: Enrollment data flows to attendance tracking
+- **Workshops ↔ Teachers**: Assignment triggers material access and preparation
+- **Courses ↔ Workshops**: Multi-session courses create workshop series
+- **Students ↔ Teachers**: Progress notes and communication centralized
+- **IAM**: Access control applied consistently across all modules
+
+### Shared Features
+- **Universal Search**: Find students, workshops, content, or teachers across system
+- **Dashboard Overview**: Key metrics and urgent tasks from all modules
+- **Notification System**: Alerts for schedule changes, new enrollments, deadlines
+- **Quick Actions**: Common tasks (create workshop, enroll student) accessible from any page
+
+---
+
+## 📊 Success Metrics
+
+### Immediate Goals (Month 1)
+- **Content Migration**: 100% of current lesson plans uploaded and categorized in CMS
+- **User Adoption**: All 3 admin staff actively using system for daily tasks
+- **Workshop Scheduling**: Zero scheduling conflicts (currently 1-2 per month)
+- **Data Accuracy**: Student enrollment errors reduced from 20% to under 5%
+
+### Short-term Goals (Month 3)
+- **Process Efficiency**: Workshop coordination time reduced by 50% (from 2 hours to 1 hour per workshop)
+- **Teacher Utilization**: Eliminate teacher double-booking (currently 1-2 incidents per month)
+- **Student Tracking**: 90% of workshops have complete attendance and progress records
+- **Content Accessibility**: Teachers find required materials within 2 clicks, 95% of the time
+
+### Long-term Goals (Month 6)
+- **Reporting Capability**: Generate 3 key reports (student attendance rates, teacher utilization, course completion rates)
+- **System Coverage**: 100% of workshops planned and tracked through system (eliminate spreadsheets)
+- **Data Quality**: Maintain 95% data accuracy across student records and workshop information
+- **Operational Scalability**: Handle 50% increase in workshop volume with same admin staff time
+
+### Quantifiable KPIs
+- **Workshop Management**: Process workshop from planning to completion in under 30 minutes
+- **Student Records**: Access complete student history within 10 seconds
+- **Teacher Assignment**: Identify and assign available teacher within 5 minutes
+- **Content Discovery**: Find specific lesson plan or resource within 1 minute
+- **Attendance Tracking**: Complete workshop attendance in under 2 minutes
+- **Progress Reporting**: Generate student progress report in under 3 minutes
+
+---
+
+---
+
+## 🛠️ Technical Requirements
+
+### Frontend Architecture
+- **Framework**: React 18 + Vite + TypeScript
+- **Styling**: TailwindCSS for consistent UI components
+- **Routing**: React Router (HashRouter for GitHub Pages compatibility)
+- **State Management**: React Context for user auth, local state for modules
+- **Responsive Design**: Mobile-first approach with tablet optimization
+
+### Backend & Infrastructure
+- **Database**: Supabase Postgres (managed, free tier up to 500MB)
+- **Authentication**: Supabase Auth with email magic links
+- **File Storage**: Supabase Storage for lesson materials and images
+- **Email Service**: SendGrid for notifications and communications
+- **Analytics**: Google Analytics 4 (optional)
+
+### Deployment & Hosting
+- **Frontend Hosting**: Vercel (zero-config deployment, preview branches)
+- **CI/CD**: Vercel Auto Deploy (push to main triggers production build)
+- **Environment**: Production and staging environments with branch previews
+
+### Data Architecture
+- **Database Tables**: Users, Students, Teachers, Workshops, Content, Courses
+- **Real-time Updates**: Supabase real-time subscriptions for live data sync
+- **Row-Level Security**: Database-level permissions aligned with user roles
+- **File Management**: Organized folder structure in Supabase Storage
+
+### Security & Compliance
+- **Authentication**: Secure session management with automatic timeout
+- **Data Protection**: Student information encrypted and access-controlled
+- **RBAC Implementation**: Role permissions enforced at database level
+- **Backup Strategy**: Automatic daily backups through Supabase
+
+### Mobile & Responsive Design Requirements
+
+#### Target Devices & Use Cases
+- **Desktop (Admin)**: Primary interface for content management and detailed planning
+- **Tablet (Teachers)**: Workshop delivery, attendance tracking, progress notes
+- **Mobile (Optional)**: Quick status checks and basic information access
+
+#### Tablet Optimization (Primary Mobile Focus)
+**Device Targets**: iPad (10.9"), Android tablets (10-11"), Surface Pro
+**Orientation**: Both portrait and landscape support
+
+**Core Interface Adaptations**:
+- **Touch-Friendly Controls**: Minimum 44px touch targets for buttons and interactive elements
+- **Simplified Navigation**: Bottom tab bar for quick module switching during workshops
+- **Workshop Mode**: Dedicated mobile layout for teachers during session delivery
+- **Quick Actions**: Large, easily accessible buttons for common tasks (mark attendance, add notes)
+
+#### Mobile-Specific Features
+
+**Workshop Delivery Mode (Teachers)**:
 ```
-Super Admin Management System
-├── 📋 Content Management System (CMS)
-├── 🔐 Identity & Access Management (IAM/RBAC)
-├── 👥 Student Management
-├── 🏫 Workshop Management  
-├── 📚 Course Management
-└── 👨‍🏫 Teacher Management
+📱 Workshop Dashboard:
+- Large student roster with photo thumbnails
+- One-tap attendance marking (present/absent)
+- Quick note-taking with pre-defined tags
+- Emergency contact information readily accessible
+- Material checklist with large checkboxes
 ```
 
----
+**Responsive Breakpoints**:
+- **Mobile**: < 768px (simplified interface, vertical navigation)
+- **Tablet**: 768px - 1024px (hybrid interface, workshop delivery mode)
+- **Desktop**: > 1024px (full admin interface, multi-column layouts)
 
-## 📋 Module 1: Content Management System (CMS)
+#### Mobile Interface Guidelines
 
-### Purpose
-Centralized management of all educational content, marketing materials, and product information across Airbotix's platform.
+**Navigation**:
+- **Desktop**: Left sidebar with full module names and icons
+- **Tablet**: Collapsible sidebar or bottom tab navigation
+- **Mobile**: Bottom tab navigation with icons only
 
-### Core Features
+**Data Tables**:
+- **Desktop**: Full table view with all columns
+- **Tablet**: Card-based layout with swipe actions
+- **Mobile**: List view with expandable details
 
-#### **Educational Content Management**
-- **Curriculum Library**: Store and organize AI/Robotics lesson plans, activities, and assessments
-- **Age-Appropriate Categorization**: K-12 grade level content organization
-- **Multimedia Support**: Images, videos, interactive demos, and 3D models
-- **Version Control**: Track content updates and maintain revision history
-- **Content Templates**: Standardized formats for different workshop types
+**Forms & Input**:
+- **Touch Optimization**: Large input fields, dropdown alternatives
+- **Input Methods**: Voice-to-text for progress notes, photo capture for materials
+- **Validation**: Immediate visual feedback, simplified error messages
 
-#### **Product Information Management**
-- **Hardware Documentation**: Specifications, assembly guides, troubleshooting
-- **Partner Brand Content**: Marketing materials for distributed robotics products
-- **Pricing Information**: Dynamic pricing management for workshops and products
-- **Inventory Descriptions**: Detailed product catalogs
+**Workshop-Specific Mobile Features**:
+- **Offline Capability**: Basic attendance tracking works without internet
+- **Auto-sync**: Data synchronizes when connection restored
+- **Photo Integration**: Capture workshop moments, student projects
+- **Quick Communication**: Send updates to parents via integrated messaging
 
-#### **Marketing & Website Content**
-- **Landing Page Management**: Update workshop offerings and testimonials
-- **Blog System**: Share success stories and educational insights
-- **Resource Downloads**: Whitepapers, case studies, teacher guides
-- **SEO Optimization**: Meta tags, keywords, and search optimization
+#### Performance Requirements (Mobile)
+- **Load Time**: Under 2 seconds on 3G connection
+- **Touch Response**: Immediate visual feedback for all interactions
+- **Battery Efficiency**: Optimize for 4+ hour workshop sessions
+- **Data Usage**: Minimize bandwidth consumption for teachers with limited data
 
-### Business Impact
-- **Revenue Growth**: Faster content updates lead to quicker market response
-- **Operational Efficiency**: Reduced time to launch new workshops and courses
-- **Brand Consistency**: Standardized messaging across all touchpoints
-
----
-
-## 🔐 Module 2: Identity & Access Management (IAM/RBAC)
-
-### Purpose
-Secure, role-based access control system managing permissions across all stakeholders in Airbotix's ecosystem.
-
-### Role Hierarchy
-
-#### **Internal Roles**
-- **Super Admin**: Full system access (Airbotix leadership)
-- **Business Manager**: Workshop and revenue management
-- **Education Coordinator**: Course and teacher management
-- **Content Creator**: CMS and curriculum management
-- **Support Agent**: Limited user management and troubleshooting
-
-#### **External Roles**
-- **School Administrator**: Manage their school's workshops and students
-- **Teacher**: Access assigned courses and student progress
-- **Parent/Guardian**: View child's progress and workshop schedules
-- **Student**: Access learning materials and track personal progress
-- **Distribution Partner**: Access product catalogs and commission data
-
-### Core Features
-
-#### **Permission Management**
-- **Granular Permissions**: Module-level and feature-level access control
-- **Dynamic Role Assignment**: Temporary permissions for special projects
-- **Audit Trail**: Complete logging of all access and changes
-- **Multi-School Support**: School-specific data isolation
-
-#### **Authentication & Security**
-- **Multi-Factor Authentication**: Required for admin roles
-- **Session Management**: Secure timeout and concurrent session limits
-- **Password Policies**: Strength requirements and rotation schedules
-- **API Key Management**: Secure integration with external tools
-
-### Business Impact
-- **Data Security**: Protect sensitive student and business information
-- **Compliance**: Meet education sector privacy requirements
-- **Operational Control**: Clear accountability and access tracking
+#### Accessibility (Mobile)
+- **Font Scaling**: Support iOS/Android system font size preferences
+- **High Contrast**: Readable in various lighting conditions (classroom to outdoor)
+- **Voice Control**: Basic voice commands for hands-free operation during workshops
+- **Landscape Mode**: Full functionality in both orientations
 
 ---
 
-## 👥 Module 3: Student Management
+## 🚧 Implementation Phases
 
-### Purpose
-Comprehensive student lifecycle management supporting Airbotix's educational service delivery and revenue tracking.
+### Phase 1: Foundation (Weeks 1-2)
+- **IAM System**: User roles, authentication, basic access control
+- **Dashboard Structure**: Main navigation and module framework
+- **CMS Core**: Content upload, basic categorization, search functionality
 
-### Core Features
+**Success Criteria**: Admin staff can log in, upload content, and navigate between modules
 
-#### **Student Profiles & Registration**
-- **Demographics**: Age, grade level, school affiliation, contact information
-- **Learning Preferences**: AI vs Robotics interest, skill level assessment
-- **Parental Information**: Guardian contacts and consent management
-- **Special Needs**: Accommodation requirements and accessibility needs
+### Phase 2: Operations (Weeks 3-4)
+- **Student Management**: Create profiles, enrollment, attendance tracking
+- **Workshop System**: Calendar interface, scheduling, teacher assignment
+- **Teacher Coordination**: Availability management, conflict prevention
 
-#### **Enrollment & Participation Tracking**
-- **Workshop Registration**: Easy booking system for upcoming workshops
-- **Attendance Tracking**: Real-time check-in for workshop sessions
-- **Progress Monitoring**: Skill development and learning outcomes
-- **Certificate Management**: Digital badges and completion certificates
+**Success Criteria**: Complete workshop can be planned and executed through system
 
-#### **Engagement Analytics**
-- **Participation Metrics**: Attendance rates, engagement scores
-- **Learning Outcomes**: Pre/post workshop assessments
-- **Retention Analysis**: Long-term student journey tracking
-- **Parent Communication**: Progress reports and update notifications
+### Phase 3: Advanced Features (Weeks 5-6)
+- **Course Management**: Multi-session programs, progress tracking
+- **System Integration**: Cross-module data flow and shared features
+- **Reporting & Analytics**: Basic reports and performance metrics
 
-### Business Impact
-- **Revenue Optimization**: Data-driven insights for workshop pricing and capacity
-- **Student Retention**: Improved tracking leads to better educational outcomes
-- **Market Expansion**: Understanding demographics for new market opportunities
+**Success Criteria**: All current spreadsheet processes replaced with system workflows
 
 ---
 
-## 🏫 Module 4: Workshop Management
+## 🎯 Definition of Done
 
-### Purpose
-End-to-end workshop operations management supporting Airbotix's primary service revenue stream.
+### Functional DoD (Module Completion Standards)
 
-### Core Features
+#### CMS Module ✅
+- [ ] Upload and categorize lesson plans with metadata (age, topic, duration)
+- [ ] Search content by keywords, age group, or topic
+- [ ] Link materials to specific workshops
+- [ ] Generate material checklists based on workshop type
+- [ ] Content accessible to teachers based on workshop assignments
 
-#### **Workshop Planning & Scheduling**
-- **Calendar Management**: Multi-location scheduling with conflict detection
-- **Resource Allocation**: Teacher assignments and hardware requirements
-- **Capacity Planning**: Student limits and room requirements
-- **Recurring Workshop Templates**: Standard program formats
+#### IAM Module ✅
+- [ ] User login/logout with role assignment
+- [ ] Role-based page visibility (teachers see only assigned workshops)
+- [ ] Session timeout after 30 minutes inactivity
+- [ ] Super Admin can create/modify user accounts
 
-#### **Booking & Payment Processing**
-- **Registration Portal**: Easy booking for schools and individuals
-- **Payment Integration**: Secure payment processing and invoicing
-- **Cancellation Policies**: Automated refund and rescheduling
-- **Group Discounts**: Volume pricing for multiple students
+#### Student Management ✅
+- [ ] Create student profiles with contact and learning preference info
+- [ ] Enroll students in workshops with capacity limits
+- [ ] Mark attendance during workshops
+- [ ] Record progress notes and achievements
+- [ ] Generate basic student history reports
 
-#### **Delivery & Quality Assurance**
-- **Workshop Materials**: Equipment checklists and setup guides
-- **Teacher Dashboard**: Real-time workshop management tools
-- **Student Check-in**: Attendance and participation tracking
-- **Feedback Collection**: Post-workshop surveys and ratings
+#### Workshop Management ✅
+- [ ] Create workshops using templates (age group, capacity, materials)
+- [ ] Visual calendar scheduling with drag-and-drop
+- [ ] Assign teachers based on availability and skills
+- [ ] Prevent double-booking and over-enrollment
+- [ ] Generate pre-workshop material lists and student rosters
 
-#### **Business Intelligence**
-- **Revenue Analytics**: Workshop profitability and trending topics
-- **Teacher Performance**: Delivery quality and student satisfaction
-- **Market Demand**: Popular workshop types and optimal pricing
-- **Operational Metrics**: Utilization rates and resource efficiency
+#### Course Management ✅
+- [ ] Create multi-session courses with learning progression
+- [ ] Enroll students in complete course sequences
+- [ ] Track progress across course sessions
+- [ ] Issue completion certificates based on attendance criteria
 
-### Business Impact
-- **Revenue Growth**: Optimized pricing and capacity utilization
-- **Service Quality**: Consistent delivery standards and improvement tracking
-- **Market Intelligence**: Data-driven decisions for workshop expansion
+#### Teacher Management ✅
+- [ ] Maintain teacher profiles with availability and expertise
+- [ ] Assign workshops with conflict detection
+- [ ] Teacher dashboard shows assigned workshops and materials
+- [ ] Teachers can update student attendance and progress
 
----
+### System DoD (Technical Performance Standards)
 
-## 📚 Module 5: Course Management
+#### Performance Requirements ✅
+- [ ] Page load times under 3 seconds on standard internet
+- [ ] Support 5 concurrent users without performance degradation
+- [ ] Mobile responsive on tablets (teachers use during workshops)
+- [ ] Search results return within 2 seconds
 
-### Purpose
-Structured curriculum management enabling scalable delivery of Airbotix's educational programs across multiple schools and learning contexts.
+#### Security & Reliability ✅
+- [ ] User sessions secure with proper timeout
+- [ ] Data validation prevents common errors (double-booking, over-capacity)
+- [ ] Role permissions properly restrict access to authorized content
+- [ ] System recovers gracefully from connection interruptions
 
-### Core Features
+#### Compatibility ✅
+- [ ] Works on Chrome and Safari browsers
+- [ ] Tablet-friendly interface for teacher use during workshops
+- [ ] Data exports to Excel for external reporting needs
+- [ ] Integration ready for future payment systems
 
-#### **Curriculum Development**
-- **Course Templates**: Standardized AI and Robotics curriculum frameworks
-- **Learning Objectives**: Clear outcomes aligned with educational standards
-- **Assessment Tools**: Pre/post tests, practical evaluations, and skill assessments
-- **Age Progression**: Scaffolded learning paths from K-12
+### Business DoD (Operational Impact Standards)
 
-#### **Content Organization**
-- **Lesson Plans**: Detailed workshop activities and timing
-- **Resource Libraries**: Hardware requirements, software tools, and materials
-- **Interactive Elements**: Hands-on projects and coding challenges
-- **Homework & Extensions**: Take-home activities and advanced challenges
+#### Process Replacement ✅
+- [ ] 100% of workshop scheduling moved from WhatsApp to system
+- [ ] All student records migrated from Excel to centralized system
+- [ ] Teacher assignments coordinated through system calendar
+- [ ] Content discovery replaces folder-hunting in Google Drive
 
-#### **Deployment & Tracking**
-- **School Program Management**: Long-term course deployments at partner schools
-- **Progress Tracking**: Individual and class-level advancement
-- **Curriculum Customization**: School-specific adaptations and requirements
-- **Outcome Measurement**: Learning effectiveness and skill development
+#### Efficiency Improvements ✅
+- [ ] Workshop planning time reduced from 2 hours to under 30 minutes
+- [ ] Student information accessible within 10 seconds during workshops
+- [ ] Teacher materials preparation streamlined to under 15 minutes
+- [ ] Zero scheduling conflicts after system implementation
 
-### Business Impact
-- **Scalable Education**: Standardized curriculum enables rapid expansion
-- **Quality Consistency**: Uniform educational outcomes across all locations
-- **Competitive Advantage**: Proprietary curriculum becomes key differentiator
+#### Quality Assurance ✅
+- [ ] All workshop sessions have complete attendance records
+- [ ] Student progress tracking consistent across all programs
+- [ ] Course delivery standardized using organized content library
+- [ ] Teacher feedback collected and stored for program improvement
 
----
+#### User Adoption ✅
+- [ ] All admin staff (3 people) actively using system daily
+- [ ] Teachers prefer system over manual coordination methods
+- [ ] New staff can be trained on system within 30 minutes
+- [ ] System reduces rather than increases daily workload
 
-## 👨‍🏫 Module 6: Teacher Management
+### Acceptance Criteria Summary
+**The system is complete when**: Admin staff can plan, execute, and track a complete workshop from initial request through student progress reporting entirely within the system, without resorting to spreadsheets, messaging apps, or manual coordination.
 
-### Purpose
-Comprehensive teacher lifecycle management supporting Airbotix's human resource requirements for educational service delivery.
-
-### Core Features
-
-#### **Teacher Recruitment & Onboarding**
-- **Skill Assessment**: AI and Robotics expertise evaluation
-- **Certification Tracking**: Required qualifications and ongoing training
-- **Background Checks**: Safety and security verification for school environments
-- **Training Programs**: Airbotix methodology and curriculum training
-
-#### **Schedule & Assignment Management**
-- **Availability Tracking**: Teacher schedules and preferred locations
-- **Workshop Assignment**: Automated matching based on skills and availability
-- **Workload Management**: Fair distribution and capacity planning
-- **Substitute Coverage**: Backup teacher coordination
-
-#### **Performance & Development**
-- **Student Feedback**: Workshop ratings and improvement suggestions
-- **Professional Development**: Ongoing training and skill advancement
-- **Performance Reviews**: Regular evaluation and career growth planning
-- **Recognition Programs**: Awards and incentives for excellent delivery
-
-#### **Administrative Support**
-- **Payroll Integration**: Workshop-based compensation tracking
-- **Travel Coordination**: Multi-school assignment logistics
-- **Resource Allocation**: Equipment and materials assignment
-- **Communication Tools**: Updates and important announcements
-
-### Business Impact
-- **Service Quality**: Skilled, trained teachers deliver better educational outcomes
-- **Operational Efficiency**: Optimized scheduling reduces costs and gaps
-- **Growth Enablement**: Teacher capacity directly limits workshop expansion potential
-
----
-
-## 🔗 Cross-Module Integration Requirements
-
-### **Data Flow & Dependencies**
-1. **CMS ↔ Course Management**: Curriculum content and lesson plan integration
-2. **IAM ↔ All Modules**: Permission-based access across entire system
-3. **Student ↔ Workshop**: Registration, attendance, and progress tracking
-4. **Teacher ↔ Workshop**: Assignment, delivery, and feedback loops
-5. **Course ↔ Workshop**: Curriculum implementation in live sessions
-
-### **Business Intelligence Integration**
-- **Revenue Dashboard**: Real-time tracking across all income streams
-- **Operational KPIs**: Workshop utilization, teacher efficiency, student satisfaction
-- **Growth Metrics**: Market expansion opportunities and capacity planning
-- **Financial Reporting**: Cost analysis, profit margins, and forecasting
-
----
-
-## 🚀 Technical Requirements
-
-### **Performance Standards**
-- **Page Load Time**: <3 seconds for all dashboard views
-- **Data Processing**: Handle 10,000+ student records efficiently
-- **Concurrent Users**: Support 50+ simultaneous admin users
-- **Mobile Responsiveness**: Full functionality on tablets and smartphones
-
-### **Security Requirements**
-- **Data Encryption**: All sensitive data encrypted at rest and in transit
-- **GDPR Compliance**: Student privacy and data protection requirements
-- **Audit Logging**: Complete activity tracking for compliance
-- **Backup & Recovery**: Daily automated backups with 99.9% uptime
-
-### **Integration Requirements**
-- **Payment Gateway**: Stripe or PayPal for workshop bookings
-- **Email System**: Automated notifications and communications
-- **Calendar Integration**: Google Calendar and Outlook synchronization
-- **Reporting Tools**: Excel export and dashboard analytics
-
----
-
-## 📈 Success Criteria & KPIs
-
-### **Operational Metrics**
-- **Time Savings**: 70% reduction in manual administrative tasks
-- **Error Reduction**: 90% fewer data entry mistakes
-- **Process Automation**: 80% of routine tasks automated
-- **User Adoption**: 95% of staff actively using the system
-
-### **Business Metrics**
-- **Revenue Visibility**: Real-time tracking of workshop bookings and payments
-- **Capacity Optimization**: 15% improvement in workshop utilization rates
-- **Teacher Efficiency**: 25% improvement in teacher-to-student ratios
-- **Customer Satisfaction**: Improved Net Promoter Score from school partners
-
-### **Growth Enablement**
-- **Scalability**: System can handle 10x current workshop volume
-- **Market Expansion**: Support for new geographic regions
-- **Product Integration**: Seamless addition of new hardware products
-- **Partner Onboarding**: Streamlined process for new distribution partners
-
----
-
-## 🗓️ Implementation Phases
-
-### **Phase 1: Foundation (Weeks 1-2)**
-- IAM/RBAC system implementation
-- Basic user management and authentication
-- Core navigation and dashboard structure
-
-### **Phase 2: Core Operations (Weeks 3-4)**
-- Student and Teacher management modules
-- Workshop scheduling and booking system
-- Basic CMS functionality
-
-### **Phase 3: Advanced Features (Weeks 5-6)**
-- Course management and curriculum tools
-- Business intelligence and reporting
-- Payment processing and invoicing
-
-### **Phase 4: Optimization (Weeks 7-8)**
-- Performance optimization and security hardening
-- Advanced analytics and automation
-- Integration testing and deployment
-
----
-
-## 🔍 Risk Assessment
-
-### **Technical Risks**
-- **Data Migration**: Existing spreadsheet data needs careful transformation
-- **Performance**: Large datasets may impact initial load times
-- **Integration Complexity**: Multiple external system dependencies
-
-### **Business Risks**
-- **User Adoption**: Staff may resist change from familiar manual processes
-- **Data Accuracy**: Historical data quality may impact reporting reliability
-- **Scope Creep**: Additional feature requests during development
-
-### **Mitigation Strategies**
-- **Phased Rollout**: Gradual implementation with extensive testing
-- **Training Program**: Comprehensive staff training and documentation
-- **Data Validation**: Rigorous data cleaning and verification processes
-
----
-
-## 💡 Future Considerations
-
-### **Potential Enhancements**
-- **AI-Powered Analytics**: Predictive insights for workshop demand and student outcomes
-- **Mobile Application**: Teacher and student mobile app integration
-- **API Marketplace**: Third-party integration capabilities
-- **International Expansion**: Multi-language and currency support
-
-### **Scalability Planning**
-- **Microservices Architecture**: Modular system design for future growth
-- **Cloud Infrastructure**: Scalable hosting and database solutions
-- **API-First Design**: Enable future integrations and mobile applications
-
----
-
-## ✅ Definition of Done
-
-### **Functional Requirements**
-- [ ] All six core modules fully implemented and tested
-- [ ] Role-based access control working for all user types
-- [ ] Real-time data synchronization across modules
-- [ ] Automated reporting and analytics functional
-- [ ] Payment processing integration complete
-
-### **Non-Functional Requirements**
-- [ ] System meets performance benchmarks (load time, concurrent users)
-- [ ] Security audit passed with no critical vulnerabilities
-- [ ] Mobile responsiveness verified across devices
-- [ ] Data backup and recovery procedures tested
-- [ ] User acceptance testing completed with 90%+ satisfaction
-
-### **Business Requirements**
-- [ ] All revenue streams tracked and reportable
-- [ ] Workshop booking and management workflow operational
-- [ ] Student and teacher lifecycle management complete
-- [ ] Integration with existing Airbotix business processes
-- [ ] Staff training completed and adoption metrics met
-
----
-
-**Next Steps**: Upon approval of this PRD, proceed to technical specification development and implementation planning using Airbotix's AI-first development workflow.
+This system will enable Airbotix to deliver consistent, high-quality educational programs while reducing administrative overhead and supporting sustainable growth.
