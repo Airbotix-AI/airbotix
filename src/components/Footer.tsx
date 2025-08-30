@@ -1,17 +1,19 @@
 import { Link } from 'react-router-dom'
+import { LOGO_PATHS, ALT_TEXTS, LOGO_SIZES } from '../constants/assets'
 
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">A</span>
-              </div>
-              <span className="text-xl font-bold">Airbotix</span>
+            <div className={`logo-crop-container-footer ${LOGO_SIZES.FOOTER.MAX_WIDTH} mb-0`}>
+              <img 
+                src={LOGO_PATHS.WHITE_HORIZONTAL} 
+                alt={ALT_TEXTS.LOGO_MAIN}
+                className={`${LOGO_SIZES.FOOTER.HEIGHT} ${LOGO_SIZES.FOOTER.WIDTH} logo-crop-footer`}
+              />
             </div>
             <p className="text-gray-300 mb-4 max-w-md">
               Bringing AI and Robotics education to K-12 students across Australia. 
