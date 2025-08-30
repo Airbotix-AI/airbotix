@@ -1,478 +1,377 @@
-# Airbotix Super Admin Management System
-## Product Requirements Document (PRD)
+# Airbotix Super Admin Management System - MVP (2 Weeks)
+
+**Product Requirements Document (PRD)**
 
 ---
 
-## 📋 Product Overview
+## Product Overview
 
-### What We're Building
-A web-based admin dashboard for Airbotix internal staff to manage educational operations: content, users, students, workshops, courses, and teachers. This replaces current spreadsheet-based workflows with a centralized management system.
+### What We're Building (MVP)
 
-### Current Pain Points
-- Workshop content scattered across Google Drive folders
-- Student enrollment managed via Excel sheets
-- Teacher scheduling through WhatsApp, WeChat and email coordination
-- Course materials inconsistently organized
-- No unified user access control system
+A lightweight web-based admin dashboard to replace Excel and WhatsApp workflows. Core focus: manage workshops, students, teachers, courses, and lesson content through a unified system with role-based access control.
 
-### Success Goals
-- Centralize all educational content in one searchable system
-- Streamline workshop booking and teacher assignment workflow
-- Maintain comprehensive student records and progress tracking
-- Standardize course delivery across all programs
+### Current Problems
+- Workshop scheduling done manually via WhatsApp
+- Student records scattered across Excel files
+- Teacher coordination via phone calls
+- Lesson materials lost in random Google Drive folders
+- No centralized access control or role management
 
----
-
-## 🎯 Core User Journey
-
-### Primary Users: Airbotix Admin Team
-
-**Daily Operations:**
-1. **Content Management**: Update lesson plans, upload new materials
-2. **Workshop Coordination**: Review bookings, assign teachers, prepare materials
-3. **Student Tracking**: Manage enrollments, track attendance and progress
-4. **Teacher Scheduling**: Coordinate availability and workshop assignments
-5. **Course Oversight**: Ensure consistent curriculum delivery
+### MVP Success Goals (2 Weeks)
+- Replace Excel/WhatsApp for workshop and student management
+- Centralized content and user access management
+- Role-based access for admins and teachers
+- Daily admin tasks completed in under 30 minutes
 
 ---
 
-## 🏗️ Functional Modules
+## Core User Flows
 
-### Module 1: Content Management System (CMS)
-**Purpose**: Centralized repository for all educational materials and content
+### Admin Daily Workflow:
+1. **Check Dashboard:** Today's workshops, teacher assignments, student counts
+2. **Manage Students:** Add new students, enroll in workshops
+3. **Coordinate Workshops:** Create/modify workshops, assign teachers
+4. **Content Management:** Upload/organize lesson materials
+5. **Monitor Progress:** Mark attendance, track course completion
 
-**Core Functions:**
-- **Content Library**: Store and organize lesson plans by age group (K-12)
-- **Resource Management**: Upload videos, handouts, assessment sheets, project templates
-- **Material Database**: Track workshop supplies, robotics kits, software requirements
-- **Content Organization**: Categorize by difficulty level, duration, learning objectives
-- **Search & Filter**: Find content by keywords, age group, topic, or duration
-
-**User Workflow:**
-1. Admin uploads new lesson plan with metadata (age, topic, duration, materials)
-2. System automatically categorizes and makes searchable
-3. Teacher accesses relevant materials when preparing for workshop
-4. Content can be linked to specific workshops and courses
-
-**Key Outputs:**
-- Organized content library with 100% of current materials uploaded
-- Material checklists automatically generated for each workshop type
-- Teachers can find relevant resources within 2 clicks
+### Teacher Daily Workflow:
+1. **View Assigned Workshops:** Check today's schedule and student roster
+2. **Mark Attendance:** Record student participation
+3. **Access Content:** Download lesson materials for workshops
+4. **Update Availability:** Set availability status
 
 ---
 
-### Module 2: Identity & Access Management (IAM + RBAC)
-**Purpose**: Secure user authentication with role-based access and basic change tracking
+## Core Modules (6)
+
+### Module 1: CMS (Content Management System)
+
+**Core Function:** Centralized storage and organization of lesson materials
+
+**Features:**
+- File upload to Supabase Storage (documents, videos, images)
+- Content categorization: age group, topic, difficulty level
+- Search and filter by tags, filename, or metadata
+- Download/preview capabilities
+- Version control for updated materials
+
+**Access Control:**
+- Admins: Full CRUD access
+- Teachers: Read-only access to assigned content
+
+---
+
+### Module 2: IAM + RBAC (Identity & Access Management)
+
+**Core Function:** Secure authentication and role-based access control
 
 **User Roles & Permissions:**
-- **Super Admin**: Full system access - can create/edit/delete all content
-- **Content Manager**: CMS and courses (full access), other modules (read-only)
-- **Operations Coordinator**: Students, workshops, teachers (full access), CMS (read-only)
-- **Teacher**: Assigned workshops only (read), student progress (update only)
+- **Super Admin:** Full system access, user management
+- **Admin:** Workshop/student/teacher management, content upload
+- **Teacher:** View assigned workshops, mark attendance, access content
 
-**Core Functions:**
-- **User Authentication**: Supabase Auth with email magic links
-- **Role Assignment**: Assign and modify user roles via profiles.role field
-- **Access Control**: Module visibility based on user role
-- **Session Management**: Automatic logout after inactivity
-- **Change Tracking**: Basic logging of critical data changes (student info updates, workshop modifications)
+**Features:**
+- Email-based authentication via Supabase Auth
+- Magic link or Google OAuth login
+- Role assignment and management
+- Session management and security
+- Audit trail for sensitive actions
 
-**Business Rules:**
-- Only Super Admin can create new user accounts
-- Teachers can only see workshops they're assigned to
-- Role changes require Super Admin approval
-- Student information changes logged with user ID and timestamp for security compliance
-
-**Data Protection:**
-Given the educational context involving student information, minimal change tracking is essential:
-- **Student Updates**: Log who modified student records and when
-- **Workshop Changes**: Track capacity and enrollment modifications  
-- **Critical Actions**: Record user actions affecting student safety or privacy
-
-**Implementation**: Use simple `change_logs` table with user_id, table_name, record_id, action, and timestamp. This provides accountability without full audit complexity.
+**Access Matrix:**
+```
+Feature                | Super Admin | Admin | Teacher
+--------------------- |-------------|-------|--------
+User Management       | ✅          | ❌    | ❌
+Workshop Management   | ✅          | ✅    | View Only
+Student Management    | ✅          | ✅    | View Assigned
+Content Management    | ✅          | ✅    | Read Only
+Attendance Marking    | ✅          | ✅    | ✅
+```
 
 ---
 
 ### Module 3: Student Management
-**Purpose**: Comprehensive student records and enrollment tracking
 
-**Core Functions:**
-- **Student Profiles**: Store name, age, grade, school, parent contact, learning preferences
-- **Enrollment Processing**: Register students for workshops and courses
-- **Attendance Tracking**: Mark present/absent during workshops
-- **Progress Recording**: Teacher observations, skill development notes, achievements
-- **Communication Log**: Parent updates, feedback, and correspondence history
+**Core Function:** Comprehensive student information and enrollment system
 
-**Key Workflows:**
-1. **New Student**: Create profile → assign to workshop → generate materials list
-2. **Workshop Day**: Check attendance → update progress notes → record achievements
-3. **Course Tracking**: Monitor multi-session progress → issue certificates upon completion
-4. **Parent Communication**: Generate progress reports → send updates
+**Features:**
+- Student profiles: name, age, school, parent contact, medical notes
+- Bulk import/export capabilities
+- Advanced search and filtering
+- Workshop enrollment management
+- Student participation history and progress tracking
+- Parent communication records
 
-**Business Requirements:**
-- Support minimum 200 student profiles
-- Track attendance across multiple workshops per student
-- Generate parent reports showing learning progression
-- Maintain student privacy with restricted teacher access
+**Data Fields:**
+- Personal: Name, DOB, School, Grade
+- Contact: Parent email, phone, emergency contact
+- Program: Enrolled courses, completed workshops, skill level
+- Notes: Special requirements, progress comments
 
 ---
 
 ### Module 4: Workshop Management
-**Purpose**: End-to-end workshop planning, scheduling, and execution with concurrency protection
 
-**Core Functions:**
-- **Workshop Planning**: Define workshop details (title, age group, capacity, materials)
-- **Calendar Scheduling**: Visual calendar with drag-and-drop workshop placement
-- **Teacher Assignment**: Match available teachers to workshops based on expertise
-- **Student Enrollment**: Manage workshop capacity and waitlists with atomic operations
-- **Resource Planning**: Generate material checklists and setup instructions
-- **Session Tracking**: Record attendance, notes, and outcomes
+**Core Function:** Complete workshop lifecycle management
 
-**Workshop Lifecycle:**
-1. **Create Workshop**: Select template → set date/time → assign teacher → open enrollment
-2. **Pre-Workshop**: Generate student list → prepare materials → confirm teacher
-3. **Workshop Day**: Check attendance → conduct session → collect feedback
-4. **Post-Workshop**: Update student records → archive session notes → plan follow-up
+**Features:**
+- Workshop creation with detailed metadata
+- Scheduling with conflict detection
+- Teacher assignment and availability checking
+- Student enrollment with capacity management
+- Attendance tracking with timestamps
+- Workshop templates for recurring sessions
 
-**Business Rules:**
-- Maximum capacity enforcement with automatic waitlist
-- Teacher conflict prevention (no double-booking)
-- Material requirements calculated based on enrolled student count
-- Workshop templates ensure consistent delivery standards
-
-**Concurrency & Data Integrity:**
-Given multiple admin staff may simultaneously manage enrollments, critical operations must handle race conditions:
-
-- **Enrollment Protection**: Use Supabase database functions or transactions to ensure atomic enrollment checks (verify capacity → enroll student → update count)
-- **Teacher Assignment**: Implement optimistic locking to prevent double-booking when two admins assign same teacher simultaneously
-- **Capacity Management**: Real-time enrollment counts with database-level constraints to prevent over-enrollment
-- **Conflict Detection**: Server-side validation for all scheduling operations with immediate user feedback
-
-**Implementation Notes:**
-- **Database Constraints**: Workshop capacity limits enforced at database level
-- **Real-time Updates**: Supabase real-time subscriptions notify all users of enrollment changes
-- **Error Handling**: Clear user messages when enrollment fails due to capacity or conflicts
-- **Retry Logic**: Automatic retry for failed operations due to concurrent access
+**Workshop Properties:**
+- Basic: Title, description, date/time, location
+- Capacity: Min/max students, current enrollment
+- Requirements: Age range, skill level, equipment
+- Assignment: Primary teacher, assistant teachers
+- Content: Linked lesson materials
 
 ---
 
-### Module 5: Course Management
-**Purpose**: Multi-session program organization and progress tracking
+### Module 5: Teacher Management
 
-**Core Functions:**
-- **Course Design**: Create multi-session courses with learning progression
-- **Session Planning**: Define individual workshops within course sequence  
-- **Enrollment Management**: Register students for complete course programs
-- **Progress Tracking**: Monitor student advancement through course levels
-- **Certification**: Issue completion certificates based on attendance and assessment
+**Core Function:** Teacher profiles and assignment coordination
 
-**Course Types:**
-- **Taster Sessions**: Single workshop introductions
-- **Short Courses**: 3-4 sessions over consecutive weeks
-- **Term Programs**: 8-12 sessions over school semester
-- **Holiday Intensives**: Daily sessions during school breaks
+**Features:**
+- Teacher profiles: contact info, specializations, certifications
+- Skills and subject expertise tracking
+- Workshop assignment history
+- Availability calendar management
+- Performance metrics and feedback
+- Communication preferences
 
-**Key Workflows:**
-1. **Course Setup**: Define session sequence → set learning objectives → create assessment criteria
-2. **Student Enrollment**: Register for full course → automatic workshop assignments
-3. **Progress Monitoring**: Track session attendance → record skill development → assess completion
-4. **Certification**: Verify completion criteria → generate certificates → update student records
+**Teacher Data:**
+- Profile: Name, email, phone, bio, photo
+- Skills: Subject areas, age groups, experience level
+- Schedule: Availability patterns, blackout dates
+- History: Past workshops, ratings, notes
 
 ---
 
-### Module 6: Teacher Management
-**Purpose**: Teacher scheduling, assignment, and performance tracking
+### Module 6: Course Management
 
-**Core Functions:**
-- **Teacher Profiles**: Contact info, qualifications, expertise areas, availability
-- **Schedule Management**: Track availability, assign workshops, prevent conflicts
-- **Skill Matching**: Match teacher expertise to workshop requirements
-- **Performance Tracking**: Collect feedback, monitor workshop quality, identify training needs
-- **Resource Coordination**: Manage equipment allocation and travel planning
+**Core Function:** Structured learning program organization
 
-**Key Workflows:**
-1. **Teacher Onboarding**: Create profile → assess skills → set availability → assign first workshop
-2. **Workshop Assignment**: Check availability → match skills → confirm assignment → send details
-3. **Workshop Delivery**: Provide materials access → track attendance → collect feedback
-4. **Performance Review**: Analyze feedback → identify development areas → plan training
+**Features:**
+- Course creation with learning objectives
+- Session sequence planning (1-8 workshops per course)
+- Age group and difficulty level assignment
+- Workshop-to-course linking
+- Student progress tracking across course sessions
+- Course completion certificates
 
-**Business Requirements:**
-- Support minimum 10 teacher profiles with varying availability
-- Prevent scheduling conflicts across all teachers
-- Match teacher skills (AI vs Robotics) to workshop requirements
-- Track teacher utilization and performance metrics
+**Course Structure:**
+- Metadata: Name, description, duration, objectives
+- Sessions: Ordered workshop sequence, prerequisites
+- Targeting: Age range, skill requirements, class size
+- Tracking: Enrollment, completion rates, feedback
 
 ---
 
-## 🔗 Module Integration Requirements
+## Dashboard (System-wide Feature)
 
-### Cross-Module Data Flow
-- **CMS ↔ Workshops**: Lesson plans automatically linked to workshop types
-- **Workshops ↔ Students**: Enrollment data flows to attendance tracking
-- **Workshops ↔ Teachers**: Assignment triggers material access and preparation
-- **Courses ↔ Workshops**: Multi-session courses create workshop series
-- **Students ↔ Teachers**: Progress notes and communication centralized
-- **IAM**: Access control applied consistently across all modules
+**Purpose:** Unified entry point aggregating cross-module information
 
-### Shared Features
-- **Universal Search**: Find students, workshops, content, or teachers across system
-- **Dashboard Overview**: Key metrics and urgent tasks from all modules
-- **Notification System**: Alerts for schedule changes, new enrollments, deadlines
-- **Quick Actions**: Common tasks (create workshop, enroll student) accessible from any page
+### Dashboard Sections:
+1. **Today's Overview**
+   - Active workshops with teacher and student counts
+   - Attendance completion status
+   - Teacher availability alerts
 
----
+2. **Weekly View**
+   - Upcoming workshops and deadlines
+   - New student registrations
+   - Course completion milestones
 
-## 📊 Success Metrics
+3. **Quick Actions**
+   - Add Student (→ Student Management)
+   - Create Workshop (→ Workshop Management)
+   - Upload Content (→ CMS)
+   - Assign Teacher (→ Teacher Management)
 
-### Immediate Goals (Month 1)
-- **Content Migration**: 100% of current lesson plans uploaded and categorized in CMS
-- **User Adoption**: All 3 admin staff actively using system for daily tasks
-- **Workshop Scheduling**: Zero scheduling conflicts (currently 1-2 per month)
-- **Data Accuracy**: Student enrollment errors reduced from 20% to under 5%
-
-### Short-term Goals (Month 3)
-- **Process Efficiency**: Workshop coordination time reduced by 50% (from 2 hours to 1 hour per workshop)
-- **Teacher Utilization**: Eliminate teacher double-booking (currently 1-2 incidents per month)
-- **Student Tracking**: 90% of workshops have complete attendance and progress records
-- **Content Accessibility**: Teachers find required materials within 2 clicks, 95% of the time
-
-### Long-term Goals (Month 6)
-- **Reporting Capability**: Generate 3 key reports (student attendance rates, teacher utilization, course completion rates)
-- **System Coverage**: 100% of workshops planned and tracked through system (eliminate spreadsheets)
-- **Data Quality**: Maintain 95% data accuracy across student records and workshop information
-- **Operational Scalability**: Handle 50% increase in workshop volume with same admin staff time
-
-### Quantifiable KPIs
-- **Workshop Management**: Process workshop from planning to completion in under 30 minutes
-- **Student Records**: Access complete student history within 10 seconds
-- **Teacher Assignment**: Identify and assign available teacher within 5 minutes
-- **Content Discovery**: Find specific lesson plan or resource within 1 minute
-- **Attendance Tracking**: Complete workshop attendance in under 2 minutes
-- **Progress Reporting**: Generate student progress report in under 3 minutes
+4. **Key Metrics**
+   - Weekly enrollment numbers
+   - Attendance rates
+   - Content usage statistics
+   - Teacher utilization rates
 
 ---
 
----
+## Integrations & Data Relationships
 
-## 🛠️ Technical Requirements
-
-### Frontend Architecture
-- **Framework**: React 18 + Vite + TypeScript
-- **Styling**: TailwindCSS for consistent UI components
-- **Routing**: React Router (HashRouter for GitHub Pages compatibility)
-- **State Management**: React Context for user auth, local state for modules
-- **Responsive Design**: Mobile-first approach with tablet optimization
-
-### Backend & Infrastructure
-- **Database**: Supabase Postgres (managed, free tier up to 500MB)
-- **Authentication**: Supabase Auth with email magic links
-- **File Storage**: Supabase Storage for lesson materials and images
-- **Email Service**: SendGrid for notifications and communications
-- **Analytics**: Google Analytics 4 (optional)
-
-### Deployment & Hosting
-- **Frontend Hosting**: Vercel (zero-config deployment, preview branches)
-- **CI/CD**: Vercel Auto Deploy (push to main triggers production build)
-- **Environment**: Production and staging environments with branch previews
-
-### Data Architecture
-- **Database Tables**: Users, Students, Teachers, Workshops, Content, Courses
-- **Real-time Updates**: Supabase real-time subscriptions for live data sync
-- **Row-Level Security**: Database-level permissions aligned with user roles
-- **File Management**: Organized folder structure in Supabase Storage
-
-### Security & Compliance
-- **Authentication**: Secure session management with automatic timeout
-- **Data Protection**: Student information encrypted and access-controlled
-- **RBAC Implementation**: Role permissions enforced at database level
-- **Backup Strategy**: Automatic daily backups through Supabase
-
-### Mobile & Responsive Design Requirements
-
-#### Target Devices & Use Cases
-- **Desktop (Admin)**: Primary interface for content management and detailed planning
-- **Tablet (Teachers)**: Workshop delivery, attendance tracking, progress notes
-- **Mobile (Optional)**: Quick status checks and basic information access
-
-#### Tablet Optimization (Primary Mobile Focus)
-**Device Targets**: iPad (10.9"), Android tablets (10-11"), Surface Pro
-**Orientation**: Both portrait and landscape support
-
-**Core Interface Adaptations**:
-- **Touch-Friendly Controls**: Minimum 44px touch targets for buttons and interactive elements
-- **Simplified Navigation**: Bottom tab bar for quick module switching during workshops
-- **Workshop Mode**: Dedicated mobile layout for teachers during session delivery
-- **Quick Actions**: Large, easily accessible buttons for common tasks (mark attendance, add notes)
-
-#### Mobile-Specific Features
-
-**Workshop Delivery Mode (Teachers)**:
+### Core Data Flow:
 ```
-📱 Workshop Dashboard:
-- Large student roster with photo thumbnails
-- One-tap attendance marking (present/absent)
-- Quick note-taking with pre-defined tags
-- Emergency contact information readily accessible
-- Material checklist with large checkboxes
+Users (IAM) ──→ Role-based access to all modules
+    ↓
+Students ←─→ Workshops (enrollment & attendance)
+    ↓            ↓
+Courses ←──→ Workshop sequences
+    ↓            ↓
+Content ←──→ Workshop materials
+    ↓            ↓
+Teachers ←─→ Workshop assignments
 ```
 
-**Responsive Breakpoints**:
-- **Mobile**: < 768px (simplified interface, vertical navigation)
-- **Tablet**: 768px - 1024px (hybrid interface, workshop delivery mode)
-- **Desktop**: > 1024px (full admin interface, multi-column layouts)
-
-#### Mobile Interface Guidelines
-
-**Navigation**:
-- **Desktop**: Left sidebar with full module names and icons
-- **Tablet**: Collapsible sidebar or bottom tab navigation
-- **Mobile**: Bottom tab navigation with icons only
-
-**Data Tables**:
-- **Desktop**: Full table view with all columns
-- **Tablet**: Card-based layout with swipe actions
-- **Mobile**: List view with expandable details
-
-**Forms & Input**:
-- **Touch Optimization**: Large input fields, dropdown alternatives
-- **Input Methods**: Voice-to-text for progress notes, photo capture for materials
-- **Validation**: Immediate visual feedback, simplified error messages
-
-**Workshop-Specific Mobile Features**:
-- **Offline Capability**: Basic attendance tracking works without internet
-- **Auto-sync**: Data synchronizes when connection restored
-- **Photo Integration**: Capture workshop moments, student projects
-- **Quick Communication**: Send updates to parents via integrated messaging
-
-#### Performance Requirements (Mobile)
-- **Load Time**: Under 2 seconds on 3G connection
-- **Touch Response**: Immediate visual feedback for all interactions
-- **Battery Efficiency**: Optimize for 4+ hour workshop sessions
-- **Data Usage**: Minimize bandwidth consumption for teachers with limited data
-
-#### Accessibility (Mobile)
-- **Font Scaling**: Support iOS/Android system font size preferences
-- **High Contrast**: Readable in various lighting conditions (classroom to outdoor)
-- **Voice Control**: Basic voice commands for hands-free operation during workshops
-- **Landscape Mode**: Full functionality in both orientations
+### Module Dependencies:
+- **IAM:** Foundation for all other modules
+- **CMS:** Independent but accessible by all roles
+- **Student/Teacher Management:** Required for Workshop operations
+- **Workshop Management:** Core connector between Students, Teachers, Courses
+- **Course Management:** Orchestrates Workshop sequences
 
 ---
 
-## 🚧 Implementation Phases
+## Success Metrics
 
-### Phase 1: Foundation (Weeks 1-2)
-- **IAM System**: User roles, authentication, basic access control
-- **Dashboard Structure**: Main navigation and module framework
-- **CMS Core**: Content upload, basic categorization, search functionality
+### Week 1 Milestones:
+- IAM system functional with role-based access
+- Basic Student and Workshop CRUD operations
+- Teacher assignment capabilities
+- Dashboard showing real-time data
 
-**Success Criteria**: Admin staff can log in, upload content, and navigate between modules
+### Week 2 Milestones:
+- Complete Course management workflow
+- CMS with file upload and search
+- Attendance marking system
+- Cross-module data integration complete
 
-### Phase 2: Operations (Weeks 3-4)
-- **Student Management**: Create profiles, enrollment, attendance tracking
-- **Workshop System**: Calendar interface, scheduling, teacher assignment
-- **Teacher Coordination**: Availability management, conflict prevention
+### Performance KPIs:
+- User login < 2 seconds
+- Workshop creation < 5 minutes
+- Student search < 3 seconds
+- File upload/retrieval < 1 minute
+- Dashboard load < 3 seconds
 
-**Success Criteria**: Complete workshop can be planned and executed through system
-
-### Phase 3: Advanced Features (Weeks 5-6)
-- **Course Management**: Multi-session programs, progress tracking
-- **System Integration**: Cross-module data flow and shared features
-- **Reporting & Analytics**: Basic reports and performance metrics
-
-**Success Criteria**: All current spreadsheet processes replaced with system workflows
+### Business Impact Metrics:
+- Admin task completion time: < 30 minutes daily
+- Elimination of WhatsApp coordination
+- 100% digital student record management
+- Centralized content access for all teachers
 
 ---
 
-## 🎯 Definition of Done
+## Technical Requirements
 
-### Functional DoD (Module Completion Standards)
+### Architecture:
+- **Frontend:** React + Vite + TailwindCSS + Shadcn/ui
+- **Backend:** Supabase (Database + Auth + Storage + Edge Functions)
+- **Database:** PostgreSQL with Row Level Security (RLS)
+- **Authentication:** Supabase Auth with role-based policies
+- **Storage:** Supabase Storage for content files
+- **Hosting:** Vercel for frontend deployment
 
-#### CMS Module ✅
-- [ ] Upload and categorize lesson plans with metadata (age, topic, duration)
-- [ ] Search content by keywords, age group, or topic
-- [ ] Link materials to specific workshops
-- [ ] Generate material checklists based on workshop type
-- [ ] Content accessible to teachers based on workshop assignments
+### Security Implementation:
+- Row Level Security (RLS) policies for all tables
+- JWT-based session management
+- Role-based API access control
+- Secure file upload with type validation
+- Audit logging for admin actions
 
-#### IAM Module ✅
-- [ ] User login/logout with role assignment
-- [ ] Role-based page visibility (teachers see only assigned workshops)
-- [ ] Session timeout after 30 minutes inactivity
-- [ ] Super Admin can create/modify user accounts
+### Mobile Responsiveness:
+- Tablet-optimized for teacher attendance marking
+- Mobile-friendly dashboard and quick actions
+- Progressive Web App (PWA) capabilities
+- Offline-first architecture not required for MVP
 
-#### Student Management ✅
-- [ ] Create student profiles with contact and learning preference info
-- [ ] Enroll students in workshops with capacity limits
-- [ ] Mark attendance during workshops
-- [ ] Record progress notes and achievements
-- [ ] Generate basic student history reports
+### Database Schema (Simplified):
+```sql
+-- IAM Tables
+users: id, email, role, created_at
+profiles: user_id, name, phone, avatar_url
 
-#### Workshop Management ✅
-- [ ] Create workshops using templates (age group, capacity, materials)
-- [ ] Visual calendar scheduling with drag-and-drop
-- [ ] Assign teachers based on availability and skills
-- [ ] Prevent double-booking and over-enrollment
-- [ ] Generate pre-workshop material lists and student rosters
+-- Core Entity Tables  
+students: id, name, age, school, parent_email, created_by
+teachers: id, name, email, phone, skills, availability_status
+workshops: id, title, date_time, location, capacity, teacher_id
+courses: id, name, description, age_group, session_count
 
-#### Course Management ✅
-- [ ] Create multi-session courses with learning progression
-- [ ] Enroll students in complete course sequences
-- [ ] Track progress across course sessions
-- [ ] Issue completion certificates based on attendance criteria
+-- Relationship Tables
+enrollments: student_id, workshop_id, attended, attendance_time
+course_workshops: course_id, workshop_id, sequence_order
+content: id, filename, file_url, tags, uploaded_by, course_id
+```
 
-#### Teacher Management ✅
-- [ ] Maintain teacher profiles with availability and expertise
-- [ ] Assign workshops with conflict detection
-- [ ] Teacher dashboard shows assigned workshops and materials
-- [ ] Teachers can update student attendance and progress
+---
 
-### System DoD (Technical Performance Standards)
+## Implementation Timeline (2 Weeks)
 
-#### Performance Requirements ✅
-- [ ] Page load times under 3 seconds on standard internet
-- [ ] Support 5 concurrent users without performance degradation
-- [ ] Mobile responsive on tablets (teachers use during workshops)
-- [ ] Search results return within 2 seconds
+### Week 1: Foundation + Core Operations
+**Days 1-2:** Infrastructure Setup
+- Supabase project configuration
+- Database schema creation with RLS policies
+- Authentication flow implementation
+- Basic UI components and routing
 
-#### Security & Reliability ✅
-- [ ] User sessions secure with proper timeout
-- [ ] Data validation prevents common errors (double-booking, over-capacity)
-- [ ] Role permissions properly restrict access to authorized content
-- [ ] System recovers gracefully from connection interruptions
+**Days 3-4:** Core Modules
+- IAM + RBAC implementation
+- Student Management CRUD
+- Teacher Management CRUD
+- Basic Workshop Management
 
-#### Compatibility ✅
-- [ ] Works on Chrome and Safari browsers
-- [ ] Tablet-friendly interface for teacher use during workshops
-- [ ] Data exports to Excel for external reporting needs
-- [ ] Integration ready for future payment systems
+**Days 5-7:** Integration + Dashboard
+- Workshop-Student enrollment system
+- Teacher assignment workflow
+- Dashboard aggregation views
+- Cross-module data flow testing
 
-### Business DoD (Operational Impact Standards)
+**Week 1 Success Criteria:**
+- Role-based authentication working
+- Students can be added and enrolled in workshops
+- Teachers can be assigned to workshops
+- Dashboard displays real-time data
 
-#### Process Replacement ✅
-- [ ] 100% of workshop scheduling moved from WhatsApp to system
-- [ ] All student records migrated from Excel to centralized system
-- [ ] Teacher assignments coordinated through system calendar
-- [ ] Content discovery replaces folder-hunting in Google Drive
+### Week 2: Advanced Features + Polish
+**Days 8-10:** Advanced Workflows
+- Course Management system
+- Workshop-Course linking
+- Attendance marking interface
+- Progress tracking implementation
 
-#### Efficiency Improvements ✅
-- [ ] Workshop planning time reduced from 2 hours to under 30 minutes
-- [ ] Student information accessible within 10 seconds during workshops
-- [ ] Teacher materials preparation streamlined to under 15 minutes
-- [ ] Zero scheduling conflicts after system implementation
+**Days 11-12:** Content + Optimization
+- CMS file upload and organization
+- Search and filtering capabilities
+- Mobile responsiveness optimization
+- Performance optimization
 
-#### Quality Assurance ✅
-- [ ] All workshop sessions have complete attendance records
-- [ ] Student progress tracking consistent across all programs
-- [ ] Course delivery standardized using organized content library
-- [ ] Teacher feedback collected and stored for program improvement
+**Days 13-14:** Testing + Deployment
+- End-to-end workflow testing
+- User acceptance testing
+- Bug fixes and polish
+- Production deployment
 
-#### User Adoption ✅
-- [ ] All admin staff (3 people) actively using system daily
-- [ ] Teachers prefer system over manual coordination methods
-- [ ] New staff can be trained on system within 30 minutes
-- [ ] System reduces rather than increases daily workload
+**Week 2 Success Criteria:**
+- Complete course creation and management
+- File upload and content management
+- Attendance system functional
+- All user roles can complete their workflows
 
-### Acceptance Criteria Summary
-**The system is complete when**: Admin staff can plan, execute, and track a complete workshop from initial request through student progress reporting entirely within the system, without resorting to spreadsheets, messaging apps, or manual coordination.
+---
 
-This system will enable Airbotix to deliver consistent, high-quality educational programs while reducing administrative overhead and supporting sustainable growth.
+## Definition of Done
+
+### Functional Requirements:
+- [ ] Super Admin can create and manage user accounts
+- [ ] Admins can create workshops and assign teachers
+- [ ] Students can be enrolled in workshops and courses
+- [ ] Teachers can view assignments and mark attendance
+- [ ] Course sequences can be created and managed
+- [ ] Content can be uploaded, tagged, and searched
+- [ ] Dashboard provides real-time operational overview
+
+### Technical Requirements:
+- [ ] Role-based access control fully implemented
+- [ ] All CRUD operations secured with RLS policies
+- [ ] Mobile-responsive design tested on tablets
+- [ ] File upload supports multiple formats with validation
+- [ ] Search functionality works across all modules
+- [ ] Data relationships maintain referential integrity
+
+### Performance Standards:
+- [ ] Page load times < 3 seconds
+- [ ] Search operations < 2 seconds
+- [ ] File uploads complete successfully > 95% of attempts
+- [ ] System handles 100+ concurrent users
+- [ ] Database queries optimized with proper indexing
