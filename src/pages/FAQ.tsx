@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { faqCategories, getAllFAQData, searchFAQ } from '../data/faq'
 
 const FAQ = () => {
@@ -111,9 +112,9 @@ const FAQ = () => {
               </svg>
               <h3 className="text-lg font-medium text-gray-900 mb-2">没有找到相关问题</h3>
               <p className="text-gray-600 mb-6">尝试使用不同的关键词搜索，或者联系我们获取帮助。</p>
-              <a href="/contact" className="btn-primary">
+              <Link to="/contact" className="btn-primary">
                 联系我们
-              </a>
+              </Link>
             </div>
           ) : (
             <div className="space-y-4">
@@ -157,12 +158,12 @@ const FAQ = () => {
             我们的专业团队随时为您提供帮助。无论是课程咨询、技术问题还是合作洽谈，我们都乐意为您解答。
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" className="bg-white text-primary-600 hover:bg-gray-50 font-semibold px-8 py-3 rounded-lg transition-colors">
+            <Link to="/contact" className="bg-white text-primary-600 hover:bg-gray-50 font-semibold px-8 py-3 rounded-lg transition-colors">
               联系我们
-            </a>
-            <a href="/book" className="border-2 border-white text-white hover:bg-white hover:text-primary-600 font-semibold px-8 py-3 rounded-lg transition-colors">
+            </Link>
+            <Link to="/book" className="border-2 border-white text-white hover:bg-white hover:text-primary-600 font-semibold px-8 py-3 rounded-lg transition-colors">
               立即预约
-            </a>
+            </Link>
           </div>
         </div>
       </section>

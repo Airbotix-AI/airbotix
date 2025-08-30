@@ -138,7 +138,7 @@ const WorkshopDetail = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">Bring this workshop to your school</h2>
           <p className="text-primary-100 max-w-2xl mx-auto mb-8">We tailor content to suit your class size, schedule, and learning goals.</p>
-          <Link to={`/book?workshop=${item.id}`} className="bg-white text-primary-600 hover:bg-gray-50 font-semibold text-lg px-8 py-3 rounded-lg inline-block no-underline">
+          <Link to={`/book?workshop=${item.slug}`} className="bg-white text-primary-600 hover:bg-gray-50 font-semibold text-lg px-8 py-3 rounded-lg inline-block no-underline">
             Book This Workshop
           </Link>
         </div>

@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 const Home = () => {
   return (
     <div>
@@ -14,12 +16,12 @@ const Home = () => {
               Interactive workshops, hands-on learning, and future-ready skills.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="/book" className="btn-primary text-lg px-8 py-3">
+              <Link to="/book" className="btn-primary text-lg px-8 py-3">
                 Book a Workshop
-              </a>
-              <a href="/workshops" className="btn-outline text-lg px-8 py-3">
+              </Link>
+              <Link to="/workshops" className="btn-outline text-lg px-8 py-3">
                 Learn More
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -93,35 +95,35 @@ const Home = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {[
               {
-                src: 'https://images.unsplash.com/photo-1581091014534-7f3c2b3a2f9b?q=80&w=1200&auto=format&fit=crop',
+                src: 'https://picsum.photos/seed/airbotix-1/800/600',
                 alt: 'Student programming a robot',
               },
               {
-                src: 'https://images.unsplash.com/photo-1555255707-c07966088b7b?q=80&w=1200&auto=format&fit=crop',
+                src: 'https://picsum.photos/seed/airbotix-2/800/600',
                 alt: 'Robotics workshop table',
               },
               {
-                src: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop',
+                src: 'https://picsum.photos/seed/airbotix-3/800/600',
                 alt: 'AI and coding session',
               },
               {
-                src: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1200&auto=format&fit=crop',
+                src: 'https://picsum.photos/seed/airbotix-4/800/600',
                 alt: 'Teamwork on a challenge',
               },
               {
-                src: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=1200&auto=format&fit=crop',
+                src: 'https://picsum.photos/seed/airbotix-5/800/600',
                 alt: 'Electronics and prototyping',
               },
               {
-                src: 'https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=1200&auto=format&fit=crop',
+                src: 'https://picsum.photos/seed/airbotix-6/800/600',
                 alt: 'Computer vision demo',
               },
               {
-                src: 'https://images.unsplash.com/photo-1526378722484-bd91ca387e72?q=80&w=1200&auto=format&fit=crop',
+                src: 'https://picsum.photos/seed/airbotix-7/800/600',
                 alt: 'Classroom presentation',
               },
               {
-                src: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1200&auto=format&fit=crop',
+                src: 'https://picsum.photos/seed/airbotix-8/800/600',
                 alt: 'Coding activity',
               },
             ].map((img) => (
@@ -194,9 +196,9 @@ const Home = () => {
           <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
             Join thousands of students across Australia who are already learning the skills of tomorrow.
           </p>
-          <a href="/book" className="bg-white text-primary-600 hover:bg-gray-50 font-semibold text-lg px-8 py-3 rounded-lg transition-colors duration-200">
+          <Link to="/book" className="bg-white text-primary-600 hover:bg-gray-50 font-semibold text-lg px-8 py-3 rounded-lg transition-colors duration-200">
             Book Your Workshop Today
-          </a>
+          </Link>
         </div>
       </section>
     </div>

@@ -106,15 +106,15 @@ export const formatPhoneNumber = (phone: string): string => {
 /**
  * Debounce function
  */
-export const debounce = <T extends (...args: any[]) => void>(
+export const debounce = <T extends (..._args: any[]) => void>(
   func: T,
   wait: number
-): ((...args: Parameters<T>) => void) => {
+): ((..._args: Parameters<T>) => void) => {
   let timeout: ReturnType<typeof setTimeout> | null = null
   
-  return (...args: Parameters<T>) => {
+  return (..._args: Parameters<T>) => {
     if (timeout) clearTimeout(timeout)
-    timeout = setTimeout(() => func(...args), wait)
+    timeout = setTimeout(() => func(..._args), wait)
   }
 }
 
