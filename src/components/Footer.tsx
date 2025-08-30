@@ -70,7 +70,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-2">
                 <a href="mailto:info@airbotix.com" className="hover:text-white transition-colors">
-                  hello@airbotix.com
+                  hello@airbotix.ai
                 </a>
               </li>
               <li className="flex items-center space-x-2">
