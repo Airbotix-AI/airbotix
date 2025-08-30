@@ -1,8 +1,4 @@
-# Airbotix Super Admin Management System - MVP (2 Weeks)
-
-**Product Requirements Document (PRD)**
-
----
+# Super Admin Management System Product Requirements Document
 
 ## Product Overview
 
@@ -17,7 +13,7 @@ A lightweight web-based admin dashboard to replace Excel and WhatsApp workflows.
 - Lesson materials lost in random Google Drive folders
 - No centralized access control or role management
 
-### MVP Success Goals (2 Weeks)
+### MVP Success Goals
 - Replace Excel/WhatsApp for workshop and student management
 - Centralized content and user access management
 - Role-based access for admins and teachers
@@ -42,7 +38,7 @@ A lightweight web-based admin dashboard to replace Excel and WhatsApp workflows.
 
 ---
 
-## Core Modules (6)
+## Core Modules
 
 ### Module 1: CMS (Content Management System)
 
