@@ -23,14 +23,28 @@ export const ALT_TEXTS = {
 
 export const LOGO_SIZES = {
   HEADER: {
-    HEIGHT: 'h-28 md:h-40',
+    // Mobile: vertical logo, Desktop: horizontal logo
+    HEIGHT: 'h-20 md:h-40',
     WIDTH: 'w-auto',
-    MAX_WIDTH: 'max-w-64 md:max-w-96', // Responsive max width
+    MAX_WIDTH: 'max-w-24 md:max-w-96', // Mobile: square space, Desktop: wide space
   },
   FOOTER: {
-    HEIGHT: 'h-16 md:h-24', 
+    // Mobile: vertical logo, Desktop: horizontal logo  
+    HEIGHT: 'h-20 md:h-24', 
     WIDTH: 'w-auto',
-    MAX_WIDTH: 'max-w-40 md:max-w-56', // Reasonable max width for footer
+    MAX_WIDTH: 'max-w-20 md:max-w-56', // Mobile: larger space, Desktop: wide space
+  },
+} as const
+
+// Responsive logo paths - mobile gets vertical, desktop gets horizontal
+export const RESPONSIVE_LOGOS = {
+  HEADER: {
+    MOBILE: LOGO_PATHS.BLACK_VERTICAL,
+    DESKTOP: LOGO_PATHS.BLACK_HORIZONTAL,
+  },
+  FOOTER: {
+    MOBILE: LOGO_PATHS.WHITE_VERTICAL,
+    DESKTOP: LOGO_PATHS.WHITE_HORIZONTAL,
   },
 } as const
 

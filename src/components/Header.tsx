@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { LOGO_PATHS, ALT_TEXTS, LOGO_SIZES } from '../constants/assets'
+import { ALT_TEXTS, LOGO_SIZES, RESPONSIVE_LOGOS } from '../constants/assets'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -16,10 +16,17 @@ const Header = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
+              {/* Mobile Logo - Vertical */}
               <img 
-                src={LOGO_PATHS.BLACK_HORIZONTAL} 
+                src={RESPONSIVE_LOGOS.HEADER.MOBILE} 
                 alt={ALT_TEXTS.LOGO_MAIN}
-                className={`${LOGO_SIZES.HEADER.HEIGHT} ${LOGO_SIZES.HEADER.WIDTH} ${LOGO_SIZES.HEADER.MAX_WIDTH}`}
+                className={`${LOGO_SIZES.HEADER.HEIGHT} ${LOGO_SIZES.HEADER.WIDTH} ${LOGO_SIZES.HEADER.MAX_WIDTH} block md:hidden`}
+              />
+              {/* Desktop Logo - Horizontal */}
+              <img 
+                src={RESPONSIVE_LOGOS.HEADER.DESKTOP} 
+                alt={ALT_TEXTS.LOGO_MAIN}
+                className={`${LOGO_SIZES.HEADER.HEIGHT} ${LOGO_SIZES.HEADER.WIDTH} ${LOGO_SIZES.HEADER.MAX_WIDTH} hidden md:block`}
               />
             </Link>
           </div>

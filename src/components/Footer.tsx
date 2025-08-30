@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { LOGO_PATHS, ALT_TEXTS, LOGO_SIZES } from '../constants/assets'
+import { ALT_TEXTS, LOGO_SIZES, RESPONSIVE_LOGOS } from '../constants/assets'
 
 const Footer = () => {
   return (
@@ -8,11 +8,18 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
-            <div className={`logo-crop-container-footer ${LOGO_SIZES.FOOTER.MAX_WIDTH} mb-1 md:mb-2`}>
+            <div className={`logo-crop-container-footer ${LOGO_SIZES.FOOTER.MAX_WIDTH} mb-4 md:mb-2`}>
+              {/* Mobile Logo - Vertical */}
               <img 
-                src={LOGO_PATHS.WHITE_HORIZONTAL} 
+                src={RESPONSIVE_LOGOS.FOOTER.MOBILE} 
                 alt={ALT_TEXTS.LOGO_MAIN}
-                className={`${LOGO_SIZES.FOOTER.HEIGHT} ${LOGO_SIZES.FOOTER.WIDTH} logo-crop-footer`}
+                className={`${LOGO_SIZES.FOOTER.HEIGHT} ${LOGO_SIZES.FOOTER.WIDTH} logo-crop-footer block md:hidden`}
+              />
+              {/* Desktop Logo - Horizontal */}
+              <img 
+                src={RESPONSIVE_LOGOS.FOOTER.DESKTOP} 
+                alt={ALT_TEXTS.LOGO_MAIN}
+                className={`${LOGO_SIZES.FOOTER.HEIGHT} ${LOGO_SIZES.FOOTER.WIDTH} logo-crop-footer hidden md:block`}
               />
             </div>
             <p className="text-gray-300 mb-4 max-w-md">
