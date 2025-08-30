@@ -1,5 +1,7 @@
-* [32mmain[m
-  [31mremotes/origin/HEAD[m -> origin/main
-  [31mremotes/origin/cursor/setup-airbotix-static-website-project-structure-e596[m
-  [31mremotes/origin/gh-pages[m
-  [31mremotes/origin/main[m
+[33md020047[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/faq-page[m[33m, [m[1;31morigin/feature/faq-page[m[33m)[m Add FAQ page with search and filtering functionality
+[33mfd5c7fa[m[33m ([m[1;31mupstream/main[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m add rules and docs
+[33mcf22cdd[m add workshop
+[33m0d84b5f[m update ai version
+[33m38f86a2[m Merge pull request #1 from australiaitgroup/cursor/setup-airbotix-static-website-project-structure-e596
+[33md5c335b[m[33m ([m[1;31mupstream/cursor/setup-airbotix-static-website-project-structure-e596[m[33m, [m[1;31morigin/cursor/setup-airbotix-static-website-project-structure-e596[m[33m)[m feat: Initialize Airbotix website with React, TypeScript, and TailwindCSS
+[33m6e322ac[m Initial commit
