@@ -71,16 +71,24 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact</h3>
             <ul className="space-y-2 text-gray-300">
-              <li>Australia</li>
-              <li>
+              <li className="flex items-start space-x-2">
+                <span>
+                  L10b 144 Edward St<br />
+                  Brisbane City, QLD 4000, AU
+                </span>
+              </li>
+              <li className="flex items-center space-x-2">
                 <a href="mailto:info@airbotix.com" className="hover:text-white transition-colors">
-                  info@airbotix.com
+                  hello@airbotix.ai
                 </a>
               </li>
-              <li>
+              <li className="flex items-center space-x-2">
                 <a href="tel:+61123456789" className="hover:text-white transition-colors">
                   +61 123 456 789
                 </a>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span>ABN: 37 689 925 219</span>
               </li>
             </ul>
           </div>
