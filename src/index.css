@@ -64,9 +64,17 @@
     align-items: flex-start;
   }
 
-  .logo-crop-footer {
-    transform: scale(1.75);
-    margin: -1rem -0.75rem;
+  .logo-crop-footer { /* For mobile */
+    transform: scale(2);
+    margin: -0.5rem;
     transform-origin: left center;
+  }
+
+  /* Responsive footer logo cropping */
+  @media (min-width: 768px) {
+    .logo-crop-footer {
+      transform: scale(1.75);
+      margin: -0.75rem;
+    }
   }
 }

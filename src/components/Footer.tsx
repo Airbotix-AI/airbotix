@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
-            <div className={`logo-crop-container-footer ${LOGO_SIZES.FOOTER.MAX_WIDTH} mb-0`}>
+            <div className={`logo-crop-container-footer ${LOGO_SIZES.FOOTER.MAX_WIDTH} mb-1 md:mb-2`}>
               <img 
                 src={LOGO_PATHS.WHITE_HORIZONTAL} 
                 alt={ALT_TEXTS.LOGO_MAIN}

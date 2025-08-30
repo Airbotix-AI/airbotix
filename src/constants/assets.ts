@@ -23,14 +23,14 @@ export const ALT_TEXTS = {
 
 export const LOGO_SIZES = {
   HEADER: {
-    HEIGHT: 'h-24 md:h-40',
+    HEIGHT: 'h-28 md:h-40',
     WIDTH: 'w-auto',
     MAX_WIDTH: 'max-w-64 md:max-w-96', // Responsive max width
   },
   FOOTER: {
-    HEIGHT: 'h-12 md:h-24', 
+    HEIGHT: 'h-16 md:h-24', 
     WIDTH: 'w-auto',
-    MAX_WIDTH: 'max-w-48 md:max-w-56', // Reasonable max width for footer
+    MAX_WIDTH: 'max-w-40 md:max-w-56', // Reasonable max width for footer
   },
 } as const
 
