@@ -39,6 +39,9 @@ const Header = () => {
             <Link to="/workshops" className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
               Workshops
             </Link>
+            <Link to="/blog" className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              Blog
+            </Link>
             <Link to="/about" className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
               About
             </Link>
@@ -59,6 +62,8 @@ const Header = () => {
             <button
               onClick={toggleMenu}
               className="text-gray-700 hover:text-primary-600 focus:outline-none focus:text-primary-600"
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              title={isMenuOpen ? "Close menu" : "Open menu"}
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isMenuOpen ? (
@@ -80,6 +85,9 @@ const Header = () => {
               </Link>
               <Link to="/workshops" className="block text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-base font-medium">
                 Workshops
+              </Link>
+              <Link to="/blog" className="block text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-base font-medium">
+                Blog
               </Link>
               <Link to="/about" className="block text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-base font-medium">
                 About
