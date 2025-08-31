@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { blogPosts } from '../../data/blog-posts'
 import { blogCategories } from '../../data/blog-categories'
@@ -15,6 +15,7 @@ const BlogList = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Smart loading state - only show for actual API calls or complex operations
   const handleCategoryChange = (category: string) => {
@@ -29,15 +30,16 @@ const BlogList = () => {
   }
 
   const handleSearchChange = (term: string) => {
-    // Only show loading for complex searches or when term length > 3
-    if (term.length > 3 && term !== searchTerm) {
-      setIsLoading(true)
-      setTimeout(() => {
-        setIsLoading(false)
-      }, 150)
-    }
+    // Direct search without loading state for better UX
     setSearchTerm(term)
   }
+
+  // Keep focus on search input
+  useEffect(() => {
+    if (searchInputRef.current && document.activeElement !== searchInputRef.current) {
+      searchInputRef.current.focus()
+    }
+  }, [])
 
   // Filter posts based on category and search term
   const filteredPosts = useMemo(() => {
@@ -109,14 +111,12 @@ const BlogList = () => {
             {/* Search */}
             <div className="relative w-full md:w-64">
               <input
+                ref={searchInputRef}
                 type="text"
                 placeholder={BLOG_SEARCH_PLACEHOLDERS.ARTICLES}
                 value={searchTerm}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                disabled={isLoading}
-                className={`w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
               <svg
                 className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
@@ -198,3 +198,4 @@ const BlogList = () => {
 }
 
 export default BlogList
+
