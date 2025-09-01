@@ -8,11 +8,11 @@ const FAQ = () => {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
 
   const categories = [
-    { id: 'all', name: '全部问题', icon: '🔍' },
+    { id: 'all', name: 'All', icon: '🔍' },
     ...faqCategories.map(cat => ({ id: cat.id, name: cat.name, icon: cat.icon }))
   ]
 
-  // 切换展开/收起
+  // Toggle expand/collapse
   const toggleItem = (itemId: string) => {
     const newExpanded = new Set(expandedItems)
     if (newExpanded.has(itemId)) {
@@ -23,16 +23,16 @@ const FAQ = () => {
     setExpandedItems(newExpanded)
   }
 
-  // 搜索和筛选
+  // Search and filter
   const getFilteredData = () => {
     let allData = getAllFAQData()
 
-    // 按分类筛选
+    // Filter by category
     if (activeCategory !== 'all') {
       allData = allData.filter(item => item.category === activeCategory)
     }
 
-    // 按搜索词筛选
+    // Filter by search term
     if (searchTerm) {
       allData = searchFAQ(searchTerm).filter(item => 
         activeCategory === 'all' || item.category === activeCategory
@@ -51,10 +51,10 @@ const FAQ = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              常见问题解答
+              Frequently Asked Questions
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              找到您关于AI和机器人教育的所有答案。如果这里没有您要找的答案，请随时联系我们。
+              Find answers to the most common questions about our AI and Robotics workshops. If you don't find what you're looking for, please contact us.
             </p>
           </div>
         </div>
@@ -66,7 +66,7 @@ const FAQ = () => {
           <div className="relative">
             <input
               type="text"
-              placeholder="搜索问题..."
+              placeholder="Search questions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -110,10 +110,10 @@ const FAQ = () => {
               <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33" />
               </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">没有找到相关问题</h3>
-              <p className="text-gray-600 mb-6">尝试使用不同的关键词搜索，或者联系我们获取帮助。</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No matching questions</h3>
+              <p className="text-gray-600 mb-6">Try different keywords or contact us for assistance.</p>
               <Link to="/contact" className="btn-primary">
-                联系我们
+                Contact Us
               </Link>
             </div>
           ) : (
@@ -152,17 +152,17 @@ const FAQ = () => {
       <section className="py-16 bg-primary-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
-            还有其他问题？
+            Have more questions?
           </h2>
           <p className="text-primary-100 mb-8 max-w-2xl mx-auto">
-            我们的专业团队随时为您提供帮助。无论是课程咨询、技术问题还是合作洽谈，我们都乐意为您解答。
+            Our team is here to help. Whether it's course inquiries, technical questions, or partnerships, feel free to reach out.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/contact" className="bg-white text-primary-600 hover:bg-gray-50 font-semibold px-8 py-3 rounded-lg transition-colors">
-              联系我们
+              Contact Us
             </Link>
             <Link to="/book" className="border-2 border-white text-white hover:bg-white hover:text-primary-600 font-semibold px-8 py-3 rounded-lg transition-colors">
-              立即预约
+              Book Now
             </Link>
           </div>
         </div>
