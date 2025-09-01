@@ -10,7 +10,7 @@ export default defineConfig({
     assetsDir: 'assets',
   },
   server: {
-    port: 3000,
+    port: 8080,
     host: '0.0.0.0', // 允许外部访问
     open: true
   }
