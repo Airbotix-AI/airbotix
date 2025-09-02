@@ -106,7 +106,7 @@ export const formatPhoneNumber = (phone: string): string => {
 /**
  * Debounce function
  */
-export const debounce = <T extends (...args: any[]) => void>(
+export const debounce = <T extends (...args: unknown[]) => void>(
   func: T,
   wait: number
 ): ((...args: Parameters<T>) => void) => {

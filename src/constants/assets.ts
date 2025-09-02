@@ -1,7 +1,7 @@
 // Asset constants - following string-constants rules
 // All asset paths must be defined as constants to avoid magic strings
 
-const BASE_PATH = import.meta.env.MODE === 'production' ? '/airbotix-website' : ''
+const BASE_PATH = import.meta.env.MODE === 'production' ? '' : ''
 
 export const LOGO_PATHS = {
   BLACK_HORIZONTAL: `${BASE_PATH}/logo-black-horizontal.png`,

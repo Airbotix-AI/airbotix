@@ -3,7 +3,7 @@
 🚀 **Modern static website for Airbotix** - Australia's premier EdTech company bringing AI and Robotics education to K-12 students.
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Airbotix-blue?style=flat&logo=linkedin)](https://www.linkedin.com/company/airbotix-ai)
-[![Website](https://img.shields.io/badge/Website-Live-green?style=flat)](https://airbotix.github.io/airbotix-website/)
+[![Website](https://img.shields.io/badge/Website-Live-green?style=flat)](https://airbotix.github.io/)
 
 ## 🎯 Project Overview
 
