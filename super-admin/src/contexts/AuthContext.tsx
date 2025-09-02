@@ -61,6 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const fetchProfile = async (userId: string) => {
     try {
       console.log('📊 Fetching profile for user:', userId)
+      // Firstly, try direct query
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -68,32 +69,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (error) {
-        console.error('❌ Profile fetch error:', error)
-        // 如果profile不存在，创建一个默认的profile
-        if (error.code === 'PGRST116') {
-          console.log('👤 Profile not found, user might need to be added to profiles table')
-          // 可以在这里创建默认profile或显示错误
+        console.error('❌ Profile fetch error:', error.message, 'Code:', error.code)
+        
+        // If it's a permission issue (PGRST301) or not found (PGRST116)
+        if (error.code === 'PGRST301') {
+          console.log('🔒 RLS policy denied access - this might be normal for new users')
+        } else if (error.code === 'PGRST116') {
+          console.log('👤 Profile not found in database')
         }
+        
         throw error
       }
       
       console.log('✅ Profile fetched successfully:', data)
       setProfile(data)
+      
     } catch (error) {
-      console.error('💥 Error fetching profile:', error)
-      // 即使profile获取失败，我们仍然可以让用户访问系统
-      // 创建一个临时profile
+      console.error('💥 Error fetching profile, will use temporary profile')
+      
+      // Get current user info to create temporary profile
       const currentUser = await supabase.auth.getUser()
       if (currentUser.data.user) {
         const tempProfile = {
           id: userId,
           email: currentUser.data.user.email || '',
           full_name: currentUser.data.user.user_metadata?.full_name || currentUser.data.user.email || '',
-          role: 'super_admin', // 临时设置为super_admin用于测试
+          role: 'super_admin', // Temporary setting to super_admin for testing
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         }
-        console.log('🚀 Using temporary profile:', tempProfile)
+        console.log('🚀 Using temporary profile for:', tempProfile.email)
         setProfile(tempProfile)
       }
     }
