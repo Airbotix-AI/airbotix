@@ -1,5 +1,8 @@
 // Common types for the Airbotix website
 
+// Re-export blog types
+export * from './blog'
+
 export interface Workshop {
   id: string
   title: string
