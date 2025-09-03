@@ -91,13 +91,13 @@ export const sortBy = <T>(array: T[], key: keyof T, direction: 'asc' | 'desc' = 
 
 // Validation utilities
 export const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const emailRegex = VALIDATION_CONSTANTS.REGEX_PATTERNS.EMAIL
   return emailRegex.test(email)
 }
 
 export const isValidPhone = (phone: string): boolean => {
-  const phoneRegex = /^\+?[\d\s\-\(\)]+$/
-  return phoneRegex.test(phone) && phone.replace(/\D/g, '').length >= 10
+  const phoneRegex = VALIDATION_CONSTANTS.REGEX_PATTERNS.PHONE
+  return phoneRegex.test(phone) && phone.replace(VALIDATION_CONSTANTS.REGEX_PATTERNS.NON_DIGITS, '').length >= VALIDATION_CONSTANTS.MIN_PHONE_LENGTH
 }
 
 // Local storage utilities
@@ -137,7 +137,7 @@ export const storage = {
 }
 
 // Debounce utility
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: unknown[]) => unknown>(
   func: T,
   delay: number
 ): ((...args: Parameters<T>) => void) => {
@@ -150,7 +150,7 @@ export const debounce = <T extends (...args: any[]) => any>(
 }
 
 // API utilities
-export const buildQueryString = (params: Record<string, any>): string => {
+export const buildQueryString = (params: Record<string, unknown>): string => {
   const searchParams = new URLSearchParams()
   
   Object.entries(params).forEach(([key, value]) => {
@@ -166,9 +166,25 @@ export const buildQueryString = (params: Record<string, any>): string => {
 export const getErrorMessage = (error: unknown): string => {
   if (error instanceof Error) return error.message
   if (typeof error === 'string') return error
-  return 'An unknown error occurred'
+  return VALIDATION_CONSTANTS.ERROR_MESSAGES.UNKNOWN_ERROR
 }
 
 export const isNetworkError = (error: unknown): boolean => {
-  return error instanceof TypeError && error.message.includes('fetch')
+  return error instanceof TypeError && error.message.includes(VALIDATION_CONSTANTS.NETWORK_ERROR_KEYWORDS.FETCH)
 }
+
+// Constants for validation and error messages
+const VALIDATION_CONSTANTS = {
+  MIN_PHONE_LENGTH: 10,
+  ERROR_MESSAGES: {
+    UNKNOWN_ERROR: 'An unknown error occurred',
+  },
+  REGEX_PATTERNS: {
+    EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    PHONE: /^\+?[\d\s\-()]+$/,
+    NON_DIGITS: /\D/g,
+  },
+  NETWORK_ERROR_KEYWORDS: {
+    FETCH: 'fetch',
+  },
+} as const

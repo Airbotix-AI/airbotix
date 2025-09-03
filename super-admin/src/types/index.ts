@@ -149,7 +149,7 @@ export interface ContentData {
   body?: string
   video_url?: string
   attachments?: string[]
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 // Dashboard Types
@@ -169,7 +169,7 @@ export interface DashboardActivity {
   user_id: string
   user_name: string
   timestamp: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export type ActivityType = 'student_enrolled' | 'workshop_completed' | 'course_created' | 'user_registered'
@@ -195,7 +195,7 @@ export interface TableColumn<T> {
   key: keyof T
   label: string
   sortable?: boolean
-  render?: (value: any, row: T) => React.ReactNode
+  render?: (value: unknown, row: T) => React.ReactNode
 }
 
 export interface TableProps<T> {
@@ -234,7 +234,7 @@ export interface NavItem {
 export interface AppError {
   code: string
   message: string
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 }
 
 // Utility Types
