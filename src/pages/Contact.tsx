@@ -90,8 +90,8 @@ const Contact = () => {
           'No form endpoint configured. Please set VITE_FORMSPREE_ID or VITE_CONTACT_EMAIL.'
         )
       }
-    } catch (err: any) {
-      setErrorMessage(err?.message || 'Something went wrong. Please try again later.')
+    } catch (err) {
+      setErrorMessage((err as Error)?.message || 'Something went wrong. Please try again later.')
     } finally {
       setIsSubmitting(false)
     }

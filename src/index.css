@@ -50,4 +50,31 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
+  /* Logo cropping utilities to remove whitespace around logos */
+  .logo-crop-container {
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+
+  .logo-crop-container-footer {
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .logo-crop-footer { /* For mobile - vertical logo */
+    transform: scale(1.1);
+    margin: -0.75rem;
+    transform-origin: left center;
+  }
+
+  /* Responsive footer logo cropping */
+  @media (min-width: 768px) {
+    .logo-crop-footer { /* For desktop - horizontal logo */
+      transform: scale(1.75);
+      margin: -0.75rem;
+    }
+  }
 }

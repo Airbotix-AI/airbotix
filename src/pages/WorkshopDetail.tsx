@@ -53,8 +53,8 @@ const WorkshopDetail = () => {
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Workshop Outline</h2>
             <div className="space-y-5">
               {item.syllabus.map((s) => (
-                <div key={s.week} className="p-5 border border-gray-200 rounded-xl">
-                  <div className="font-semibold text-gray-900 mb-1">Week {s.week}: {s.title}</div>
+                <div key={s.day} className="p-5 border border-gray-200 rounded-xl">
+                  <div className="font-semibold text-gray-900 mb-1">Day {s.day}: {s.title}</div>
                   <div className="text-sm text-gray-600 mb-2">Objective: {s.objective}</div>
                   <ul className="list-disc pl-5 text-gray-700 space-y-1">
                     {s.activities.map((t) => (
