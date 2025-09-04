@@ -126,20 +126,9 @@ const Workshops = () => {
                       {ws.title}
                     </Link>
                   </h3>
-                  <div className="flex flex-col items-end gap-1 max-w-[35%]">
-                    <span className="text-xs sm:text-sm text-primary-700 bg-primary-50 px-2 py-1 rounded-full font-medium line-clamp-2 text-center">
-                      {ws.targetAudience || 'All levels'}
-                    </span>
-                    <span className="text-[10px] sm:text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full font-medium text-center">
-                      {(() => {
-                        const tag = deriveDurationFilter(ws.duration)
-                        if (tag === WORKSHOP_FILTERS.ONE_DAY) return WORKSHOP_TEXTS.FILTER_1D
-                        if (tag === WORKSHOP_FILTERS.TWO_DAY) return WORKSHOP_TEXTS.FILTER_2D
-                        if (tag === WORKSHOP_FILTERS.THREE_DAY) return WORKSHOP_TEXTS.FILTER_3D
-                        return WORKSHOP_TEXTS.FILTER_OTHER
-                      })()}
-                    </span>
-                  </div>
+                  <span className="text-xs sm:text-sm text-primary-700 bg-primary-50 px-2 py-1 rounded-full font-medium max-w-[35%] line-clamp-2 text-center">
+                    {ws.targetAudience || 'All levels'}
+                  </span>
                 </div>
                 <p className="text-gray-600 mb-4 line-clamp-4">{ws.overview}</p>
                 {ws.highlights && (
