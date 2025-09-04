@@ -125,8 +125,8 @@ const Book = () => {
       } else {
         throw new Error('No booking endpoint configured. Set VITE_FORMSPREE_BOOK_ID or VITE_CONTACT_EMAIL')
       }
-    } catch (err: any) {
-      setErrorMessage(err?.message || 'Something went wrong. Please try again later.')
+    } catch (err) {
+      setErrorMessage((err as Error)?.message || 'Something went wrong. Please try again later.')
     } finally {
       setIsSubmitting(false)
     }

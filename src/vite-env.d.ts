@@ -1,15 +1,12 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  readonly MODE: string
   readonly VITE_FORMSPREE_ID?: string
-  readonly VITE_FORMSPREE_BOOK_ID?: string
   readonly VITE_CONTACT_EMAIL?: string
-  // more env variables...
+  // Add more env variables as needed
 }
 
-declare global {
-  // eslint-disable-next-line no-unused-vars
-  interface ImportMeta {
-    readonly env: ImportMetaEnv
-  }
+interface ImportMeta {
+  readonly env: ImportMetaEnv
 }

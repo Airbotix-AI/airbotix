@@ -465,13 +465,262 @@ const handleData = (data: ApiResponse) => { ... }
 
 ---
 
+## 🤖 AI Code Better Rules
+
+*These additional rules ensure AI can better understand, analyze, and maintain our codebase.*
+
+### String Constants (Critical Rule)
+
+**RULE**: Never use string literals in conditional statements or comparisons
+
+```typescript
+// ❌ FORBIDDEN - String literals in conditions
+if (status === 'completed') { ... }
+if (userType === 'admin') { ... }
+if (category === 'courses') { ... }
+
+// ✅ REQUIRED - Use constants
+const STATUS = {
+  COMPLETED: 'completed',
+  PENDING: 'pending',
+  IN_PROGRESS: 'in_progress'
+} as const
+
+const USER_TYPES = {
+  ADMIN: 'admin',
+  STUDENT: 'student',
+  TEACHER: 'teacher'
+} as const
+
+if (status === STATUS.COMPLETED) { ... }
+if (userType === USER_TYPES.ADMIN) { ... }
+```
+
+**Why**: AI systems have difficulty understanding string-based logic. Constants provide clear semantic meaning and prevent typos.
+
+### File Size Limits (Critical Rule)
+
+**RULE**: Single file must not exceed 1000 lines
+
+```typescript
+// ❌ BAD - 1200 line component file
+const MassiveComponent = () => {
+  // ... 1200 lines of code
+}
+
+// ✅ GOOD - Split into smaller components
+const Header = () => { ... }           // 150 lines
+const SearchSection = () => { ... }    // 200 lines  
+const ContentList = () => { ... }      // 250 lines
+const Footer = () => { ... }           // 100 lines
+
+const MainComponent = () => {          // 100 lines
+  return (
+    <>
+      <Header />
+      <SearchSection />
+      <ContentList />
+      <Footer />
+    </>
+  )
+}
+```
+
+**Enforcement**:
+- **800+ lines**: Issue warning in PR
+- **1000+ lines**: Mandatory refactoring required
+- **Exception**: Configuration files only
+
+**Why**: AI has context window limitations. Large files reduce AI's ability to understand and modify code accurately.
+
+### Naming Disambiguation (Critical Rule)
+
+**RULE**: Avoid similar names that can confuse AI systems
+
+```typescript
+// ❌ BAD - Confusing similar names
+const adminUser = {...}
+const superAdminUser = {...}
+const userAdmin = {...}
+
+// ✅ GOOD - Clearly distinct names  
+const standardAdmin = {...}
+const systemSupervisor = {...}
+const departmentManager = {...}
+
+// ❌ BAD - Ambiguous file names
+AdminPanel.tsx
+SuperAdminPanel.tsx
+AdminSettings.tsx
+
+// ✅ GOOD - Clear, distinct names
+StandardAdminDashboard.tsx
+SystemSupervisorConsole.tsx
+DepartmentManagerSettings.tsx
+```
+
+**Guidelines**:
+- Use **descriptive prefixes** instead of modifiers
+- Avoid **similar-sounding** terms in the same context
+- Choose **semantically different** words when possible
+
+### TypeScript Interface Requirements (Mandatory)
+
+**RULE**: All data structures must have explicit TypeScript interfaces
+
+```typescript
+// ❌ FORBIDDEN - No type definition
+const processData = (data: any) => { ... }
+
+// ✅ REQUIRED - Explicit interface
+interface UserData {
+  id: string
+  name: string
+  email: string
+  role: 'admin' | 'student' | 'teacher'
+  createdAt: Date
+}
+
+const processData = (data: UserData) => { ... }
+
+// ✅ REQUIRED - Complex nested interfaces
+interface WorkshopSchedule {
+  id: string
+  title: string
+  instructor: {
+    name: string
+    expertise: string[]
+  }
+  sessions: Array<{
+    date: Date
+    duration: number
+    participants: UserData[]
+  }>
+}
+```
+
+**Requirements**:
+- **All props interfaces** must be defined
+- **API response types** must be typed
+- **State structures** must have interfaces
+- **No `any` types** except for third-party library compatibility
+
+### Documentation Requirements (Mandatory)
+
+**RULE**: Complex features require structured documentation
+
+```markdown
+// Required structure for new features:
+docs/
+├── FEATURE_NAME_SYSTEM_DESIGN.md    # Architecture & components
+├── FEATURE_NAME_FUNCTION_DOCS.md    # API & usage documentation  
+└── FEATURE_NAME_CODING_RULES.md     # Feature-specific rules
+```
+
+**Documentation Content Requirements**:
+
+1. **System Design Document**:
+   - Component hierarchy diagram
+   - Data flow visualization  
+   - File location mapping
+   - AI quick-reference guide
+
+2. **Function Documentation**:
+   - API interface definitions
+   - Usage examples
+   - Component props documentation
+   - Error handling patterns
+
+3. **File Relationship Mapping**:
+   - "If you want to modify X, edit file Y"
+   - Cross-reference between related files
+   - Dependency documentation
+
+### AI Context Optimization
+
+**RULE**: Structure code for AI comprehension
+
+```typescript
+// ✅ GOOD - Clear, single-purpose functions
+const validateUserEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+const formatUserDisplayName = (user: UserData): string => {
+  return `${user.firstName} ${user.lastName}`
+}
+
+// ✅ GOOD - Descriptive variable names
+const filteredActiveWorkshops = workshops.filter(workshop => workshop.isActive)
+const sortedUpcomingEvents = events.sort((a, b) => a.date.getTime() - b.date.getTime())
+
+// ❌ BAD - Vague names that confuse AI
+const data = getData()
+const temp = processStuff(data)
+const result = temp.map(x => x.thing)
+```
+
+### Refactoring Triggers
+
+**RULE**: Automatic refactoring requirements
+
+**File Size Trigger**:
+```bash
+# 800+ lines: Create GitHub issue
+# 1000+ lines: Block PR merge until refactored
+```
+
+**Naming Conflict Trigger**:
+```bash
+# Similar names detected: Require renaming
+# AI confusion reported: Mandatory disambiguation
+```
+
+**Complexity Trigger**:
+```bash
+# Cyclomatic complexity > 15: Refactor required
+# Function > 100 lines: Split into smaller functions
+```
+
+### AI-Friendly Code Review Checklist
+
+```markdown
+## AI Code Better Checklist
+
+### String Constants
+- [ ] No string literals in conditionals
+- [ ] All comparison strings use constants
+- [ ] Constants are exported and reusable
+
+### File Structure  
+- [ ] No files exceed 1000 lines
+- [ ] Components have single responsibility
+- [ ] Clear file naming convention
+
+### Type Safety
+- [ ] All interfaces defined
+- [ ] No `any` types (except library compatibility)
+- [ ] Props interfaces exported
+
+### Documentation
+- [ ] Complex features have docs
+- [ ] File relationships documented
+- [ ] AI quick-reference included
+
+### Naming Clarity
+- [ ] No confusing similar names
+- [ ] Descriptive variable names
+- [ ] Clear semantic meaning
+```
+
 ## 🎯 Remember
 
-> "Code is written once but read many times. Write for the next developer (which might be you in 6 months)."
+> "Code is written once but read many times. Write for the next developer (which might be you in 6 months) **and for AI systems that will help maintain it**."
 
 **Questions?** Don't hesitate to ask in our team channel or during standup meetings. We're all here to help each other grow! 🚀
 
 ---
 
-*Last updated: [Date]*  
-*Next review: [Date + 3 months]*
+*Last updated: 2025年1月*  
+*Next review: 2025年4月*
