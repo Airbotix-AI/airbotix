@@ -30,10 +30,10 @@ const WorkshopDetail = () => {
       {/* Header */}
       <section className="bg-gradient-to-br from-primary-50 to-secondary-50 py-12 md:py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link to="/workshops" className="text-primary-700 hover:underline">‚Üê Back to Workshops</Link>
+          <Link to="/workshops" className="text-primary-700 hover:underline">‚Ü?Back to Workshops</Link>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-3 leading-tight">{item.title}</h1>
           {item.subtitle && <div className="mt-2 text-primary-700 font-medium">{item.subtitle}</div>}
-          <div className="mt-3 text-gray-600">{item.targetAudience} ‚Ä¢ {item.duration}</div>
+          <div className="mt-3 text-gray-600">{item.targetAudience} ‚Ä?{item.duration}</div>
           <p className="mt-6 text-base md:text-lg text-gray-700 max-w-3xl">{item.overview}</p>
         </div>
       </section>
@@ -138,7 +138,7 @@ const WorkshopDetail = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">Bring this workshop to your school</h2>
           <p className="text-primary-100 max-w-2xl mx-auto mb-8">We tailor content to suit your class size, schedule, and learning goals.</p>
-          <Link to={`/book?workshop=${item.id}`} className="bg-white text-primary-600 hover:bg-gray-50 font-semibold text-lg px-8 py-3 rounded-lg inline-block no-underline">
+          <Link to={`/book?workshop=${item.slug}`} className="bg-white text-primary-600 hover:bg-gray-50 font-semibold text-lg px-8 py-3 rounded-lg inline-block no-underline">
             Book This Workshop
           </Link>
         </div>
