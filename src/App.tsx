@@ -6,6 +6,8 @@ import About from './pages/About'
 import Contact from './pages/Contact'
 import WorkshopDetail from './pages/WorkshopDetail'
 import Book from './pages/Book'
+import Media from './pages/Media'
+import NotFound from './pages/NotFound'
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/book" element={<Book />} />
+        <Route path="*" element={<NotFound />} />
+        <Route path="/media" element={<Media />} />
       </Routes>
     </Layout>
   )

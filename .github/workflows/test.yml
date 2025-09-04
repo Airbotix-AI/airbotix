@@ -1,13 +1,13 @@
-name: Deploy to GitHub Pages
+name: Test Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature/* ]
   pull_request:
     branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  test:
     runs-on: ubuntu-latest
     
     steps:
@@ -29,10 +29,8 @@ jobs:
     - name: Build project
       run: npm run build
 
-    - name: Deploy to GitHub Pages
-      if: github.ref == 'refs/heads/main'
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist
-        cname: # Add your custom domain here if you have one
+    - name: Check build artifacts
+      run: |
+        ls -la dist/
+        test -f dist/index.html
+        echo "Build completed successfully"
