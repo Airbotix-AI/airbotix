@@ -14,7 +14,12 @@ export function ProtectedRoute({
   requiredRole,
   requiredPermission 
 }: ProtectedRouteProps) {
+  const isBypassAuth = import.meta.env.VITE_BYPASS_AUTH === 'true'
   const { user, profile, loading, hasPermission } = useAuth()
+
+  if (isBypassAuth) {
+    return <>{children}</>
+  }
 
   if (loading) {
     return <div className="flex items-center justify-center h-screen">
