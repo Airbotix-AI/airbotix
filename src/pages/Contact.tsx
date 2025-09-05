@@ -125,7 +125,7 @@ const Contact = () => {
                     type="text"
                     value={form.fullName}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:border-primary-500 focus:ring-primary-500"
+                    className="w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-500"
                     placeholder="Your name"
                     required
                   />
@@ -140,7 +140,7 @@ const Contact = () => {
                     type="email"
                     value={form.email}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:border-primary-500 focus:ring-primary-500"
+                    className="w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-500"
                     placeholder="you@example.com"
                     required
                   />
