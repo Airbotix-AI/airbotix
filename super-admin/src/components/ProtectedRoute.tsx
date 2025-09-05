@@ -32,12 +32,7 @@ const ProtectedRoute = ({
   requiredRoles = [], 
   fallbackPath = ROUTES.LOGIN 
 }: ProtectedRouteProps) => {
-  const isBypassAuth = import.meta.env.VITE_BYPASS_AUTH === 'true'
   const { user, isLoading, userRole } = useAuth()
-
-  if (isBypassAuth) {
-    return <>{children}</>
-  }
 
   // Show loading spinner while checking authentication
   if (isLoading) {
