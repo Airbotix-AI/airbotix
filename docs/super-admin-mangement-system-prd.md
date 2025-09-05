@@ -108,22 +108,46 @@ Attendance Marking    | ✅          | ✅    | ✅
 
 ### Module 4: Workshop Management
 
-**Core Function:** Complete workshop lifecycle management
+**Core Function:** Complete workshop lifecycle management with comprehensive content and media management
 
 **Features:**
-- Workshop creation with detailed metadata
-- Scheduling with conflict detection
-- Teacher assignment and availability checking
-- Student enrollment with capacity management
-- Attendance tracking with timestamps
-- Workshop templates for recurring sessions
+- Workshop creation with detailed metadata and content modules
+- Scheduling with conflict detection and date validation
+- Media asset management (videos, photos)
+- SEO optimization settings
+- Workshop status management (Draft/Completed/Archived)
+- Preview functionality for main website display
 
 **Workshop Properties:**
-- Basic: Title, description, date/time, location
-- Capacity: Min/max students, current enrollment
-- Requirements: Age range, skill level, equipment
-- Assignment: Primary teacher, assistant teachers
-- Content: Linked lesson materials
+- **Basic Information:** Title, subtitle, overview, duration, target audience
+- **Time & Status:** Start date, end date, status (Draft/Completed/Archived)
+- **Content Modules:** 
+  - Highlights (required array of workshop highlights)
+  - Syllabus (required day-by-day breakdown with objectives and activities)
+  - Materials (required hardware, software, and online resources)
+  - Assessment (required evaluation criteria with weights)
+  - Learning Outcomes (required array of learning objectives)
+- **Media Assets:** 
+  - Videos (required with URL, poster, caption)
+  - Photos (required array with alt text)
+- **SEO Settings:** Title and description for search optimization
+- **Source:** Origin tracking for workshop content
+- **Capacity:** Min/max students, current enrollment
+- **Assignment:** Primary teacher, assistant teachers
+- **Content:** Linked lesson materials
+
+**Workshop Management Pages:**
+- **Workshop List:** Filter by status, date range, keywords; sort by date/title/status; actions for edit/delete/archive/preview
+- **Workshop Form:** Sectioned input with validation for all required fields
+- **Workshop Preview:** Display workshop in main website format for review
+
+**Data Validation Requirements:**
+- All fields are required (no optional fields)
+- Array fields must have minimum items (highlights: 1+, syllabus: 1+ days, materials: 1+ per category, assessment: 1+, learning outcomes: 1+)
+- Media requirements: minimum 1 video and 1 photo
+- Date validation: end date must be after start date
+- URL validation for media links
+- SEO fields: both title and description required
 
 ---
 
@@ -281,7 +305,10 @@ profiles: user_id, name, phone, avatar_url
 -- Core Entity Tables  
 students: id, name, age, school, parent_email, created_by
 teachers: id, name, email, phone, skills, availability_status
-workshops: id, title, date_time, location, capacity, teacher_id
+workshops: id, slug, title, subtitle, overview, duration, target_audience, 
+          start_date, end_date, status, highlights, syllabus, materials, 
+          assessment, learning_outcomes, media, seo, source, capacity, 
+          teacher_id, created_at, updated_at
 courses: id, name, description, age_group, session_count
 
 -- Relationship Tables
@@ -305,7 +332,7 @@ content: id, filename, file_url, tags, uploaded_by, course_id
 - IAM + RBAC implementation
 - Student Management CRUD
 - Teacher Management CRUD
-- Basic Workshop Management
+- Workshop Management
 
 **Days 5-7:** Integration + Dashboard
 - Workshop-Student enrollment system
@@ -317,6 +344,8 @@ content: id, filename, file_url, tags, uploaded_by, course_id
 - Role-based authentication working
 - Students can be added and enrolled in workshops
 - Teachers can be assigned to workshops
+- Workshop Management system with all required fields and validation
+- Workshop List, Form, and Preview pages functional
 - Dashboard displays real-time data
 
 ### Week 2: Advanced Features + Polish
@@ -350,7 +379,10 @@ content: id, filename, file_url, tags, uploaded_by, course_id
 
 ### Functional Requirements:
 - [ ] Super Admin can create and manage user accounts
-- [ ] Admins can create workshops and assign teachers
+- [ ] Admins can create workshops with comprehensive content and media management
+- [ ] Workshop forms enforce all required fields and validation rules
+- [ ] Workshop status management (Draft/Completed/Archived) controls visibility
+- [ ] Workshop preview functionality shows main website display format
 - [ ] Students can be enrolled in workshops and courses
 - [ ] Teachers can view assignments and mark attendance
 - [ ] Course sequences can be created and managed
