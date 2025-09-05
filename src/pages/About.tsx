@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-
 const values = [
   {
     title: 'Student-Centered',
@@ -152,9 +150,9 @@ const About = () => {
           <p className="text-primary-100 max-w-2xl mx-auto mb-8">
             We collaborate with schools, clubs, libraries, and community groups to deliver tailored programs.
           </p>
-          <Link to="/contact" className="bg-white text-primary-600 hover:bg-gray-50 font-semibold text-lg px-8 py-3 rounded-lg transition-colors inline-block">
+          <button className="bg-white text-primary-600 hover:bg-gray-50 font-semibold text-lg px-8 py-3 rounded-lg transition-colors">
             Get in Touch
-          </Link>
+          </button>
         </div>
       </section>
     </div>
