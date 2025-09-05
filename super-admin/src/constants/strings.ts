@@ -127,7 +127,7 @@ export const APP_STRINGS = {
   FORM_STATUS: 'Status',
 } as const
 
-// Route paths
+// Route paths (legacy - use ROUTE_PATHS from routes.ts instead)
 export const ROUTES = {
   ROOT: '/',
   LOGIN: '/',
