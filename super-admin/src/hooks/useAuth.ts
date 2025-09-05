@@ -1,52 +1,113 @@
 import { useState, useEffect } from 'react'
-import { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
-import type { User as AppUser, AuthState } from '@/types'
+import type { User } from '@supabase/supabase-js'
 
-export const useAuth = () => {
-  const [authState, setAuthState] = useState<AuthState>({
-    user: null,
-    loading: true,
-    error: null,
-  })
+// Constants following AI coding rules
+const USER_ROLES = {
+  SUPER_ADMIN: 'super_admin',
+  ADMIN: 'admin', 
+  TEACHER: 'teacher'
+} as const
+
+const AUTH_STATES = {
+  LOADING: 'loading',
+  AUTHENTICATED: 'authenticated',
+  UNAUTHENTICATED: 'unauthenticated'
+} as const
+
+interface UseAuthReturn {
+  user: User | null
+  userRole: string | null
+  isLoading: boolean
+  signOut: () => Promise<void>
+}
+
+export const useAuth = (): UseAuthReturn => {
+  const [user, setUser] = useState<User | null>(null)
+  const [userRole, setUserRole] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     // Get initial session
-    const getSession = async () => {
+    const getInitialSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (error) {
-          setAuthState({ user: null, loading: false, error: error.message })
+          console.error('Error getting session:', error)
+          setUser(null)
+          setUserRole(null)
+          setIsLoading(false)
           return
         }
 
+        setUser(session?.user ?? null)
+        
         if (session?.user) {
-          const appUser = mapSupabaseUserToAppUser(session.user)
-          setAuthState({ user: appUser, loading: false, error: null })
+          // Fetch user role from profiles table
+          try {
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', session.user.id)
+              .single()
+            
+            if (profileError) {
+              console.error('Error fetching profile:', profileError)
+              // Set default role for super admin system
+              setUserRole(USER_ROLES.SUPER_ADMIN)
+            } else {
+              setUserRole(profile?.role ?? USER_ROLES.SUPER_ADMIN)
+            }
+          } catch (error) {
+            console.error('Error in profile fetch:', error)
+            setUserRole(USER_ROLES.SUPER_ADMIN)
+          }
         } else {
-          setAuthState({ user: null, loading: false, error: null })
+          setUserRole(null)
         }
+        
+        setIsLoading(false)
       } catch (error) {
-        setAuthState({ 
-          user: null, 
-          loading: false, 
-          error: error instanceof Error ? error.message : 'Unknown error' 
-        })
+        console.error('Error in getInitialSession:', error)
+        setUser(null)
+        setUserRole(null)
+        setIsLoading(false)
       }
     }
 
-    getSession()
+    getInitialSession()
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
+        console.log('Auth state change:', event, session?.user?.email)
+        
+        setUser(session?.user ?? null)
+        
         if (session?.user) {
-          const appUser = mapSupabaseUserToAppUser(session.user)
-          setAuthState({ user: appUser, loading: false, error: null })
+          try {
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', session.user.id)
+              .single()
+            
+            if (profileError) {
+              console.error('Error fetching profile on auth change:', profileError)
+              setUserRole(USER_ROLES.SUPER_ADMIN)
+            } else {
+              setUserRole(profile?.role ?? USER_ROLES.SUPER_ADMIN)
+            }
+          } catch (error) {
+            console.error('Error in auth change profile fetch:', error)
+            setUserRole(USER_ROLES.SUPER_ADMIN)
+          }
         } else {
-          setAuthState({ user: null, loading: false, error: null })
+          setUserRole(null)
         }
+        
+        setIsLoading(false)
       }
     )
 
@@ -55,36 +116,32 @@ export const useAuth = () => {
 
   const signOut = async () => {
     try {
-      setAuthState(prev => ({ ...prev, loading: true }))
+      setIsLoading(true)
       const { error } = await supabase.auth.signOut()
       
       if (error) {
-        setAuthState(prev => ({ ...prev, loading: false, error: error.message }))
+        console.error('Error signing out:', error)
       } else {
-        setAuthState({ user: null, loading: false, error: null })
+        setUser(null)
+        setUserRole(null)
       }
     } catch (error) {
-      setAuthState(prev => ({
-        ...prev,
-        loading: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      }))
+      console.error('Error in signOut:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return {
-    ...authState,
-    signOut,
+    user,
+    userRole,
+    isLoading,
+    signOut
   }
 }
 
-// Helper function to map Supabase User to our App User type
-const mapSupabaseUserToAppUser = (user: User): AppUser => ({
-  id: user.id,
-  email: user.email || '',
-  name: user.user_metadata?.name || user.email || '',
-  role: 'super_admin', // Default role for super admin system
-  avatar_url: user.user_metadata?.avatar_url,
-  created_at: user.created_at || new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-})
+// Export constants for external use
+export { USER_ROLES, AUTH_STATES }
+
+// Export types for external use
+export type { UseAuthReturn }

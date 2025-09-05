@@ -1,22 +1,62 @@
-import { USER_ROLES } from '../constants/userRoles'
+import { User } from '@supabase/supabase-js'
+import { NotificationType } from '@/constants/ui'
 
-export interface User {
+// User dropdown component props
+export interface UserDropdownProps {
+  user: User | null
+  userRole: string | null
+  onSignOut: () => Promise<void>
+  className?: string
+}
+
+// Notification item interface
+export interface NotificationItem {
+  id: string
+  type: NotificationType
+  title: string
+  message: string
+  timestamp: Date
+  isRead: boolean
+  priority: 'low' | 'medium' | 'high'
+}
+
+// Notification dropdown props
+export interface NotificationDropdownProps {
+  notifications: NotificationItem[]
+  unreadCount: number
+  onMarkAsRead: (id: string) => void
+  onMarkAllAsRead: () => void
+  onNotificationClick: (notification: NotificationItem) => void
+  className?: string
+}
+
+// User profile interface
+export interface UserProfile {
   id: string
   email: string
-  role: typeof USER_ROLES[keyof typeof USER_ROLES]
-  created_at: string
-  updated_at: string
-}
-
-export interface UserProfile {
-  user_id: string
-  name: string
-  phone: string | null
+  full_name: string | null
   avatar_url: string | null
+  role: string
   created_at: string
   updated_at: string
 }
 
-export interface AuthUser extends User {
-  profile: UserProfile
+// User menu action interface
+export interface UserMenuAction {
+  id: string
+  label: string
+  icon: React.ComponentType<{ className?: string }>
+  onClick: () => void
+  variant?: 'default' | 'destructive'
 }
+
+// Responsive user info interface
+export interface ResponsiveUserInfo {
+  showAvatar: boolean
+  showName: boolean
+  showRole: boolean
+  showDropdown: boolean
+}
+
+// Export types for external use
+export type { UserDropdownProps, NotificationItem, NotificationDropdownProps, UserProfile, UserMenuAction, ResponsiveUserInfo }
