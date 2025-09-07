@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { MediaItem } from '../../data/media'
+import { MediaItem } from '../../types'
 
 interface LightboxProps {
   items: MediaItem[]
@@ -26,7 +26,32 @@ const Lightbox = ({ items, currentIndex, onClose, onPrev, onNext }: LightboxProp
     }
   }, [onClose, onPrev, onNext])
 
-  if (!current) return null
+  const renderErrorModal = () => (
+    <div
+      className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Media Load Error"
+      onClick={onClose}
+    >
+      <div className="relative max-w-md w-full bg-white rounded-lg p-6 text-center" onClick={(e) => e.stopPropagation()}>
+        <div className="text-4xl mb-3">⚠️</div>
+        <h2 className="text-xl font-semibold mb-2">Unable to open this item</h2>
+        <p className="text-gray-600 mb-6">This media could not be loaded. Please try another item.</p>
+        <button
+          type="button"
+          className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
+          onClick={onClose}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  )
+
+  if (!current) {
+    return renderErrorModal()
+  }
 
   const getCategoryDisplay = (category: string) => {
     const categoryMap = {
@@ -76,10 +101,15 @@ const Lightbox = ({ items, currentIndex, onClose, onPrev, onNext }: LightboxProp
             {current.type === 'video' ? (
               <video
                 controls
-                autoPlay
-                className="max-w-full max-h-[70vh] rounded-lg"
-                poster={current.thumbnailUrl}
+                className="max-w-full max-h-[70vh] rounded-lg bg-black"
+                poster={current.thumbnailUrl || '/media/placeholder-image.svg'}
                 preload="metadata"
+                onError={(e) => {
+                  const container = (e.currentTarget.parentElement as HTMLElement)
+                  if (!container) return
+                  // Replace failed video with an image fallback
+                  container.innerHTML = `<img src="${current.thumbnailUrl || '/media/placeholder-image.svg'}" alt="${current.title}" class="max-w-full max-h-[70vh] object-contain rounded-lg" />`
+                }}
               >
                 <source src={current.imageUrl} />
                 Your browser does not support the video tag.
@@ -152,8 +182,6 @@ const Lightbox = ({ items, currentIndex, onClose, onPrev, onNext }: LightboxProp
               <p className="text-gray-300 mb-3 leading-relaxed">
                 {current.description}
               </p>
-              
-              {/* Tags */}
               <div className="flex flex-wrap gap-2">
                 {current.tags.map((tag) => (
                   <span
@@ -165,11 +193,9 @@ const Lightbox = ({ items, currentIndex, onClose, onPrev, onNext }: LightboxProp
                 ))}
               </div>
             </div>
-            
-            {/* Thumbnail Preview */}
             <div className="ml-6 flex-shrink-0">
               <img
-                src={current.thumbnailUrl}
+                src={current.thumbnailUrl || '/media/placeholder-image.svg'}
                 alt=""
                 className="w-20 h-20 object-cover rounded-lg opacity-60"
                 onError={(e) => {
