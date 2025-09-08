@@ -105,7 +105,7 @@ export function useDashboardData() {
 
   // Set up real-time subscriptions
   useEffect(() => {
-    let subscription: any = null
+    const subscription: unknown = null
 
     const setupRealtimeSubscription = async () => {
       try {
@@ -144,8 +144,8 @@ export function useDashboardData() {
     setupRealtimeSubscription()
 
     return () => {
-      if (subscription) {
-        subscription.unsubscribe()
+      if (subscription && typeof subscription === 'object' && subscription !== null && 'unsubscribe' in subscription) {
+        (subscription as { unsubscribe: () => void }).unsubscribe()
       }
     }
   }, [fetchDashboardData])

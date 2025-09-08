@@ -13,8 +13,7 @@ import {
 import { 
   WORKSHOP_STATUS, 
   ALERT_TYPES, 
-  CAPACITY_THRESHOLDS,
-  TIME_FORMATS 
+  CAPACITY_THRESHOLDS
 } from '@/constants/dashboard'
 import { 
   TodayOverviewProps, 
@@ -275,7 +274,7 @@ export default function TodayOverview({
     )
   }
 
-  const { workshops, totalWorkshops, activeWorkshops, completedWorkshops, totalEnrollments, averageAttendance, alerts } = data
+  const { workshops, totalWorkshops, activeWorkshops, completedWorkshops, totalEnrollments, alerts } = data
 
   return (
     <div className="space-y-6">
