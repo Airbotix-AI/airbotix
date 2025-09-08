@@ -1,6 +1,7 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/contexts/AuthContext'
+import type { Permission } from '@/constants/permissions'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 // Constants following AI coding rules
@@ -24,18 +25,27 @@ const ERROR_MESSAGES = {
 interface ProtectedRouteProps {
   children: React.ReactNode
   requiredRoles?: string[]
+  requiredPermission?: Permission
   fallbackPath?: string
 }
 
 const ProtectedRoute = ({ 
   children, 
   requiredRoles = [], 
+  requiredPermission, 
   fallbackPath = ROUTES.LOGIN 
 }: ProtectedRouteProps) => {
-  const { user, isLoading, userRole } = useAuth()
+  const { user, profile, loading, hasRole, hasPermission } = useAuth()
+
+  // Allow bypassing all auth/role checks for local/dev when explicitly enabled
+  const isBypassAuth = import.meta.env.VITE_BYPASS_AUTH === 'true'
+
+  if (isBypassAuth) {
+    return <>{children}</>
+  }
 
   // Show loading spinner while checking authentication
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
@@ -52,7 +62,7 @@ const ProtectedRoute = ({
   }
 
   // Check role-based access if required roles specified
-  if (requiredRoles.length > 0 && userRole && !requiredRoles.includes(userRole)) {
+  if (requiredRoles.length > 0 && profile && !requiredRoles.some(role => hasRole(role))) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center max-w-md mx-auto p-8">
@@ -81,7 +91,51 @@ const ProtectedRoute = ({
             </p>
             <div className="text-sm text-gray-500">
               <p>Required roles: {requiredRoles.join(', ')}</p>
-              <p>Your role: {userRole || 'None'}</p>
+              <p>Your role: {profile?.role || 'None'}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => window.history.back()}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Check permission if specified
+  if (requiredPermission && profile && !hasPermission(requiredPermission)) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center max-w-md mx-auto p-8">
+          <div className="mb-6">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+              <svg 
+                className="h-8 w-8 text-red-600" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" 
+                />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              {ERROR_MESSAGES.ACCESS_DENIED_TITLE}
+            </h2>
+            <p className="text-gray-600 mb-6">
+              {ERROR_MESSAGES.ACCESS_DENIED_DESCRIPTION}
+            </p>
+            <div className="text-sm text-gray-500">
+              <p>Required permission: {requiredPermission}</p>
+              <p>Your role: {profile?.role || 'None'}</p>
             </div>
           </div>
           <button

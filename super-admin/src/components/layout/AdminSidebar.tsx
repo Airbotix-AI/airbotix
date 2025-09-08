@@ -1,22 +1,8 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { 
-  LayoutDashboard, 
-  Users, 
-  GraduationCap, 
-  Calendar, 
-  BookOpen, 
-  FileText 
-} from 'lucide-react'
+import { NAVIGATION_ITEMS } from '@/constants/navigation'
 
-const NAVIGATION_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { id: 'students', label: 'Students', href: '/students', icon: Users },
-  { id: 'teachers', label: 'Teachers', href: '/teachers', icon: GraduationCap },
-  { id: 'workshops', label: 'Workshops', href: '/workshops', icon: Calendar },
-  { id: 'courses', label: 'Courses', href: '/courses', icon: BookOpen },
-  { id: 'content', label: 'Content Management', href: '/content', icon: FileText }
-] as const
+// Use centralized navigation configuration from constants
 
 interface AdminSidebarProps {
   className?: string
@@ -36,7 +22,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ className }) => {
       <nav className="flex-1 px-4 py-6 space-y-1">
         {NAVIGATION_ITEMS.map((item) => {
           const Icon = item.icon
-          const isActive = location.pathname === item.href
+          const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + '/')
           
           return (
             <Link

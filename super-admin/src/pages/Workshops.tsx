@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
   Plus, 
@@ -27,7 +27,12 @@ export default function Workshops() {
   const navigate = useNavigate()
   
   // View mode state
-  const [viewMode, setViewMode] = useState<'table' | 'card'>('table')
+  const [viewMode, setViewMode] = useState<'table' | 'card'>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 640 ? 'card' : 'table'
+    }
+    return 'table'
+  })
   const [showFilters, setShowFilters] = useState(false)
   const [sortField, setSortField] = useState<'title' | 'startDate' | 'endDate' | 'createdAt'>('createdAt')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
@@ -73,8 +78,15 @@ export default function Workshops() {
   // Handle search with debounce
   const handleSearch = useCallback((value: string) => {
     setSearchTerm(value)
-    setSearch(value)
-  }, [setSearch])
+  }, [])
+
+  // Debounce search term updates to avoid excessive requests
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setSearch(searchTerm)
+    }, 300)
+    return () => clearTimeout(t)
+  }, [searchTerm])
 
   // Handle status filter
   const handleStatusFilter = useCallback((status: NewWorkshopStatus | null) => {
@@ -174,8 +186,8 @@ export default function Workshops() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="min-w-0">
           <h1 className="text-3xl font-bold text-gray-900">Workshop Management</h1>
           <p className="mt-2 text-gray-600">Manage and organize educational workshops</p>
           {total > 0 && (
@@ -184,19 +196,19 @@ export default function Workshops() {
             </p>
           )}
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center sm:justify-end gap-3 flex-wrap">
           {/* View Mode Toggle */}
-          <div className="flex items-center border border-gray-200 rounded-lg">
+          <div className="hidden sm:flex items-center border border-gray-200 rounded-lg">
             <button
               onClick={() => setViewMode('table')}
-              className={`p-2 ${viewMode === 'table' ? 'bg-primary text-white' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`p-2 min-w-10 ${viewMode === 'table' ? 'bg-primary text-white' : 'text-gray-500 hover:text-gray-700'}`}
               title="Table view"
             >
               <List className="h-4 w-4" />
             </button>
             <button
               onClick={() => setViewMode('card')}
-              className={`p-2 ${viewMode === 'card' ? 'bg-primary text-white' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`p-2 min-w-10 ${viewMode === 'card' ? 'bg-primary text-white' : 'text-gray-500 hover:text-gray-700'}`}
               title="Card view"
             >
               <Grid className="h-4 w-4" />
@@ -206,7 +218,7 @@ export default function Workshops() {
           {/* Add Workshop Button */}
           <button 
             onClick={() => navigate('/admin/workshops/new')}
-            className="btn-primary flex items-center space-x-2"
+            className="btn-primary flex items-center justify-center space-x-2 w-full sm:w-auto"
             title="Create new workshop"
           >
             <Plus className="h-4 w-4" />
@@ -216,28 +228,28 @@ export default function Workshops() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex flex-col lg:flex-row gap-4">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Search */}
-          <div className="flex-1">
+          <div className="lg:col-span-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search workshops by title, overview, or target audience..."
+                aria-label="Search workshops"
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="form-input pl-10"
+                className="form-input pl-10 w-full"
               />
             </div>
           </div>
           
           {/* Status Filter */}
-          <div className="sm:w-48">
+          <div className="w-full sm:w-48">
             <select
               value={statusFilter || 'all'}
               onChange={(e) => handleStatusFilter(e.target.value === 'all' ? null : e.target.value as NewWorkshopStatus)}
-              className="form-input"
+              className="form-input w-full"
               title="Filter by status"
             >
               <option value="all">All Status</option>
@@ -248,13 +260,15 @@ export default function Workshops() {
           </div>
           
           {/* More Filters Toggle */}
-          <button 
-            onClick={() => setShowFilters(!showFilters)}
-            className="btn-outline flex items-center space-x-2"
-          >
-            <Filter className="h-4 w-4" />
-            <span>Filters</span>
-          </button>
+          <div className="lg:col-span-3">
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className="btn-outline w-full sm:w-auto flex items-center justify-center space-x-2"
+            >
+              <Filter className="h-4 w-4" />
+              <span>Filters</span>
+            </button>
+          </div>
         </div>
 
         {/* Advanced Filters */}
@@ -269,7 +283,7 @@ export default function Workshops() {
                   type="date"
                   value={startDate}
                   onChange={(e) => handleDateRange(e.target.value, endDate)}
-                  className="form-input"
+                  className="form-input w-full"
                   title="Start date filter"
                 />
               </div>
@@ -281,7 +295,7 @@ export default function Workshops() {
                   type="date"
                   value={endDate}
                   onChange={(e) => handleDateRange(startDate, e.target.value)}
-                  className="form-input"
+                  className="form-input w-full"
                   title="End date filter"
                 />
               </div>
@@ -337,17 +351,17 @@ export default function Workshops() {
                       {getSortIcon('endDate')}
                     </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                     Target Audience
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                     Duration
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
                   <th 
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 hidden lg:table-cell"
                     onClick={() => handleSort('createdAt')}
                   >
                     <div className="flex items-center space-x-1">
@@ -390,10 +404,10 @@ export default function Workshops() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 hidden md:table-cell">
                       <div className="text-sm text-gray-900">{workshop.targetAudience}</div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 hidden md:table-cell">
                       <div className="text-sm text-gray-900">{workshop.duration}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -401,11 +415,11 @@ export default function Workshops() {
                         {WORKSHOP_STATUS_LABELS[workshop.status]}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
                       {formatDate(workshop.createdAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <button 
                           className="text-primary hover:text-primary/80" 
                           title="Preview Workshop"
@@ -453,14 +467,14 @@ export default function Workshops() {
         </div>
       ) : (
         /* Card View */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {workshops.map((workshop) => (
-            <div key={workshop.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-start justify-between mb-4">
+            <div key={workshop.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between mb-3 sm:mb-4">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{workshop.title}</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">{workshop.title}</h3>
                   {workshop.subtitle && (
-                    <p className="text-sm text-gray-600 mb-2">{workshop.subtitle}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-2">{workshop.subtitle}</p>
                   )}
                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(workshop.status)}`}>
                     {WORKSHOP_STATUS_LABELS[workshop.status]}
@@ -468,23 +482,23 @@ export default function Workshops() {
                 </div>
               </div>
               
-              <p className="text-gray-600 text-sm mb-4 line-clamp-3">{workshop.overview}</p>
+              <p className="text-gray-600 text-sm mb-3 sm:mb-4 line-clamp-3">{workshop.overview}</p>
               
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-sm text-gray-500">
+              <div className="space-y-2 mb-3 sm:mb-4">
+                <div className="flex items-center text-xs sm:text-sm text-gray-500">
                   <Calendar className="h-4 w-4 mr-2" />
                   <span>{formatDate(workshop.startDate)} - {formatDate(workshop.endDate)}</span>
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-xs sm:text-sm text-gray-500">
                   <span className="font-medium">Duration:</span> {workshop.duration}
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-xs sm:text-sm text-gray-500">
                   <span className="font-medium">Audience:</span> {workshop.targetAudience}
                 </div>
               </div>
               
-              <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-between pt-3 sm:pt-4 border-t border-gray-200">
+                <div className="flex items-center gap-2">
                   <button 
                     className="text-primary hover:text-primary/80" 
                     title="Preview Workshop"
@@ -523,7 +537,7 @@ export default function Workshops() {
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
-                <div className="text-xs text-gray-400">
+                <div className="text-[10px] sm:text-xs text-gray-400">
                   {formatDate(workshop.createdAt)}
                 </div>
               </div>
