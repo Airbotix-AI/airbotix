@@ -4,8 +4,7 @@ import {
   ChevronLeft, 
   ChevronRight, 
   Settings, 
-  LogOut,
-  User
+  LogOut
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { NAVIGATION_ITEMS, ROLE_LABELS, SIDEBAR_CONFIG } from '@/constants/navigation'
@@ -14,6 +13,24 @@ import { cn } from '@/utils'
 
 interface SidebarProps {
   className?: string
+}
+
+// Role display and badge color functions - exported for potential future use
+export const getRoleDisplayName = (role: string) => {
+  return ROLE_LABELS[role as keyof typeof ROLE_LABELS] || role
+}
+
+export const getRoleBadgeColor = (role: string) => {
+  switch (role) {
+    case USER_ROLES.SUPER_ADMIN:
+      return 'bg-red-100 text-red-800 border-red-200'
+    case USER_ROLES.ADMIN:
+      return 'bg-blue-100 text-blue-800 border-blue-200'
+    case USER_ROLES.TEACHER:
+      return 'bg-green-100 text-green-800 border-green-200'
+    default:
+      return 'bg-gray-100 text-gray-800 border-gray-200'
+  }
 }
 
 export default function Sidebar({ className }: SidebarProps) {
@@ -31,23 +48,6 @@ export default function Sidebar({ className }: SidebarProps) {
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed)
-  }
-
-  const getRoleDisplayName = (role: string) => {
-    return ROLE_LABELS[role as keyof typeof ROLE_LABELS] || role
-  }
-
-  const getRoleBadgeColor = (role: string) => {
-    switch (role) {
-      case USER_ROLES.SUPER_ADMIN:
-        return 'bg-red-100 text-red-800 border-red-200'
-      case USER_ROLES.ADMIN:
-        return 'bg-blue-100 text-blue-800 border-blue-200'
-      case USER_ROLES.TEACHER:
-        return 'bg-green-100 text-green-800 border-green-200'
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200'
-    }
   }
 
   const filteredNavigationItems = NAVIGATION_ITEMS.filter(item => 

@@ -18,7 +18,7 @@ import {
   TOP_NAV_CONFIG,
   USER_MENU_ACTIONS 
 } from '@/constants/search'
-import { USER_MENU_ITEMS, UI_TEXT } from '@/constants/ui'
+import { UI_TEXT } from '@/constants/ui'
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar'
 import { 
   DropdownMenu, 
