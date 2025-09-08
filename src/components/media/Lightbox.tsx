@@ -101,6 +101,7 @@ const Lightbox = ({ items, currentIndex, onClose, onPrev, onNext }: LightboxProp
             {current.type === 'video' ? (
               <video
                 controls
+                playsInline
                 className="max-w-full max-h-[70vh] rounded-lg bg-black"
                 poster={current.thumbnailUrl || '/media/placeholder-image.svg'}
                 preload="metadata"
@@ -111,7 +112,7 @@ const Lightbox = ({ items, currentIndex, onClose, onPrev, onNext }: LightboxProp
                   container.innerHTML = `<img src="${current.thumbnailUrl || '/media/placeholder-image.svg'}" alt="${current.title}" class="max-w-full max-h-[70vh] object-contain rounded-lg" />`
                 }}
               >
-                <source src={current.imageUrl} />
+                <source src={current.imageUrl} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             ) : (
