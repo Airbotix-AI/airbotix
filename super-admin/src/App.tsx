@@ -7,6 +7,7 @@ import Login from '@/pages/Login'
 import Students from '@/pages/Students'
 import Teachers from '@/pages/Teachers'
 import Workshops from '@/pages/Workshops'
+import WorkshopForm from '@/pages/WorkshopForm'
 import Courses from '@/pages/Courses'
 import Content from '@/pages/Content'
 
@@ -48,6 +49,22 @@ function App() {
             element={
               <ProtectedRoute requiredPermission={PERMISSIONS.VIEW_WORKSHOPS}>
                 <Workshops />
+              </ProtectedRoute>
+            }
+          />
+                    <Route
+            path="workshops/new"
+            element={
+              <ProtectedRoute requiredPermission={PERMISSIONS.CREATE_WORKSHOPS}>
+                <WorkshopForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="workshops/:id/edit"
+            element={
+              <ProtectedRoute requiredPermission={PERMISSIONS.EDIT_WORKSHOPS}>
+                <WorkshopForm />
               </ProtectedRoute>
             }
           />
