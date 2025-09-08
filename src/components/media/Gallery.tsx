@@ -7,9 +7,9 @@ interface GalleryProps {
 
 const Gallery = ({ items, onItemClick }: GalleryProps) => {
   const handleImgError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const target = e.currentTarget
-    if ((target as any).dataset.fallbackApplied === 'true') return
-    ;(target as any).dataset.fallbackApplied = 'true'
+    const target = e.currentTarget as HTMLImageElement & { dataset: { fallbackApplied?: string } }
+    if (target.dataset.fallbackApplied === 'true') return
+    target.dataset.fallbackApplied = 'true'
     target.src = '/media/placeholder-image.svg'
   }
 

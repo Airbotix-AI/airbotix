@@ -1,8 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import Gallery from '../components/media/Gallery'
 import Lightbox from '../components/media/Lightbox'
-import { pacificCampMedia, mediaCategories } from '../data/media'
-import { MediaItem } from '../types'
+import { pacificCampMedia } from '../data/media'
 
 const Media = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -91,7 +90,7 @@ const Media = () => {
 
         {/* Grouped sections */}
         {classroomItems.length > 0 && (
-          <section id="classroom" ref={classroomRef as any} className="reveal mb-14 scroll-mt-24">
+          <section id="classroom" ref={classroomRef} className="reveal mb-14 scroll-mt-24">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2"><span>📚</span> Classroom Learning</h2>
               <span className="text-sm text-gray-500">{classroomItems.length} items</span>
@@ -105,7 +104,7 @@ const Media = () => {
         )}
 
         {activityItems.length > 0 && (
-          <section id="activities" ref={activitiesRef as any} className="reveal mb-14 scroll-mt-24">
+          <section id="activities" ref={activitiesRef} className="reveal mb-14 scroll-mt-24">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2"><span>🎮</span> Interactive Activities</h2>
               <span className="text-sm text-gray-500">{activityItems.length} items</span>
@@ -119,7 +118,7 @@ const Media = () => {
         )}
 
         {outcomeItems.length > 0 && (
-          <section id="outcomes" ref={outcomesRef as any} className="reveal scroll-mt-24">
+          <section id="outcomes" ref={outcomesRef} className="reveal scroll-mt-24">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2"><span>🏆</span> Learning Outcomes</h2>
               <span className="text-sm text-gray-500">{outcomeItems.length} items</span>

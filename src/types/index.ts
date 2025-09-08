@@ -71,14 +71,14 @@ export interface BookingRequest {
 
 export interface MediaItem {
   id: string
-  type: 'image' | 'video'
-  url: string
-  thumbnailUrl?: string
   title: string
-  description?: string
-  workshopId?: string
-  date: string
+  description: string
+  imageUrl: string
+  thumbnailUrl: string
+  category: 'classroom' | 'activities' | 'outcomes'
+  type: 'photo' | 'video'
   tags: string[]
+  featured?: boolean
 }
 
 // API Response types

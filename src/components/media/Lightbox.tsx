@@ -119,9 +119,9 @@ const Lightbox = ({ items, currentIndex, onClose, onPrev, onNext }: LightboxProp
                 src={current.imageUrl}
                 alt={current.title}
                 onError={(e) => {
-                  const img = e.currentTarget
-                  if ((img as any).dataset.fallbackApplied === 'true') return
-                  ;(img as any).dataset.fallbackApplied = 'true'
+                  const img = e.currentTarget as HTMLImageElement & { dataset: { fallbackApplied?: string } }
+                  if (img.dataset.fallbackApplied === 'true') return
+                  img.dataset.fallbackApplied = 'true'
                   img.src = '/media/placeholder-image.svg'
                 }}
                 className="max-w-full max-h-[70vh] object-contain rounded-lg"
