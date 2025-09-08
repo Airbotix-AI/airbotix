@@ -125,8 +125,8 @@ const MetricCard: React.FC<MetricCardProps> = ({ card, className = '' }) => {
   )
 }
 
-// Loading skeleton component
-const LoadingSkeleton = ({ className }: { className?: string }) => (
+// Loading skeleton component - exported for potential future use
+export const LoadingSkeleton = ({ className }: { className?: string }) => (
   <div className={`animate-pulse ${className}`}>
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -141,8 +141,8 @@ const LoadingSkeleton = ({ className }: { className?: string }) => (
   </div>
 )
 
-// Error state component
-const ErrorState = ({ 
+// Error state component - exported for potential future use
+export const ErrorState = ({ 
   error, 
   onRetry 
 }: { 

@@ -3,12 +3,14 @@ import { Outlet, useLocation, Link } from 'react-router-dom'
 import { Menu, X, Search, LayoutDashboard, Users, GraduationCap, Calendar, BookOpen, FileText } from 'lucide-react'
 import ErrorBoundary from '@/components/ErrorBoundary'
 
-const LAYOUT_BREAKPOINTS = {
+// Layout breakpoints - exported for potential future use
+export const LAYOUT_BREAKPOINTS = {
   MOBILE: 768,
   TABLET: 1024
 } as const
 
-const SIDEBAR_STATES = {
+// Sidebar states - exported for potential future use
+export const SIDEBAR_STATES = {
   HIDDEN: 'hidden',
   VISIBLE: 'visible',
   OVERLAY: 'overlay'

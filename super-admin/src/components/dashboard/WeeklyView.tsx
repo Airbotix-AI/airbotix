@@ -9,8 +9,7 @@ import {
   TrendingDown,
   RefreshCw,
   AlertCircle,
-  CheckCircle,
-  AlertTriangle
+  CheckCircle
 } from 'lucide-react'
 import { 
   WeeklyViewProps, 

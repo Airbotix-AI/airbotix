@@ -54,7 +54,7 @@ const DropdownMenu = ({ children }: DropdownMenuProps) => {
 }
 
 const DropdownMenuTrigger = React.forwardRef<HTMLButtonElement, DropdownMenuTriggerProps>(
-  ({ asChild, children, className, ...props }, ref) => {
+  ({ asChild, children, className, ...props }, _ref) => {
     const { isOpen, setIsOpen } = React.useContext(DropdownMenuContext)
 
     const handleClick = () => {
@@ -65,14 +65,14 @@ const DropdownMenuTrigger = React.forwardRef<HTMLButtonElement, DropdownMenuTrig
       return React.cloneElement(children, {
         ...children.props,
         onClick: handleClick,
-        ref,
+        ref: _ref,
         className: cn(children.props.className, className)
       })
     }
 
     return (
       <button
-        ref={ref}
+        ref={_ref}
         onClick={handleClick}
         className={cn('outline-none', className)}
         {...props}
@@ -85,7 +85,7 @@ const DropdownMenuTrigger = React.forwardRef<HTMLButtonElement, DropdownMenuTrig
 DropdownMenuTrigger.displayName = 'DropdownMenuTrigger'
 
 const DropdownMenuContent = React.forwardRef<HTMLDivElement, DropdownMenuContentProps>(
-  ({ children, align = 'start', className, ...props }, ref) => {
+  ({ children, align = 'start', className, ...props }, _ref) => {
     const { isOpen, setIsOpen } = React.useContext(DropdownMenuContext)
     const contentRef = useRef<HTMLDivElement>(null)
 
