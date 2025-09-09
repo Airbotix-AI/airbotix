@@ -1,4 +1,5 @@
-CREATE TABLE public.profiles (
+-- Create table if not exists
+CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
   email TEXT NOT NULL,
   full_name TEXT,
@@ -11,21 +12,42 @@ CREATE TABLE public.profiles (
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
-CREATE POLICY "Users can view own profile" ON public.profiles
-  FOR SELECT USING (auth.uid() = id);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_policy
+    WHERE polname = 'users_can_view_own_profile'
+  ) THEN
+    CREATE POLICY "Users can view own profile" ON public.profiles
+      FOR SELECT USING (auth.uid() = id);
+  END IF;
 
-CREATE POLICY "Users can update own profile" ON public.profiles  
-  FOR UPDATE USING (auth.uid() = id);
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_policy
+    WHERE polname = 'users_can_update_own_profile'
+  ) THEN
+    CREATE POLICY "Users can update own profile" ON public.profiles
+      FOR UPDATE USING (auth.uid() = id);
+  END IF;
 
-CREATE POLICY "Super admins can view all profiles" ON public.profiles
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles 
-      WHERE id = auth.uid() AND role = 'super_admin'
-    )
-  );
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_policy
+    WHERE polname = 'super_admins_can_view_all_profiles'
+  ) THEN
+    CREATE POLICY "Super admins can view all profiles" ON public.profiles
+      FOR SELECT USING (
+        EXISTS (
+          SELECT 1 FROM public.profiles 
+          WHERE id = auth.uid() AND role = 'super_admin'
+        )
+      );
+  END IF;
+END $$;
 
--- Create function to handle user creation
+-- Create function if not exists
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -36,6 +58,15 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Trigger for automatic profile creation
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_trigger
+    WHERE tgname = 'on_auth_user_created'
+  ) THEN
+    CREATE TRIGGER on_auth_user_created
+      AFTER INSERT ON auth.users
+      FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+  END IF;
+END $$;
