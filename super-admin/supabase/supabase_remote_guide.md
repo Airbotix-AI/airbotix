@@ -40,16 +40,15 @@ supabase link --project-ref your-project-ref
 
 ---
 
-### **3. Initialize Local Supabase Project (if not done yet)**
+### **3. Local Supabase Setup for New Developers**
+
+* If you are the first time working on this project and do not have a `supabase/` folder locally, run:
 
 ```bash
 supabase init
-```
+````
 
-* This will generate a `supabase/` folder containing:
-
-  * `config.toml`: connection configuration
-  * `migrations/`: folder to store all database change SQL files
+* Otherwise, just pull the main branch and run `supabase db reset`
 
 ---
 
