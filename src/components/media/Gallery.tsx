@@ -28,6 +28,19 @@ const Gallery = ({ items, onItemClick }: GalleryProps) => {
     }
   }
 
+  const buildThumbSrcSet = (item: MediaItem): string | undefined => {
+    try {
+      const thumb = getThumbSrc(item)
+      if (!thumb.endsWith('.jpg')) return undefined
+      const base = thumb.replace(/\.jpg$/, '')
+      const w320 = `${base}-320.jpg 320w`
+      const w640 = `${base}-640.jpg 640w`
+      return `${w320}, ${w640}`
+    } catch {
+      return undefined
+    }
+  }
+
   const handleMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     const el = e.currentTarget
     const rect = el.getBoundingClientRect()
@@ -69,14 +82,19 @@ const Gallery = ({ items, onItemClick }: GalleryProps) => {
             <div className="pointer-events-none absolute -inset-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl blob-gradient" />
             <img
               src={getThumbSrc(item)}
+              srcSet={buildThumbSrcSet(item)}
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               alt={item.title}
               loading="lazy"
+              decoding="async"
+              width={640}
+              height={480}
               onError={handleImgError}
               className="absolute inset-0 m-auto max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-105"
             />
 
             {item.type === 'video' && (
-              <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">
                 <div className="bg-white/90 rounded-full p-3 backdrop-blur-sm glow-soft">
                   <svg className="w-6 h-6 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />

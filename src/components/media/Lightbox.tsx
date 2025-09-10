@@ -118,7 +118,11 @@ const Lightbox = ({ items, currentIndex, onClose, onPrev, onNext }: LightboxProp
             ) : (
               <img
                 src={current.imageUrl}
+                srcSet={`${current.imageUrl.replace(/\.jpg$/, '')}-640.jpg 640w, ${current.imageUrl.replace(/\.jpg$/, '')}-1000.jpg 1000w, ${current.imageUrl}`}
+                sizes="(max-width: 768px) 90vw, (max-width: 1280px) 70vw, 60vw"
                 alt={current.title}
+                loading="lazy"
+                decoding="async"
                 onError={(e) => {
                   const img = e.currentTarget as HTMLImageElement & { dataset: { fallbackApplied?: string } }
                   if (img.dataset.fallbackApplied === 'true') return

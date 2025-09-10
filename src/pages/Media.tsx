@@ -58,6 +58,9 @@ const Media = () => {
           <img
             src={featuredImage.imageUrl}
             alt="Pacific Camp 2025"
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
             className="w-full h-full object-cover opacity-40"
             onError={(e) => { (e.target as HTMLImageElement).src = '/media/placeholder-image.svg' }}
           />
