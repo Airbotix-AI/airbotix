@@ -102,7 +102,7 @@ export async function fetchAllStudents(
 
     // Apply text search across multiple fields
     if (search && search.length >= VALIDATION_RULES.STUDENT_NAME_MIN_LENGTH) {
-      query = query.or(`${STUDENT_TABLE_COLUMNS.FULL_NAME}.ilike.%${search}%,${STUDENT_TABLE_COLUMNS.SCHOOL_NAME}.ilike.%${search}%,${STUDENT_TABLE_COLUMNS.PARENT_EMAIL}.ilike.%${search}%`)
+      query = query.or(`${STUDENT_TABLE_COLUMNS.FULL_NAME}.ilike.%${search}%,${STUDENT_TABLE_COLUMNS.SCHOOL_NAME}.ilike.%${search}%,${STUDENT_TABLE_COLUMNS.PARENT_EMAIL}.ilike.%${search}%,${STUDENT_TABLE_COLUMNS.PARENT_NAME}.ilike.%${search}%`)
     }
 
     // Apply status filter
@@ -293,6 +293,7 @@ export async function createNewStudent(data: StudentFormData): Promise<StudentAp
         [STUDENT_TABLE_COLUMNS.DATE_OF_BIRTH]: data.date_of_birth,
         [STUDENT_TABLE_COLUMNS.SCHOOL_NAME]: data.school_name,
         [STUDENT_TABLE_COLUMNS.GRADE_LEVEL]: data.grade_level,
+        [STUDENT_TABLE_COLUMNS.PARENT_NAME]: data.parent_name,
         [STUDENT_TABLE_COLUMNS.PARENT_EMAIL]: data.parent_email,
         [STUDENT_TABLE_COLUMNS.PARENT_PHONE]: data.parent_phone,
         [STUDENT_TABLE_COLUMNS.EMERGENCY_CONTACT_NAME]: data.emergency_contact_name || null,
@@ -393,6 +394,7 @@ export async function updateExistingStudent(
     if (data.date_of_birth !== undefined) updateData[STUDENT_TABLE_COLUMNS.DATE_OF_BIRTH] = data.date_of_birth
     if (data.school_name !== undefined) updateData[STUDENT_TABLE_COLUMNS.SCHOOL_NAME] = data.school_name
     if (data.grade_level !== undefined) updateData[STUDENT_TABLE_COLUMNS.GRADE_LEVEL] = data.grade_level
+    if (data.parent_name !== undefined) updateData[STUDENT_TABLE_COLUMNS.PARENT_NAME] = data.parent_name
     if (data.parent_email !== undefined) updateData[STUDENT_TABLE_COLUMNS.PARENT_EMAIL] = data.parent_email
     if (data.parent_phone !== undefined) updateData[STUDENT_TABLE_COLUMNS.PARENT_PHONE] = data.parent_phone
     if (data.emergency_contact_name !== undefined) updateData[STUDENT_TABLE_COLUMNS.EMERGENCY_CONTACT_NAME] = data.emergency_contact_name || null
@@ -673,6 +675,7 @@ export async function exportStudentsToCSV(
     const headers = [
       'ID',
       'Full Name',
+      'Parent Name',
       'Date of Birth',
       'School Name',
       'Grade Level',
@@ -694,6 +697,7 @@ export async function exportStudentsToCSV(
       ...students.map(student => [
         `"${student.id}"`,
         `"${student.full_name}"`,
+        `"${(student as any).parent_name || ''}"`,
         `"${student.date_of_birth}"`,
         `"${student.school_name}"`,
         `"${student.grade_level}"`,

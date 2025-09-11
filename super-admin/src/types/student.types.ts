@@ -58,6 +58,7 @@ export interface Student {
   date_of_birth: string; // ISO date string from database DATE type
   school_name: string;
   grade_level: string; // K-12 format validated by database constraint
+  parent_name: string;
   parent_email: string;
   parent_phone: string;
   emergency_contact_name?: string | null;
@@ -188,6 +189,7 @@ export interface StudentFormData {
   date_of_birth: string; // ISO date string (YYYY-MM-DD)
   school_name: string;
   grade_level: string; // K-12 format
+  parent_name: string;
   parent_email: string;
   parent_phone: string;
   emergency_contact_name?: string;
