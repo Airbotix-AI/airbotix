@@ -261,6 +261,10 @@ function ContactInformationCard({ studentDetails }: { studentDetails: StudentDet
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 gap-4">
           <div>
+            <label className="text-sm font-medium text-muted-foreground">Parent Name</label>
+            <p className="text-sm">{studentDetails.parent_name}</p>
+          </div>
+          <div>
             <label className="text-sm font-medium text-muted-foreground">Parent Email</label>
             <a 
               href={`mailto:${studentDetails.parent_email}`}
@@ -309,49 +313,7 @@ function ContactInformationCard({ studentDetails }: { studentDetails: StudentDet
   )
 }
 
-/**
- * Program information card
- */
-function ProgramInformationCard({ studentDetails }: { studentDetails: StudentDetailsData }) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Program Information</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 gap-4">
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">Current Status</label>
-            <div className="mt-1">
-              <Badge variant={STUDENT_STATUS_COLORS[studentDetails.status] as any}>
-                {STUDENT_STATUS_LABELS[studentDetails.status]}
-              </Badge>
-            </div>
-          </div>
-          
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">Skill Level</label>
-            <p className="text-sm">{STUDENT_SKILL_LEVEL_LABELS[studentDetails.skill_level]}</p>
-          </div>
-          
-          {studentDetails.special_requirements && (
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Special Requirements</label>
-              <p className="text-sm whitespace-pre-wrap">{studentDetails.special_requirements}</p>
-            </div>
-          )}
-          
-          {studentDetails.medical_notes && (
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Medical Notes</label>
-              <p className="text-sm whitespace-pre-wrap">{studentDetails.medical_notes}</p>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
+ 
 
 /**
  * Enrollment history card
@@ -601,18 +563,25 @@ export function StudentDetails({
         isDeleting={isDeleting}
       />
 
-      {/* Information Cards Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PersonalInformationCard studentDetails={studentDetails} />
-        <ContactInformationCard studentDetails={studentDetails} />
-        <ProgramInformationCard studentDetails={studentDetails} />
-        <ActivityTimelineCard studentDetails={studentDetails} />
+      {/* Information Cards Grid - desktop-optimized */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        <div className="xl:col-span-8 space-y-6">
+          <PersonalInformationCard studentDetails={studentDetails} />
+        </div>
+        <div className="xl:col-span-4 space-y-6">
+          <ContactInformationCard studentDetails={studentDetails} />
+        </div>
       </div>
 
       {/* Enrollment History */}
       {showEnrollments && (
-        <div className="grid grid-cols-1 gap-6">
-          <EnrollmentHistoryCard studentDetails={studentDetails} />
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <div className="xl:col-span-8">
+            <EnrollmentHistoryCard studentDetails={studentDetails} />
+          </div>
+          <div className="xl:col-span-4">
+            <ActivityTimelineCard studentDetails={studentDetails} />
+          </div>
         </div>
       )}
     </div>

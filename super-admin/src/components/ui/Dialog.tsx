@@ -61,7 +61,7 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
       }}
     >
       <div className="fixed inset-0 bg-black/50" />
-      <div className="relative z-10 w-full max-w-md">{children}</div>
+      <div className="relative z-10 w-full px-4 sm:px-6">{children}</div>
     </div>
   )
 }

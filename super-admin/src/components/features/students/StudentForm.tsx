@@ -27,7 +27,6 @@ import {
   STUDENT_GRADE_LABELS,
   STUDENT_SKILL_LEVELS,
   STUDENT_SKILL_LEVEL_LABELS,
-  STUDENT_SKILL_LEVEL_DESCRIPTIONS,
   VALIDATION_RULES,
   VALIDATION_MESSAGES,
   STUDENT_ERROR_MESSAGES
@@ -44,22 +43,8 @@ import {
   FormItem,
   FormLabel,
   FormControl,
-  FormDescription,
   FormMessage,
 } from '../../ui/Form'
-
-// ============================================================================
-// FORM SECTION CONSTANTS
-// ============================================================================
-
-/**
- * Form section titles for consistent UI
- */
-const FORM_SECTIONS = {
-  PERSONAL: 'Personal Information',
-  CONTACT: 'Contact Information', 
-  PROGRAM: 'Program Information'
-} as const
 
 // ============================================================================
 // VALIDATION SCHEMA
@@ -86,6 +71,12 @@ const calculateAge = (birthDate: Date): number => {
  */
 const studentFormSchema = z.object({
   [STUDENT_FORM_FIELDS.FULL_NAME]: z
+    .string()
+    .min(VALIDATION_RULES.STUDENT_NAME_MIN_LENGTH, VALIDATION_MESSAGES.NAME_TOO_SHORT)
+    .max(VALIDATION_RULES.STUDENT_NAME_MAX_LENGTH, VALIDATION_MESSAGES.NAME_TOO_LONG)
+    .trim(),
+  
+  [STUDENT_FORM_FIELDS.PARENT_NAME]: z
     .string()
     .min(VALIDATION_RULES.STUDENT_NAME_MIN_LENGTH, VALIDATION_MESSAGES.NAME_TOO_SHORT)
     .max(VALIDATION_RULES.STUDENT_NAME_MAX_LENGTH, VALIDATION_MESSAGES.NAME_TOO_LONG)
@@ -181,6 +172,7 @@ interface StudentFormProps {
  */
 const studentToFormData = (student: Student): StudentFormSchema => ({
   [STUDENT_FORM_FIELDS.FULL_NAME]: student.full_name,
+  [STUDENT_FORM_FIELDS.PARENT_NAME]: student.parent_name,
   [STUDENT_FORM_FIELDS.DATE_OF_BIRTH]: student.date_of_birth,
   [STUDENT_FORM_FIELDS.SCHOOL_NAME]: student.school_name,
   [STUDENT_FORM_FIELDS.GRADE_LEVEL]: student.grade_level,
@@ -198,6 +190,7 @@ const studentToFormData = (student: Student): StudentFormSchema => ({
  */
 const formDataToStudentData = (formData: StudentFormSchema): StudentFormData => ({
   full_name: formData[STUDENT_FORM_FIELDS.FULL_NAME],
+  parent_name: formData[STUDENT_FORM_FIELDS.PARENT_NAME],
   date_of_birth: formData[STUDENT_FORM_FIELDS.DATE_OF_BIRTH],
   school_name: formData[STUDENT_FORM_FIELDS.SCHOOL_NAME],
   grade_level: formData[STUDENT_FORM_FIELDS.GRADE_LEVEL],
@@ -230,6 +223,7 @@ const StudentForm = ({
     resolver: zodResolver(studentFormSchema),
     defaultValues: initialData ? studentToFormData(initialData) : {
       [STUDENT_FORM_FIELDS.FULL_NAME]: '',
+      [STUDENT_FORM_FIELDS.PARENT_NAME]: '',
       [STUDENT_FORM_FIELDS.DATE_OF_BIRTH]: '',
       [STUDENT_FORM_FIELDS.SCHOOL_NAME]: '',
       [STUDENT_FORM_FIELDS.GRADE_LEVEL]: '',
@@ -237,7 +231,7 @@ const StudentForm = ({
       [STUDENT_FORM_FIELDS.PARENT_PHONE]: '',
       [STUDENT_FORM_FIELDS.EMERGENCY_CONTACT_NAME]: '',
       [STUDENT_FORM_FIELDS.EMERGENCY_CONTACT_PHONE]: '',
-      [STUDENT_FORM_FIELDS.SKILL_LEVEL]: STUDENT_SKILL_LEVELS.BEGINNER,
+      [STUDENT_FORM_FIELDS.SKILL_LEVEL]: '' as any,
       [STUDENT_FORM_FIELDS.SPECIAL_REQUIREMENTS]: '',
       [STUDENT_FORM_FIELDS.MEDICAL_NOTES]: ''
     },
@@ -283,17 +277,6 @@ const StudentForm = ({
   // ============================================================================
 
   /**
-   * Section Header Component
-   */
-  const SectionHeader = ({ title }: { title: string }) => (
-    <div className="border-b pb-4">
-      <h3 className="text-lg font-medium text-gray-900">
-        {title}
-      </h3>
-    </div>
-  )
-
-  /**
    * Standard Field Component
    */
   interface StandardFieldProps {
@@ -301,7 +284,6 @@ const StudentForm = ({
     label: string
     required?: boolean
     placeholder: string
-    helpText?: string
     type?: 'text' | 'email' | 'tel' | 'date'
     className?: string
   }
@@ -311,7 +293,6 @@ const StudentForm = ({
     label, 
     required = false, 
     placeholder, 
-    helpText,
     type = 'text',
     className
   }: StandardFieldProps) => (
@@ -333,11 +314,7 @@ const StudentForm = ({
                 className="mt-1"
               />
             </FormControl>
-            {helpText && (
-              <FormDescription className="text-xs text-gray-500">
-                {helpText}
-              </FormDescription>
-            )}
+            {/* MVP: help text removed to reduce visual noise */}
             <FormMessage error={fieldState.error} />
           </FormItem>
         </FormField>
@@ -349,6 +326,8 @@ const StudentForm = ({
   // MAIN RENDER
   // ============================================================================
 
+  const [showOptional, setShowOptional] = useState(false)
+
   return (
     <div className="p-6 space-y-8">
       {/* Form Header */}
@@ -356,12 +335,7 @@ const StudentForm = ({
         <h2 className="text-2xl font-bold text-gray-900">
           {mode === 'create' ? 'Add New Student' : 'Edit Student'}
         </h2>
-        <p className="text-gray-600 mt-1">
-          {mode === 'create' 
-            ? 'Create a student profile with basic information. * Required fields'
-            : 'Update student information and save changes. * Required fields'
-          }
-        </p>
+        <p className="text-gray-600 mt-1">Basic info. * Required</p>
       </div>
 
       {/* Error Message */}
@@ -379,105 +353,124 @@ const StudentForm = ({
       {/* Main Form */}
       <Form {...form}>
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8">
-          {/* Desktop Layout - Three Column Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {/* Personal Information - Two columns */}
-            <div className="lg:col-span-2 space-y-6">
-              <SectionHeader title={FORM_SECTIONS.PERSONAL} />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Single-column, natural order */}
+          <div className="space-y-4">
+            <StandardField
+              name={STUDENT_FORM_FIELDS.FULL_NAME}
+              label="Student Name"
+              required
+              placeholder="Student's full name"
+            />
+            <StandardField
+              name={STUDENT_FORM_FIELDS.PARENT_NAME as any}
+              label="Parent/Guardian Name"
+              required
+              placeholder="Parent or guardian full name"
+            />
+            <StandardField
+              name={STUDENT_FORM_FIELDS.DATE_OF_BIRTH}
+              label="Date of Birth"
+              required
+              placeholder="YYYY-MM-DD"
+              type="date"
+            />
+            <Controller
+              name={STUDENT_FORM_FIELDS.GRADE_LEVEL}
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <FormField name={field.name}>
+                  <FormItem>
+                    <FormLabel>
+                      Grade Level <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        {...field}
+                        disabled={loading || isSubmitting}
+                      >
+                        <option value="">Select grade</option>
+                        {Object.entries(STUDENT_GRADES).map(([key, value]) => (
+                          <option key={key} value={value}>
+                            {STUDENT_GRADE_LABELS[value as keyof typeof STUDENT_GRADE_LABELS]}
+                          </option>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <FormMessage error={fieldState.error} />
+                  </FormItem>
+                </FormField>
+              )}
+            />
+            <StandardField
+              name={STUDENT_FORM_FIELDS.SCHOOL_NAME}
+              label="School Name"
+              required
+              placeholder="Current school"
+            />
+            <Controller
+              name={STUDENT_FORM_FIELDS.SKILL_LEVEL}
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <FormField name={field.name}>
+                  <FormItem>
+                    <FormLabel>
+                      Skill Level <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Select {...field} disabled={loading || isSubmitting}>
+                        <option value="">Select skill level</option>
+                        {Object.entries(STUDENT_SKILL_LEVELS).map(([key, value]) => (
+                          <option key={key} value={value}>
+                            {STUDENT_SKILL_LEVEL_LABELS[value as keyof typeof STUDENT_SKILL_LEVEL_LABELS]}
+                          </option>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <FormMessage error={fieldState.error} />
+                  </FormItem>
+                </FormField>
+              )}
+            />
+            {/* Parent/Guardian details */}
+            <StandardField
+              name={STUDENT_FORM_FIELDS.PARENT_EMAIL}
+              label="Parent Email"
+              required
+              placeholder="parent@example.com"
+              type="email"
+            />
+            <StandardField
+              name={STUDENT_FORM_FIELDS.PARENT_PHONE}
+              label="Parent Phone"
+              required
+              placeholder="+61 123 456 789"
+              type="tel"
+            />
+          </div>
+
+          {/* Optional details */}
+          <div className="pt-2 border-t">
+            <Button
+              type="button"
+              variant="link"
+              className="px-0"
+              onClick={() => setShowOptional(v => !v)}
+            >
+              {showOptional ? 'Hide optional details' : 'Add optional details'}
+            </Button>
+            {showOptional && (
+              <div className="mt-4 space-y-4">
                 <StandardField
-                  name={STUDENT_FORM_FIELDS.FULL_NAME}
-                  label="Full Name"
-                  required
-                  placeholder="Enter student's full name"
-                  helpText="Enter the student's complete legal name"
+                  name={STUDENT_FORM_FIELDS.EMERGENCY_CONTACT_NAME}
+                  label="Emergency Contact Name"
+                  placeholder="Emergency contact (optional)"
                 />
-                
                 <StandardField
-                  name={STUDENT_FORM_FIELDS.DATE_OF_BIRTH}
-                  label="Date of Birth"
-                  required
-                  placeholder="YYYY-MM-DD"
-                  type="date"
-                  helpText={`Student must be between ${VALIDATION_RULES.MIN_STUDENT_AGE} and ${VALIDATION_RULES.MAX_STUDENT_AGE} years old`}
+                  name={STUDENT_FORM_FIELDS.EMERGENCY_CONTACT_PHONE}
+                  label="Emergency Contact Phone"
+                  placeholder="Emergency phone (optional)"
+                  type="tel"
                 />
-                
-                <StandardField
-                  name={STUDENT_FORM_FIELDS.SCHOOL_NAME}
-                  label="School Name"
-                  required
-                  placeholder="Enter school name"
-                  helpText="Current school or educational institution"
-                />
-                
-                <Controller
-                  name={STUDENT_FORM_FIELDS.GRADE_LEVEL}
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <FormField name={field.name}>
-                      <FormItem>
-                        <FormLabel>
-                          Grade Level <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Select 
-                            {...field}
-                            disabled={loading || isSubmitting}
-                          >
-                            <option value="">Select grade level</option>
-                            {Object.entries(STUDENT_GRADES).map(([key, value]) => (
-                              <option key={key} value={value}>
-                                {STUDENT_GRADE_LABELS[value as keyof typeof STUDENT_GRADE_LABELS]}
-                              </option>
-                            ))}
-                          </Select>
-                        </FormControl>
-                        <FormDescription className="text-xs text-gray-500">
-                          Current academic grade level
-                        </FormDescription>
-                        <FormMessage error={fieldState.error} />
-                      </FormItem>
-                    </FormField>
-                  )}
-                />
-              </div>
-            </div>
-            
-            {/* Program Information - One column */}
-            <div className="space-y-6">
-              <SectionHeader title={FORM_SECTIONS.PROGRAM} />
-              <div className="space-y-4">
-                <Controller
-                  name={STUDENT_FORM_FIELDS.SKILL_LEVEL}
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <FormField name={field.name}>
-                      <FormItem>
-                        <FormLabel>
-                          Skill Level <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Select 
-                            {...field}
-                            disabled={loading || isSubmitting}
-                          >
-                            {Object.entries(STUDENT_SKILL_LEVELS).map(([key, value]) => (
-                              <option key={key} value={value}>
-                                {STUDENT_SKILL_LEVEL_LABELS[value as keyof typeof STUDENT_SKILL_LEVEL_LABELS]}
-                              </option>
-                            ))}
-                          </Select>
-                        </FormControl>
-                        <FormDescription className="text-xs text-gray-500">
-                          {field.value && STUDENT_SKILL_LEVEL_DESCRIPTIONS[field.value as keyof typeof STUDENT_SKILL_LEVEL_DESCRIPTIONS]}
-                        </FormDescription>
-                        <FormMessage error={fieldState.error} />
-                      </FormItem>
-                    </FormField>
-                  )}
-                />
-                
                 <Controller
                   name={STUDENT_FORM_FIELDS.SPECIAL_REQUIREMENTS}
                   control={form.control}
@@ -486,22 +479,18 @@ const StudentForm = ({
                       <FormItem>
                         <FormLabel>Special Requirements</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Any special accommodations or learning needs (optional)"
+                          <Textarea
+                            placeholder="Learning needs or accommodations (optional)"
                             className="min-h-[80px]"
                             {...field}
                             disabled={loading || isSubmitting}
                           />
                         </FormControl>
-                        <FormDescription className="text-xs text-gray-500">
-                          Maximum {VALIDATION_RULES.SPECIAL_REQUIREMENTS_MAX_LENGTH} characters
-                        </FormDescription>
                         <FormMessage error={fieldState.error} />
                       </FormItem>
                     </FormField>
                   )}
                 />
-                
                 <Controller
                   name={STUDENT_FORM_FIELDS.MEDICAL_NOTES}
                   control={form.control}
@@ -510,64 +499,22 @@ const StudentForm = ({
                       <FormItem>
                         <FormLabel>Medical Notes</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Any medical conditions or health information (optional)"
+                          <Textarea
+                            placeholder="Health information (optional)"
                             className="min-h-[80px]"
                             {...field}
                             disabled={loading || isSubmitting}
                           />
                         </FormControl>
-                        <FormDescription className="text-xs text-gray-500">
-                          Confidential - Maximum {VALIDATION_RULES.MEDICAL_NOTES_MAX_LENGTH} characters
-                        </FormDescription>
                         <FormMessage error={fieldState.error} />
                       </FormItem>
                     </FormField>
                   )}
                 />
               </div>
-            </div>
+            )}
           </div>
-          
-          {/* Contact Information - Full Width */}
-          <div className="space-y-6">
-            <SectionHeader title={FORM_SECTIONS.CONTACT} />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <StandardField
-                name={STUDENT_FORM_FIELDS.PARENT_EMAIL}
-                label="Parent Email"
-                required
-                placeholder="parent@example.com"
-                type="email"
-                helpText="Primary contact email for communication"
-              />
-              
-              <StandardField
-                name={STUDENT_FORM_FIELDS.PARENT_PHONE}
-                label="Parent Phone"
-                required
-                placeholder="+1 (555) 123-4567"
-                type="tel"
-                helpText="Include country code for international numbers"
-              />
-              
-              <StandardField
-                name={STUDENT_FORM_FIELDS.EMERGENCY_CONTACT_NAME}
-                label="Emergency Contact Name"
-                placeholder="Emergency contact name (optional)"
-                helpText="Alternative contact if parent unavailable"
-              />
-              
-              <StandardField
-                name={STUDENT_FORM_FIELDS.EMERGENCY_CONTACT_PHONE}
-                label="Emergency Contact Phone"
-                placeholder="Emergency contact phone (optional)"
-                type="tel"
-                helpText="Phone number for emergency contact"
-              />
-            </div>
-          </div>
-          
+
           {/* Action Buttons */}
           <div className="flex justify-end gap-3 pt-6 border-t">
             <Button

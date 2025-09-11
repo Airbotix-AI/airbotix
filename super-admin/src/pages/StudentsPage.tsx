@@ -17,7 +17,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Plus, Upload, Users } from 'lucide-react'
+import { Plus, Users, X, Mail, Pencil } from 'lucide-react'
 
 // Hooks and Context
 import { useAuth } from '../contexts/AuthContext'
@@ -34,7 +34,6 @@ import { STUDENT_SUCCESS_MESSAGES, STUDENT_ERROR_MESSAGES } from '../constants/s
 import StudentsList from '../components/features/students/StudentsList'
 import StudentForm from '../components/features/students/StudentForm'
 import StudentDetails from '../components/features/students/StudentDetails'
-import { StudentBulkOperations } from '../components/features/students/StudentBulkOperations'
 
 // UI Components
 import { Button } from '../components/ui/Button'
@@ -60,7 +59,6 @@ interface ModalState {
   editStudent: boolean
   viewStudent: boolean
   deleteConfirm: boolean
-  bulkImport: boolean
 }
 
 interface PageState {
@@ -180,15 +178,13 @@ const serializeFiltersToParams = (filters: StudentSearchFilters): URLSearchParam
 interface StudentPageHeaderProps {
   userRole: UserRole
   onAddStudent: () => void
-  onBulkImport: () => void
   totalCount?: number
   loading?: boolean
 }
 
 const StudentPageHeader = ({ 
   userRole, 
-  onAddStudent, 
-  onBulkImport, 
+  onAddStudent,
   totalCount, 
   loading 
 }: StudentPageHeaderProps) => {
@@ -235,12 +231,6 @@ const StudentPageHeader = ({
             
             {/* Action Buttons */}
             <div className="flex gap-2 w-full sm:w-auto">
-              {permissions.canBulkImport && (
-                <Button variant="outline" onClick={onBulkImport} className="flex-1 sm:flex-none">
-                  <Upload className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Import</span>
-                </Button>
-              )}
               {permissions.canCreate && (
                 <Button onClick={onAddStudent} className="flex-1 sm:flex-none">
                   <Plus className="w-4 h-4 mr-2" />
@@ -284,9 +274,7 @@ const StudentModals = ({
   
   const closeModal = useCallback((modalName: keyof ModalState) => {
     setModals(prev => ({ ...prev, [modalName]: false }))
-    if (modalName !== 'bulkImport') {
-      setSelectedStudent(null)
-    }
+    setSelectedStudent(null)
   }, [setModals, setSelectedStudent])
   
   const handleFormSubmit = useCallback(async (data: StudentFormData) => {
@@ -350,23 +338,53 @@ const StudentModals = ({
         </DialogContent>
       </Dialog>
       
-      {/* View Student Modal */}
+      {/* View Student Modal - Desktop-optimized */}
       <Dialog open={modals.viewStudent} onOpenChange={() => closeModal('viewStudent')}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Student Details</DialogTitle>
-            <DialogDescription>
-              Complete information for {selectedStudent?.full_name}
-            </DialogDescription>
-          </DialogHeader>
-          {selectedStudent && (
-            <StudentDetails 
-              studentId={selectedStudent.id}
-              editable={false}
-              showEnrollments={true}
-              userRole={userRole}
-            />
-          )}
+        <DialogContent className="w-[92vw] max-w-[1280px] max-h-[90vh] overflow-hidden p-0">
+          {/* Sticky Header with actions and close */}
+          <div className="sticky top-0 z-10 bg-background border-b px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-sm text-muted-foreground shrink-0">Student</span>
+              <span className="text-base font-semibold truncate">{selectedStudent?.full_name}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {/* Quick actions */}
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  if (!selectedStudent) return
+                  closeModal('viewStudent')
+                  setSelectedStudent(selectedStudent)
+                  setModals(prev => ({ ...prev, editStudent: true }))
+                }}
+              >
+                <Pencil className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
+              {selectedStudent?.parent_email && (
+                <a href={`mailto:${selectedStudent.parent_email}`}>
+                  <Button variant="secondary">
+                    <Mail className="w-4 h-4 mr-2" />
+                    Email Parent
+                  </Button>
+                </a>
+              )}
+              <Button variant="ghost" size="icon" aria-label="Close" onClick={() => closeModal('viewStudent')}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+          {/* Body */}
+          <div className="p-6 overflow-y-auto max-h-[calc(90vh-56px)]">
+            {selectedStudent && (
+              <StudentDetails 
+                studentId={selectedStudent.id}
+                editable={false}
+                showEnrollments={true}
+                userRole={userRole}
+              />
+            )}
+          </div>
         </DialogContent>
       </Dialog>
       
@@ -399,27 +417,7 @@ const StudentModals = ({
         </DialogContent>
       </Dialog>
       
-      {/* Bulk Import Modal */}
-      <Dialog open={modals.bulkImport} onOpenChange={() => closeModal('bulkImport')}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Import Students</DialogTitle>
-            <DialogDescription>
-              Upload a CSV or Excel file to import multiple students at once.
-            </DialogDescription>
-          </DialogHeader>
-          <StudentBulkOperations 
-            onImportComplete={(results: any) => {
-              console.log('Import completed:', results)
-              closeModal('bulkImport')
-              onSuccess()
-            }}
-            onExportComplete={(file: any) => {
-              console.log('Export completed:', file)
-            }}
-          />
-        </DialogContent>
-      </Dialog>
+      
     </>
   )
 }
@@ -438,8 +436,7 @@ const StudentsPage = () => {
     addStudent: false,
     editStudent: false,
     viewStudent: false,
-    deleteConfirm: false,
-    bulkImport: false
+    deleteConfirm: false
   })
   
   const [pageState, setPageState] = useState<PageState>({
@@ -538,7 +535,6 @@ const StudentsPage = () => {
           <StudentPageHeader 
             userRole={userRole}
             onAddStudent={() => openModal('addStudent')}
-            onBulkImport={() => openModal('bulkImport')}
             totalCount={totalCount}
             loading={loading}
           />

@@ -35,7 +35,6 @@ export const ROUTES = {
     NEW: '/admin/students/new',
     DETAILS: '/admin/students/:id',
     EDIT: '/admin/students/:id/edit',
-    IMPORT: '/admin/students/import',
     EXPORT: '/admin/students/export'
   },
   
@@ -89,7 +88,6 @@ export const ROUTE_LABELS = {
   [ROUTES.STUDENTS.NEW]: 'Add Student',
   [ROUTES.STUDENTS.DETAILS]: 'Student Details',
   [ROUTES.STUDENTS.EDIT]: 'Edit Student',
-  [ROUTES.STUDENTS.IMPORT]: 'Import Students',
   [ROUTES.STUDENTS.EXPORT]: 'Export Students',
   
   // Workshop routes
@@ -234,7 +232,6 @@ export const BREADCRUMB_CONFIG: Record<string, string[]> = {
   [ROUTES.STUDENTS.NEW]: ['Dashboard', 'Students', 'Add Student'],
   [ROUTES.STUDENTS.DETAILS]: ['Dashboard', 'Students', 'Student Details'],
   [ROUTES.STUDENTS.EDIT]: ['Dashboard', 'Students', 'Edit Student'],
-  [ROUTES.STUDENTS.IMPORT]: ['Dashboard', 'Students', 'Import Students'],
   [ROUTES.STUDENTS.EXPORT]: ['Dashboard', 'Students', 'Export Students'],
   
   // Workshop routes

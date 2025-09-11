@@ -501,11 +501,7 @@ const StudentsList = ({
           ? 'Try adjusting your search or filters'
           : 'Get started by adding your first student'}
       </p>
-      {permissions.canCreate && !isSearching && (
-        <Button onClick={() => console.log('Create student clicked')}>
-          Add Student
-        </Button>
-      )}
+      {/* Removed non-functional Add Student CTA in empty state */}
     </div>
   )
 
@@ -521,19 +517,7 @@ const StudentsList = ({
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <CardTitle>Students</CardTitle>
             
-            {/* Desktop Actions */}
-            <div className="hidden lg:flex items-center gap-2">
-              {permissions.canCreate && (
-                <Button onClick={() => console.log('Create student clicked')}>
-                  Add Student
-                </Button>
-              )}
-              {permissions.canExport && (
-                <Button variant="outline" onClick={() => console.log('Export clicked')}>
-                  Export
-                </Button>
-              )}
-            </div>
+            {/* Removed non-functional Desktop Actions (Add Student, Export) */}
           </div>
         </CardHeader>
 
@@ -602,26 +586,7 @@ const StudentsList = ({
             </Button>
           </div>
 
-          {/* Mobile Actions */}
-          <div className="flex lg:hidden gap-2">
-            {permissions.canCreate && (
-              <Button 
-                onClick={() => console.log('Create student clicked')}
-                className="flex-1"
-              >
-                Add Student
-              </Button>
-            )}
-            {permissions.canExport && (
-              <Button 
-                variant="outline" 
-                onClick={() => console.log('Export clicked')}
-                className="flex-1"
-              >
-                Export
-              </Button>
-            )}
-          </div>
+          {/* Removed non-functional Mobile Actions (Add Student, Export) */}
         </CardContent>
       </Card>
 
@@ -640,11 +605,7 @@ const StudentsList = ({
                 <Button variant="outline" onClick={deselectAll}>
                   Clear Selection
                 </Button>
-                {permissions.canExport && (
-                  <Button variant="outline" onClick={() => console.log('Export selected')}>
-                    Export Selected
-                  </Button>
-                )}
+                {/* Removed non-functional Export Selected */}
                 {permissions.canBulkDelete && (
                   <Button variant="destructive" onClick={handleBulkDeleteClick}>
                     Delete Selected
