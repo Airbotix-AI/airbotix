@@ -61,6 +61,7 @@ export interface DashboardMetricsProps {
   loading?: boolean
   error?: string
   onRefresh?: () => void
+  className?: string
 }
 
 // Metric card component props
