@@ -6,10 +6,7 @@ import {
   GraduationCap, 
   Calendar,
   BookOpen,
-  FileText,
-  LogOut,
-  User as UserIcon,
-  Settings
+  FileText
 } from 'lucide-react'
 
 import { useAuth } from '../../contexts/AuthContext'
@@ -30,7 +27,7 @@ interface NavigationItem {
 
 export default function AdminSidebar() {
   const location = useLocation()
-  const { profile, signOut } = useAuth()
+  const { profile } = useAuth()
   const userRole = (profile?.role || 'teacher') as UserRole
 
   // Get student count for badge
@@ -84,13 +81,6 @@ export default function AdminSidebar() {
     )
   }, [userRole, studentCount])
 
-  const handleSignOut = async () => {
-    try {
-      await signOut()
-    } catch (error) {
-      console.error('Error signing out:', error)
-    }
-  }
 
   const isRouteActive = (route: string): boolean => {
     if (route === ROUTES.DASHBOARD) {
@@ -99,18 +89,6 @@ export default function AdminSidebar() {
     return location.pathname === route || location.pathname.startsWith(route + '/')
   }
 
-  const getRoleBadgeColor = (role: string): string => {
-    switch (role) {
-      case USER_ROLES.SUPER_ADMIN:
-        return 'bg-purple-100 text-purple-700'
-      case USER_ROLES.ADMIN:
-        return 'bg-blue-100 text-blue-700'
-      case USER_ROLES.TEACHER:
-        return 'bg-green-100 text-green-700'
-      default:
-        return 'bg-gray-100 text-gray-700'
-    }
-  }
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -169,54 +147,6 @@ export default function AdminSidebar() {
         })}
       </nav>
 
-      {/* User Profile Section */}
-      <div className="border-t border-gray-200 p-4 bg-gray-50">
-        {/* User Info */}
-        <div className="flex items-center mb-4">
-          <div className="flex-shrink-0">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
-              <UserIcon className="h-5 w-5 text-white" />
-            </div>
-          </div>
-          <div className="ml-3 min-w-0 flex-1">
-            <p className="text-sm font-medium text-gray-900 truncate">
-              {profile?.full_name || profile?.email || 'User'}
-            </p>
-            <div className="flex items-center mt-1">
-              <span className={cn(
-                'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium',
-                getRoleBadgeColor(profile?.role || 'user')
-              )}>
-                {profile?.role?.replace('_', ' ').toUpperCase() || 'USER'}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="space-y-2">
-          <button className="w-full flex items-center justify-center px-3 py-2 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 hover:bg-white hover:shadow-sm transition-all duration-200">
-            <Settings className="h-4 w-4 mr-2" />
-            Settings
-          </button>
-          <button 
-            onClick={handleSignOut}
-            className="w-full flex items-center justify-center px-3 py-2 border border-transparent rounded-lg text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-sm transition-all duration-200"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
-          </button>
-        </div>
-
-        {/* Environment Indicator */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mt-3 text-center">
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-              Development
-            </span>
-          </div>
-        )}
-      </div>
     </div>
   )
 }

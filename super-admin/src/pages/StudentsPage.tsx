@@ -195,22 +195,22 @@ const StudentPageHeader = ({
   const permissions = getPermissionLevel(userRole)
   
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <Card className="shadow-sm">
+      <CardHeader className="pb-4">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Users className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-2xl">Student Management</CardTitle>
-              <p className="text-muted-foreground mt-1">
+              <CardTitle className="text-xl lg:text-2xl">Student Management</CardTitle>
+              <p className="text-muted-foreground mt-1 text-sm lg:text-base">
                 Manage student profiles and enrollments
               </p>
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full lg:w-auto">
             {/* Status Badge */}
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="flex items-center gap-1">
@@ -234,17 +234,17 @@ const StudentPageHeader = ({
             </div>
             
             {/* Action Buttons */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full sm:w-auto">
               {permissions.canBulkImport && (
-                <Button variant="outline" onClick={onBulkImport}>
+                <Button variant="outline" onClick={onBulkImport} className="flex-1 sm:flex-none">
                   <Upload className="w-4 h-4 mr-2" />
-                  Import
+                  <span className="hidden sm:inline">Import</span>
                 </Button>
               )}
               {permissions.canCreate && (
-                <Button onClick={onAddStudent}>
+                <Button onClick={onAddStudent} className="flex-1 sm:flex-none">
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Student
+                  <span className="hidden sm:inline">Add Student</span>
                 </Button>
               )}
             </div>
@@ -325,13 +325,7 @@ const StudentModals = ({
     <>
       {/* Add Student Modal */}
       <Dialog open={modals.addStudent} onOpenChange={() => closeModal('addStudent')}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Add New Student</DialogTitle>
-            <DialogDescription>
-              Create a new student profile with their personal and academic information.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-w-4xl w-[90vw] max-h-[90vh] overflow-y-auto p-0">
           <StudentForm 
             mode="create"
             onSubmit={handleFormSubmit}
@@ -343,13 +337,7 @@ const StudentModals = ({
       
       {/* Edit Student Modal */}
       <Dialog open={modals.editStudent} onOpenChange={() => closeModal('editStudent')}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Student</DialogTitle>
-            <DialogDescription>
-              Update {selectedStudent?.full_name}'s information and academic details.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-w-4xl w-[90vw] max-h-[90vh] overflow-y-auto p-0">
           {selectedStudent && (
             <StudentForm 
               mode="edit"
@@ -462,14 +450,12 @@ const StudentsPage = () => {
   
   // Get user role from profile  
   const userRole = (profile?.role || 'teacher') as UserRole
-  const permissions = getPermissionLevel(userRole)
   
   // Parse initial filters from URL
   const initialFilters = parseFiltersFromParams(searchParams)
   
   // Students data hook
   const {  
-    students,
     loading,
     error,
     totalCount,
@@ -520,20 +506,22 @@ const StudentsPage = () => {
   
   if (error) {
     return (
-      <div className="container mx-auto p-6">
-        <Card className="border-destructive">
-          <CardContent className="p-6 text-center">
-            <div className="text-destructive font-medium mb-2">
-              Unable to load students
-            </div>
-            <p className="text-muted-foreground mb-4">
-              {error}
-            </p>
-            <Button onClick={handleRefresh}>
-              Try Again
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <Card className="border-destructive shadow-sm">
+            <CardContent className="p-6 text-center">
+              <div className="text-destructive font-medium mb-2">
+                Unable to load students
+              </div>
+              <p className="text-muted-foreground mb-4">
+                {error}
+              </p>
+              <Button onClick={handleRefresh}>
+                Try Again
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     )
   }
@@ -543,24 +531,30 @@ const StudentsPage = () => {
   // ============================================================================
   
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Page Header */}
-      <StudentPageHeader 
-        userRole={userRole}
-        onAddStudent={() => openModal('addStudent')}
-        onBulkImport={() => openModal('bulkImport')}
-        totalCount={totalCount}
-        loading={loading}
-      />
-      
-      {/* Main Content */}
-      <StudentsList 
-        onStudentSelect={handleStudentSelect}
-        onEditStudent={handleEditStudent}
-        onDeleteStudent={handleDeleteStudent}
-        showBulkActions={true}
-        role={userRole}
-      />
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="space-y-4 sm:space-y-6">
+          {/* Page Header */}
+          <StudentPageHeader 
+            userRole={userRole}
+            onAddStudent={() => openModal('addStudent')}
+            onBulkImport={() => openModal('bulkImport')}
+            totalCount={totalCount}
+            loading={loading}
+          />
+          
+          {/* Main Content */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <StudentsList 
+              onStudentSelect={handleStudentSelect}
+              onEditStudent={handleEditStudent}
+              onDeleteStudent={handleDeleteStudent}
+              showBulkActions={true}
+              role={userRole}
+            />
+          </div>
+        </div>
+      </div>
       
       {/* Modals */}
       <StudentModals 
@@ -573,23 +567,6 @@ const StudentsPage = () => {
         userRole={userRole}
         onSuccess={handleRefresh}
       />
-      
-      {/* Development Info */}
-      {process.env.NODE_ENV === 'development' && (
-        <Card className="bg-muted/50">
-          <CardHeader>
-            <CardTitle className="text-sm">Development Information</CardTitle>
-          </CardHeader>
-          <CardContent className="text-xs space-y-2">
-            <div><strong>User Role:</strong> {userRole}</div>
-            <div><strong>Permissions:</strong> {JSON.stringify(permissions)}</div>
-            <div><strong>Students Loaded:</strong> {Array.isArray(students) ? students.length : 0}</div>
-            <div><strong>Total Count:</strong> {totalCount}</div>
-            <div><strong>Current Filters:</strong> {JSON.stringify(filters)}</div>
-            <div><strong>URL Params:</strong> {searchParams.toString()}</div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   )
 }
