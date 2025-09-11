@@ -19,7 +19,7 @@ import {
   USER_MENU_ACTIONS 
 } from '@/constants/search'
 import { UI_TEXT } from '@/constants/ui'
-import { Avatar, AvatarFallback } from '@/components/ui/Avatar'
+import { Avatar } from '@/components/ui/Avatar'
 import { 
   DropdownMenu, 
   DropdownMenuTrigger, 
@@ -207,11 +207,10 @@ export default function TopNavigation({ onSidebarToggle, currentRoute }: TopNavi
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-3 p-2 text-sm rounded-lg hover:bg-gray-100 transition-colors">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-blue-600 text-white font-medium">
-                    {getUserInitials()}
-                  </AvatarFallback>
-                </Avatar>
+                <Avatar 
+                  className="h-8 w-8 bg-blue-600 text-white font-medium"
+                  fallback={getUserInitials()}
+                />
                 <div className="text-left hidden md:block">
                   <div className="font-medium text-gray-900">{getDisplayName()}</div>
                   <div className="text-xs text-gray-500">{profile?.role || 'User'}</div>

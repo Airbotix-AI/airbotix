@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger 
 } from '@/components/ui/DropdownMenu'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface AdminHeaderProps {
   onSidebarToggle?: () => void
@@ -21,7 +21,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onSidebarToggle }) => {
     if (profile?.full_name) {
       return profile.full_name
         .split(' ')
-        .map(name => name.charAt(0))
+        .map((name: string) => name.charAt(0))
         .join('')
         .toUpperCase()
         .slice(0, 2)

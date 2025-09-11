@@ -13,7 +13,8 @@ export const PROTECTED_ROUTES = {
 // Public routes
 export const PUBLIC_ROUTES = {
   LOGIN: '/',
-  NOT_FOUND: '/404'
+  NOT_FOUND: '/404',
+  UNAUTHORIZED: '/unauthorized'
 } as const
 
 // All routes
@@ -21,6 +22,9 @@ export const ALL_ROUTES = {
   ...PROTECTED_ROUTES,
   ...PUBLIC_ROUTES
 } as const
+
+// Legacy export for compatibility
+export const ROUTE_PATHS = ALL_ROUTES
 
 // Role-based route permissions
 export const ROLE_PERMISSIONS = {
