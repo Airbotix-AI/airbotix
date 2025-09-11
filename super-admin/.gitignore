@@ -61,7 +61,3 @@ coverage/
 # Temporary folders
 tmp/
 temp/
-
-# Supabase
-supabase/.temp*
-supabase/.branches*
