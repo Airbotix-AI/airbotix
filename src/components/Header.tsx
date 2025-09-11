@@ -42,6 +42,9 @@ const Header = () => {
             <Link to="/blog" className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
               Blog
             </Link>
+            <Link to="/media" className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              Media
+            </Link>
             <Link to="/about" className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
               About
             </Link>
@@ -91,6 +94,9 @@ const Header = () => {
               </Link>
               <Link to="/blog" className="block text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-base font-medium">
                 Blog
+              </Link>
+              <Link to="/media" className="block text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-base font-medium">
+                Media
               </Link>
               <Link to="/about" className="block text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-base font-medium">
                 About
