@@ -6,8 +6,8 @@ Create a `.env` file in the root of the super-admin folder with the following va
 
 ```env
 # Supabase Configuration
-VITE_SUPABASE_URL=https://nbnuacfkmxwyvlnjycnt.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ibnVhY2ZrbXh3eXZsbmp5Y250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxNjQyODIsImV4cCI6MjA3MTc0MDI4Mn0.mfmk_bMZVKbCiUqegLY1MPWOsEhQ3gB-jd4_11r9TC8
+VITE_SUPABASE_URL=https://fauerqsvboamciwvlvxw.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhdWVycXN2Ym9hbWNpd3Zsdnh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3MjM5MjMsImV4cCI6MjA3MjI5OTkyM30.l72vYLKNZa-qA4LUioliagGu1xwJNDYIO6n2C5biO0k
 
 # Application Configuration (Optional)
 VITE_APP_NAME="Airbotix Super Admin"
