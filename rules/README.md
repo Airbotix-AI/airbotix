@@ -1,151 +1,110 @@
-# Airbotix Development Rules
+# Coding Rules and Standards
 
-This directory contains all the coding standards, principles, and rules for the Airbotix project. These rules are designed to ensure consistent, maintainable, and high-quality code across the entire project.
+**MANDATORY**: All AI coding tools (Claude Code, Cursor, Copilot, etc.) MUST follow these rules without exception.
 
-## 📋 Rule Categories
+## 🚨 CRITICAL REQUIREMENT
+Every AI coding assistant MUST read and apply ALL rules in this directory before writing or modifying ANY code.
 
-### 🏗️ [Coding Principles](./coding-principles.md)
-Core programming principles that guide all development decisions:
-- **SOLID Principles** (Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion)
-- **KISS** (Keep It Simple, Stupid)
-- **DRY** (Don't Repeat Yourself)
-- Component design patterns
-- Code organization strategies
+## Rule Categories
 
-### 📁 [File Organization](./file-organization.md)
-Rules for maintaining manageable file sizes and structure:
-- **1000-line maximum** per file (hard limit)
-- File breakdown strategies
-- Directory structure guidelines
-- Component splitting techniques
-- Monitoring and enforcement
+### 1. [General Principles](./general/)
+Core coding principles that apply to ALL code:
+- [SOLID Principles](./general/solid-principles.md)
+- [DRY (Don't Repeat Yourself)](./general/dry-principle.md)
+- [KISS (Keep It Simple, Stupid)](./general/kiss-principle.md)
+- [Code Readability](./general/readability.md)
+- [Error Handling](./general/error-handling.md)
 
-### 🔤 [TypeScript Standards](./typescript-standards.md)
-TypeScript coding standards and interface requirements:
-- **Mandatory interfaces** for all data structures
-- Interface vs type usage guidelines
-- Naming conventions
-- Generic patterns
-- Type safety enforcement
+### 2. [Frontend Rules](./frontend/)
+React/TypeScript specific rules:
+- [Component Architecture](./frontend/component-architecture.md)
+- [State Management](./frontend/state-management.md)
+- [TypeScript Standards](./frontend/typescript-standards.md)
+- [Performance Optimization](./frontend/performance.md)
+- [Accessibility Standards](./frontend/accessibility.md)
 
-### 📝 [String Constants](./string-constants.md)
-Mandatory string constant usage rules:
-- **No magic strings** allowed
-- Constant organization strategies
-- String categorization (UI, API, business logic)
-- Type-safe constants
-- Refactoring guidelines
+### 3. [Backend Rules](./backend/)
+Backend/API/Database specific rules:
+- [API Design](./backend/api-design.md)
+- [Database Patterns](./backend/database-patterns.md)
+- [Security Standards](./backend/security.md)
+- [Service Layer Architecture](./backend/service-architecture.md)
+- [Data Validation](./backend/data-validation.md)
 
-## 🎯 Quick Reference
+### 4. [Deployment Rules](./deployment/)
+CI/CD and deployment standards:
+- [Build Process](./deployment/build-process.md)
+- [Environment Management](./deployment/environment-management.md)
+- [GitHub Actions](./deployment/github-actions.md)
+- [Performance Monitoring](./deployment/performance-monitoring.md)
 
-### Critical Rules Summary
-1. **File Size**: Maximum 1000 lines per file
-2. **String Constants**: All strings must be named constants
-3. **TypeScript Interfaces**: Required for all data structures
-4. **SOLID Principles**: Follow single responsibility and dependency inversion
-5. **No Code Duplication**: Extract common functionality
+### 5. [Existing Rules](.)
+Already established rules in this codebase:
+- [Coding Principles](./coding-principles.md) - SOLID, KISS, DRY
+- [File Organization](./file-organization.md) - 1000-line limit
+- [String Constants](./string-constants.md) - No magic strings
+- [TypeScript Standards](./typescript-standards.md) - Interface requirements
 
-### Before You Code Checklist
-- [ ] Will this file exceed 1000 lines?
-- [ ] Are all strings defined as constants?
-- [ ] Do all components have proper TypeScript interfaces?
-- [ ] Does this follow single responsibility principle?
-- [ ] Am I duplicating existing functionality?
+## Rule Priority
 
-## 🚦 Enforcement
+1. **🔴 CRITICAL**: Security, data integrity, authentication
+2. **🟠 HIGH**: Performance, code quality, maintainability
+3. **🟡 MEDIUM**: Conventions, patterns, best practices
+4. **🟢 LOW**: Style preferences, optional optimizations
 
-### Automated Checks
-```bash
-# Check file sizes
-find src -name "*.ts" -o -name "*.tsx" | xargs wc -l | awk '$1 > 1000'
+## Enforcement Checklist
 
-# Run TypeScript strict checks
-npx tsc --noEmit --strict
+Before ANY code submission, verify:
 
-# Lint code quality
-npm run lint
+- [ ] **SOLID** principles applied
+- [ ] **DRY** - No code duplication
+- [ ] **KISS** - Solution is simple and clear
+- [ ] **Readability** - Code is self-documenting
+- [ ] **TypeScript** - All types properly defined
+- [ ] **Constants** - No magic strings/numbers
+- [ ] **File Size** - No file exceeds 1000 lines
+- [ ] **Security** - No exposed secrets or vulnerabilities
+- [ ] **Testing** - Critical paths have test coverage
+- [ ] **Performance** - No obvious bottlenecks
+
+## AI Tool Instructions
+
+### For Claude Code, Cursor, Copilot, and other AI assistants:
+
+1. **ALWAYS** read relevant rules before coding
+2. **NEVER** skip rule validation
+3. **REFUSE** to write code that violates these rules
+4. **EXPLAIN** rule violations when rejecting changes
+5. **SUGGEST** compliant alternatives
+
+### Example AI Response:
+```
+❌ Cannot implement: Violates DRY principle (duplicate logic in 3 files)
+✅ Suggestion: Extract shared logic to utils/common.ts
 ```
 
-### Code Review Requirements
-Every pull request must verify compliance with:
-- File size limits
-- Interface completeness  
-- String constant usage
-- SOLID principle adherence
-- Code duplication elimination
+## Quick Reference
 
-## 📚 Usage Guidelines
+### Must Follow (Non-negotiable)
+- SOLID principles for all architectures
+- DRY - Zero code duplication
+- KISS - Simplest solution that works
+- 1000-line file limit
+- TypeScript interfaces for all data
+- Named constants for all strings
 
-### For New Developers
-1. Read all rule documents in order
-2. Review example patterns in each document
-3. Set up automated checks in your IDE
-4. Ask questions during code review
+### Must Avoid
+- Magic strings/numbers
+- Any type usage in TypeScript
+- Inline styles in React
+- Direct DOM manipulation in React
+- Hardcoded credentials
+- Console.log in production code
 
-### For Code Reviews
-1. Use the enforcement checklists in each rule document
-2. Reference specific rule sections when providing feedback
-3. Ensure examples match documented patterns
-4. Verify automated checks are passing
-
-### For Refactoring
-1. Follow the step-by-step guides in each document
-2. Prioritize rule violations by impact
-3. Test thoroughly after each change
-4. Update documentation as needed
-
-## 🔄 Rule Updates
-
-### When to Update Rules
-- New patterns emerge in the codebase
-- Tool capabilities change (TypeScript, ESLint, etc.)
-- Team feedback identifies gaps or issues
-- Performance or maintenance issues arise
-
-### Update Process
-1. Propose changes in team discussion
-2. Update relevant rule document
-3. Update enforcement tools/scripts
-4. Communicate changes to all developers
-5. Update existing code gradually
-
-## 🤝 Contributing to Rules
-
-### Suggesting Improvements
-- Identify specific problems with current rules
-- Propose concrete solutions with examples
-- Consider impact on existing codebase
-- Discuss with team before implementation
-
-### Adding New Rules
-- Must solve actual problems we're experiencing
-- Should be enforceable (automatically or in code review)
-- Include clear examples of good vs bad patterns
-- Provide migration path for existing code
-
-## 📞 Support
-
-### Getting Help
-- **Questions about rules**: Ask in team chat or during standup
-- **Enforcement issues**: Check with tech lead or senior developer
-- **Tool problems**: Refer to individual rule documents
-- **Rule conflicts**: Escalate to team discussion
-
-### Reporting Issues
-- Document specific cases where rules are unclear
-- Provide examples of problematic code
-- Suggest potential solutions
-- Create GitHub issues for tracking
+## Version
+Last Updated: 2025-09-16
+Version: 2.0.0
 
 ---
 
-## 🎉 Remember
-
-> "Rules are meant to create consistency and quality, not to slow down development. When rules help us write better code faster, they're working correctly."
-
-**The goal is maintainable, readable, and robust code that serves our educational mission at Airbotix.**
-
----
-
-*Last Updated: 2025-01-26*  
-*Next Review: 2025-04-26*
+**Remember**: These rules exist to ensure code quality, maintainability, and team productivity. They are not suggestions - they are requirements.
