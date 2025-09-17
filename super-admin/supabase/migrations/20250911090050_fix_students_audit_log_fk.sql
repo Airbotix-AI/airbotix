@@ -18,3 +18,4 @@ COMMENT ON COLUMN public.students_audit_log.student_id IS
 COMMIT;
 
 
+
