@@ -4,193 +4,163 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-### Development Server
-- `npm run dev` - Start development server (opens at http://localhost:3000)
-- `npm run preview` - Preview production build locally
-
-### Build & Quality
-- `npm run build` - Build for production (output: dist/)
-- `npm run lint` - Run ESLint checks with TypeScript support
-- `npm run deploy` - Build and deploy to GitHub Pages
-
-### Development Workflow
-Always run lint after making changes to ensure code quality:
+### Main Website (root directory)
 ```bash
-npm run lint
+npm run dev      # Start development server (http://localhost:3000)
+npm run build    # Build for production (TypeScript + Vite)
+npm run lint     # Run ESLint checks with TypeScript support
+npm run preview  # Preview production build locally
+npm run deploy   # Build and deploy to GitHub Pages
+```
+
+### Super Admin Application (`/super-admin/`)
+```bash
+cd super-admin
+npm run dev      # Start admin server (http://localhost:3001)
+npm run build    # Build admin for production
+npm run lint     # Run ESLint checks
+npm run preview  # Preview admin production build
+npm run deploy   # Deploy admin to GitHub Pages
+```
+
+### Database Management (Super Admin)
+```bash
+cd super-admin
+npx supabase migration new <name>  # Create new migration
+npx supabase db reset              # Reset database with all migrations
 ```
 
 ## Project Architecture
 
-### Tech Stack
-- **React 18** with **TypeScript** for type safety
-- **Vite** as build tool for fast development
-- **TailwindCSS** for styling with custom design system
-- **React Router** for client-side navigation
-- **GitHub Pages** deployment with automated CI/CD
+This is a **monorepo** containing two separate React applications:
 
-### Project Structure
-```
-src/
-├── components/         # Reusable UI components
-│   ├── Header.tsx      # Navigation header
-│   ├── Footer.tsx      # Site footer  
-│   └── Layout.tsx      # Main layout wrapper
-├── pages/              # Page components (routes)
-├── data/               # Static data (workshops.ts)
-├── types/              # TypeScript type definitions
-├── utils/              # Utility functions
-└── App.tsx             # Main router setup
-```
+### 1. Main Website (`/`)
+Public-facing educational website for Airbotix (AI & Robotics education for K-12)
+- **Tech Stack**: React 18, TypeScript, Vite, TailwindCSS, React Router
+- **Deployment**: GitHub Pages via automated CI/CD
+- **Content**: Static data files in `src/data/` (workshops, blog posts, media)
+- **Routes**: Home, Workshops, About, Contact, Media, Blog
 
-### Routing Setup
-The app uses React Router with these main routes:
-- `/` - Home page
-- `/workshops` - Workshop listing
-- `/workshops/:id` - Individual workshop details
-- `/about` - About page
-- `/contact` - Contact form
-- `/book` - Booking page
+### 2. Super Admin (`/super-admin/`)
+Administrative management system with role-based access control
+- **Tech Stack**: React 18, TypeScript, Vite, Supabase (PostgreSQL), TanStack Query
+- **Authentication**: Supabase Auth with email/password
+- **Database**: PostgreSQL with Row Level Security (RLS) policies
+- **Key Features**: Student management, course management, audit logging
 
-### Key Data Layer
-Workshop data is centralized in `src/data/workshops.ts` with comprehensive TypeScript types including:
-- Workshop metadata (title, duration, target audience)
-- Detailed syllabus with weekly breakdown
-- Assessment criteria and learning outcomes
-- Media attachments (videos/photos)
-- SEO metadata
+### Shared Configuration
+- **TypeScript**: Strict mode with path aliases (`@/*` → `./src/*`)
+- **ESLint**: Enforced code quality with no warnings allowed
+- **Styling**: TailwindCSS with custom color palette
+- **Node Version**: 20 (specified in CI/CD)
 
-### TypeScript Configuration
-- Path aliases configured (`@/*` maps to `./src/*`)
-- Strict mode enabled with comprehensive linting
-- Modern ES2020 target with DOM types
+## Database Schema (Super Admin)
 
-## Styling Guidelines
+### Key Tables
+- `profiles` - User profiles with roles (super_admin, admin, teacher)
+- `students` - Student records with parent information
+- `students_audit` - Audit log for all student changes
+- `courses` - Workshop/course definitions
+- `enrollments` - Student course enrollments
 
-### TailwindCSS Usage
-- Custom color palette in tailwind.config.js
-- Responsive design patterns throughout
-- Component-based styling approach
-- Use @layer components for reusable styles
-
-### Code Style Rules (from rules.md)
-- **Components**: PascalCase (UserProfile)
-- **Hooks**: camelCase with 'use' prefix (useUserData)
-- **Constants**: SCREAMING_SNAKE_CASE (API_BASE_URL)
-- **Files**: Match component names exactly
-
-### Component Patterns
-Follow the established patterns:
-- Proper TypeScript interfaces for props
-- Default parameter values where appropriate
-- Consistent className organization (base classes, variants, responsive)
-- Proper error boundaries and loading states
+### Important Database Patterns
+- All tables use UUID primary keys
+- Row Level Security (RLS) enabled on all tables
+- Audit logging for sensitive operations
+- Role-based access control through `user_role` enum
+- Soft deletes with `deleted_at` timestamps
 
 ## Development Standards
 
-### Coding Principles (Enforced Rules)
-**MANDATORY**: All code must follow these principles documented in `rules/`
+### 🚨 MANDATORY CODING RULES
+**ALL AI coding tools (Claude Code, Cursor, Copilot) MUST follow the rules in `/rules/` directory**
 
-#### SOLID Principles
-- **Single Responsibility**: Each component/function has one clear purpose
-- **Open/Closed**: Components extensible through props, not modification
-- **Interface Segregation**: Create focused, specific interfaces
-- **Dependency Inversion**: Depend on abstractions, not implementations
+The `/rules/` directory contains comprehensive coding standards organized by category:
 
-#### Core Rules
-- **KISS**: Keep solutions simple, avoid over-engineering
-- **DRY**: No code duplication, extract common functionality
-- **File Size Limit**: Maximum 1000 lines per file (hard limit)
-- **No Magic Strings**: All strings must be named constants
-- **TypeScript Interfaces**: Required for all data structures
+#### Rule Categories:
+1. **[General Principles](./rules/general/)** - SOLID, DRY, KISS, Readability, Error Handling
+2. **[Frontend Rules](./rules/frontend/)** - React components, State management, TypeScript, Performance
+3. **[Backend Rules](./rules/backend/)** - API design, Database patterns, Security, Services
+4. **[Deployment Rules](./rules/deployment/)** - CI/CD, Build process, Environment management
 
-### File Organization Rules
-- **1000-line maximum** per TypeScript file
-- Break down large files into focused components
-- Extract custom hooks for complex state logic
-- Separate utilities into dedicated files
-- Use feature-based organization for related components
+#### Core Mandatory Rules (Non-negotiable):
+- **SOLID Principles** - Applied to all code architecture
+- **DRY** - Zero code duplication allowed
+- **KISS** - Simplest solution that works
+- **File Size** - Maximum 1000 lines per file
+- **TypeScript** - Interfaces required for all data structures
+- **Constants** - No magic strings/numbers allowed
+- **Error Handling** - Explicit error handling required
 
-### String Constants (Mandatory)
+#### Quick Reference Example:
 ```typescript
-// ✅ Required - All strings as constants
+// ✅ REQUIRED - Named constants
 const API_ENDPOINTS = {
   WORKSHOPS: '/api/workshops',
   BOOKINGS: '/api/bookings',
 } as const
 
-const ERROR_MESSAGES = {
-  INVALID_EMAIL: 'Please enter a valid email address',
-  REQUIRED_FIELD: 'This field is required',
-} as const
-
-// ❌ Forbidden - Magic strings
-const url = '/api/workshops'
-const error = 'Please enter a valid email address'
-```
-
-### TypeScript Interface Requirements
-```typescript
-// ✅ Required - All components must have interfaces
+// ✅ REQUIRED - TypeScript interfaces
 interface WorkshopCardProps {
   workshop: Workshop
   onBookClick: (id: string) => void
-  isLoading?: boolean
 }
 
-const WorkshopCard = ({ workshop, onBookClick, isLoading }: WorkshopCardProps) => {
-  // Component logic
-}
-
-// ❌ Forbidden - Inline types
-const WorkshopCard = ({ workshop, onBookClick, isLoading }: {
-  workshop: Workshop
-  onBookClick: (id: string) => void
-  isLoading?: boolean
-}) => {
-  // Component logic
-}
+// ❌ FORBIDDEN - Magic strings, any type, inline types
+const url = '/api/workshops'  // Use constant!
+const data: any = {}          // Define interface!
 ```
 
+**IMPORTANT**: Before writing ANY code, AI tools must read relevant rules from `/rules/` directory.
+
 ### Git Workflow
-- Follow Conventional Commits format
 - Branch naming: `feature/description`, `fix/issue-name`
-- Small, focused PRs with clear descriptions
-- Self-review before requesting team review
+- Conventional Commits format
+- CI/CD runs on push to main branch
 
-### Code Quality Enforcement
-- No unused imports or variables
-- Proper error handling throughout
-- TypeScript strict mode enabled
-- ESLint rules strictly enforced
-- All rules violations must be fixed before merge
+## API Services (Super Admin)
 
-### Performance Considerations
-- Code splitting with React.lazy() for routes
-- Optimized images with proper loading attributes
-- Memoization for expensive calculations
-- Bundle size monitoring (target: <1MB gzipped)
+### Supabase Integration
+The Super Admin uses Supabase services organized by domain:
+- `studentService.ts` - Student CRUD operations with audit logging
+- `authService.ts` - Authentication and role management
+- `courseService.ts` - Course/workshop management
+- `enrollmentService.ts` - Student enrollment handling
 
-## Deployment
+All services use TypeScript interfaces and proper error handling.
 
-### GitHub Pages Setup
-- Base path configured as `/airbotix-website/`
-- Automated deployment via `npm run deploy`
-- Uses gh-pages branch for hosting
-- Custom domain support available
+## Environment Variables
 
-### Environment Variables
+### Main Website
 - `VITE_FORMSPREE_ID` - Contact form integration
-- `VITE_CONTACT_EMAIL` - Fallback email for contact
+- `VITE_CONTACT_EMAIL` - Fallback contact email
 
-## Important Notes
+### Super Admin
+- `VITE_SUPABASE_URL` - Supabase project URL
+- `VITE_SUPABASE_ANON_KEY` - Supabase anonymous key
 
-- This is an educational website for Airbotix (AI & Robotics education for K-12)
-- **ALL DEVELOPMENT RULES** are documented in the `rules/` directory:
-  - `rules/coding-principles.md` - SOLID, KISS, DRY principles
-  - `rules/file-organization.md` - 1000-line limit and breakdown strategies
-  - `rules/typescript-standards.md` - Mandatory interface requirements
-  - `rules/string-constants.md` - No magic strings rule
+## Testing
+
+**Note**: No testing framework is currently configured. When implementing tests, consider:
+- Vitest for unit testing (compatible with Vite)
+- React Testing Library for component testing
+- Playwright or Cypress for E2E testing
+
+## Important Context
+
+### Main Website
 - Workshop data is the primary content type with rich metadata
 - Mobile-first responsive design approach
-- Professional, educational brand tone throughout
-- **Code Review**: All PRs must verify compliance with rules/ documentation
+- Static data management through TypeScript files
+- No backend API - all content is static
+
+### Super Admin
+- Protected routes require authentication
+- Role-based permissions enforced at database level
+- Audit trail for all student data modifications
+- Real-time data synchronization via Supabase
+
+### Performance Targets
+- Bundle size: < 1MB gzipped
+- Code splitting with React.lazy() for routes
+- Memoization for expensive calculations

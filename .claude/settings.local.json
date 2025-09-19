@@ -4,7 +4,14 @@
       "Bash(mkdir:*)",
       "Bash(touch:*)",
       "Bash(npm run lint)",
-      "Bash(npm install)"
+      "Bash(npm install)",
+      "Bash(tree:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(lsof:*)",
+      "Bash(pkill:*)",
+      "Bash(npx msw init:*)"
     ],
     "deny": [],
     "ask": []

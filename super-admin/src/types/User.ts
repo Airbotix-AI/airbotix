@@ -58,5 +58,4 @@ export interface ResponsiveUserInfo {
   showDropdown: boolean
 }
 
-// Export types for external use
-export type { UserDropdownProps, NotificationItem, NotificationDropdownProps, UserProfile, UserMenuAction, ResponsiveUserInfo }
+// Types are already exported individually above

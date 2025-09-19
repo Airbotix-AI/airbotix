@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { 
   Users, 
   GraduationCap, 
@@ -10,6 +10,7 @@ import {
   RefreshCw,
   AlertCircle
 } from 'lucide-react'
+import type { DashboardMetricsProps } from '@/types/dashboard'
 
 // Constants following AI coding rules
 const METRIC_TYPES = {
@@ -20,16 +21,16 @@ const METRIC_TYPES = {
 } as const
 
 const TREND_DIRECTIONS = {
-  UP: 'up',
-  DOWN: 'down',
-  NEUTRAL: 'neutral'
+  UP: 'UP',
+  DOWN: 'DOWN',
+  NEUTRAL: 'NEUTRAL'
 } as const
 
 const COLOR_VARIANTS = {
-  BLUE: 'blue',
-  GREEN: 'green',
-  PURPLE: 'purple',
-  ORANGE: 'orange'
+  BLUE: 'BLUE',
+  GREEN: 'GREEN',
+  PURPLE: 'PURPLE',
+  ORANGE: 'ORANGE'
 } as const
 
 const UI_TEXT = {
@@ -64,10 +65,6 @@ interface MetricCardData {
 
 interface MetricCardProps {
   card: MetricCardData
-  className?: string
-}
-
-interface DashboardMetricsProps {
   className?: string
 }
 
@@ -168,20 +165,64 @@ export const ErrorState = ({
 )
 
 // Main component
-const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ className = '' }) => {
-  // Mock data - replace with real data from your API
-  const metricsData: MetricCardData[] = [
+const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ 
+  data, 
+  loading = false, 
+  error, 
+  onRefresh,
+  className = '' 
+}) => {
+  // Show loading state
+  if (loading) {
+    return (
+      <div className={`space-y-8 ${className}`}>
+        <LoadingSkeleton />
+        <LoadingSkeleton />
+        <LoadingSkeleton />
+        <LoadingSkeleton />
+      </div>
+    )
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <ErrorState 
+        error={error} 
+        onRetry={onRefresh || (() => {})}
+      />
+    )
+  }
+
+  // Use provided data or fallback to mock data
+  const metricsData: MetricCardData[] = data ? [
+    // TODO: Map real data when available
+    {
+      id: METRIC_TYPES.STUDENTS,
+      title: 'Total Students',
+      value: data.metrics?.total_students || 0,
+      trend: {
+        percentage: 12,
+        direction: 'UP' as const,
+        period: 'last month'
+      },
+      icon: Users,
+      color: 'BLUE' as const
+    },
+    // Add other metrics based on data structure
+  ] : [
+    // Fallback mock data
     {
       id: METRIC_TYPES.STUDENTS,
       title: 'Total Students',
       value: 1247,
       trend: {
         percentage: 12,
-        direction: TREND_DIRECTIONS.UP,
+        direction: 'UP' as const,
         period: 'last month'
       },
       icon: Users,
-      color: COLOR_VARIANTS.BLUE
+      color: 'BLUE' as const
     },
     {
       id: METRIC_TYPES.TEACHERS,
@@ -189,11 +230,11 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ className = '' }) =
       value: 89,
       trend: {
         percentage: 8,
-        direction: TREND_DIRECTIONS.UP,
+        direction: 'UP' as const,
         period: 'last month'
       },
       icon: GraduationCap,
-      color: COLOR_VARIANTS.GREEN
+      color: 'GREEN' as const
     },
     {
       id: METRIC_TYPES.WORKSHOPS,
@@ -201,11 +242,11 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ className = '' }) =
       value: 23,
       trend: {
         percentage: 15,
-        direction: TREND_DIRECTIONS.UP,
+        direction: 'UP' as const,
         period: 'last month'
       },
       icon: Calendar,
-      color: COLOR_VARIANTS.PURPLE
+      color: 'PURPLE' as const
     },
     {
       id: METRIC_TYPES.COURSES,
@@ -213,13 +254,13 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ className = '' }) =
       value: 156,
       trend: {
         percentage: 5,
-        direction: TREND_DIRECTIONS.UP,
+        direction: 'UP' as const,
         period: 'last month'
       },
       icon: BookOpen,
-      color: COLOR_VARIANTS.ORANGE
+      color: 'ORANGE' as const
     }
-  ]
+  ] 
 
   return (
     <div className={`space-y-8 ${className}`}>
@@ -247,4 +288,4 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ className = '' }) =
 // Export statements
 export { DashboardMetrics, MetricCard }
 export default DashboardMetrics
-export type { MetricCardData, MetricCardProps, DashboardMetricsProps }
+export type { MetricCardData, MetricCardProps }

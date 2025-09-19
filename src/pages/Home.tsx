@@ -93,36 +93,36 @@ const Home = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {[
               {
-                src: 'https://images.unsplash.com/photo-1581091014534-7f3c2b3a2f9b?q=80&w=1200&auto=format&fit=crop',
-                alt: 'Student programming a robot',
+                src: '/media/pacific-camp/photos/activities-03.jpg',
+                alt: 'Hands-on robotics activity',
               },
               {
-                src: 'https://images.unsplash.com/photo-1555255707-c07966088b7b?q=80&w=1200&auto=format&fit=crop',
-                alt: 'Robotics workshop table',
+                src: '/media/pacific-camp/photos/activities-04.jpg',
+                alt: 'Team coding challenge',
               },
               {
-                src: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop',
-                alt: 'AI and coding session',
+                src: '/media/pacific-camp/photos/activities-05.jpg',
+                alt: 'Students testing robot',
               },
               {
-                src: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1200&auto=format&fit=crop',
-                alt: 'Teamwork on a challenge',
+                src: '/media/pacific-camp/photos/activities-06.jpg',
+                alt: 'AI workshop session',
               },
               {
-                src: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=1200&auto=format&fit=crop',
-                alt: 'Electronics and prototyping',
+                src: '/media/pacific-camp/photos/activities-07.jpg',
+                alt: 'Group robotics build',
               },
               {
-                src: 'https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=1200&auto=format&fit=crop',
-                alt: 'Computer vision demo',
+                src: '/media/pacific-camp/photos/activities-08.jpg',
+                alt: 'Class demo and presentation',
               },
               {
-                src: 'https://images.unsplash.com/photo-1526378722484-bd91ca387e72?q=80&w=1200&auto=format&fit=crop',
-                alt: 'Classroom presentation',
+                src: '/media/pacific-camp/photos/classroom-01.jpg',
+                alt: 'Classroom collaboration',
               },
               {
-                src: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1200&auto=format&fit=crop',
-                alt: 'Coding activity',
+                src: '/media/pacific-camp/photos/outcomes-01.jpg',
+                alt: 'Learning outcomes showcase',
               },
             ].map((img) => (
               <div key={img.src} className="relative overflow-hidden rounded-xl aspect-[4/3] bg-gray-100">

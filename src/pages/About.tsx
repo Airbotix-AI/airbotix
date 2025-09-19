@@ -23,16 +23,16 @@ const values = [
 
 const team = [
   {
-    name: 'Alex Chen',
-    role: 'Founder & CEO',
-    bio: 'Educator and engineer focused on bringing industry-grade STEM learning to classrooms.',
-    initials: 'AC',
+    name: 'Kingsley An',
+    role: 'Director & Co-Founder',
+    bio: 'Passionate about bringing cutting-edge engineering and AI into education and industry. Focuses on creating innovative solutions and partnerships that deliver real value to clients and communities.',
+    initials: 'KA',
   },
   {
-    name: 'Maya Singh',
-    role: 'Head of Curriculum',
-    bio: 'Curriculum designer passionate about inquiry-based learning and inclusive education.',
-    initials: 'MS',
+    name: 'Ray Qian',
+    role: 'CTO & Co-founder',
+    bio: 'Expert instructor in competitive robotics with decades of experience. Has led regional and national competition teams, developing robotics and AI courses for learners from primary school to university level.',
+    initials: 'RQ',
   },
   {
     name: 'Daniel Park',

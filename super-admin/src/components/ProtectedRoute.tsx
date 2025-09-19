@@ -1,7 +1,8 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/contexts/AuthContext'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import type { Permission } from '@/constants/permissions'
 
 // Constants following AI coding rules
 const AUTH_STATES = {
@@ -24,15 +25,17 @@ const ERROR_MESSAGES = {
 interface ProtectedRouteProps {
   children: React.ReactNode
   requiredRoles?: string[]
+  requiredPermission?: Permission
   fallbackPath?: string
 }
 
 const ProtectedRoute = ({ 
   children, 
   requiredRoles = [], 
+  requiredPermission,
   fallbackPath = ROUTES.LOGIN 
 }: ProtectedRouteProps) => {
-  const { user, isLoading, userRole } = useAuth()
+  const { user, loading, profile, hasPermission, hasRole } = useAuth()
 
   const isBypassAuth = import.meta.env.VITE_BYPASS_AUTH === 'true'
   if (isBypassAuth) {
@@ -40,7 +43,7 @@ const ProtectedRoute = ({
   }
 
   // Show loading spinner while checking authentication
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
@@ -56,8 +59,22 @@ const ProtectedRoute = ({
     return <Navigate to={fallbackPath} replace />
   }
 
-  // Check role-based access if required roles specified
-  if (requiredRoles.length > 0 && userRole && !requiredRoles.includes(userRole)) {
+  // Check access based on roles or permissions
+  const hasAccess = () => {
+    // Check role-based access
+    if (requiredRoles.length > 0 && profile && !requiredRoles.some(role => hasRole(role))) {
+      return false
+    }
+    
+    // Check permission-based access
+    if (requiredPermission && !hasPermission(requiredPermission)) {
+      return false
+    }
+    
+    return true
+  }
+
+  if (!hasAccess()) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center max-w-md mx-auto p-8">
@@ -85,8 +102,13 @@ const ProtectedRoute = ({
               {ERROR_MESSAGES.ACCESS_DENIED_DESCRIPTION}
             </p>
             <div className="text-sm text-gray-500">
-              <p>Required roles: {requiredRoles.join(', ')}</p>
-              <p>Your role: {userRole || 'None'}</p>
+              {requiredRoles.length > 0 && (
+                <p>Required roles: {requiredRoles.join(', ')}</p>
+              )}
+              {requiredPermission && (
+                <p>Required permission: {requiredPermission}</p>
+              )}
+              <p>Your role: {profile?.role || 'None'}</p>
             </div>
           </div>
           <button
