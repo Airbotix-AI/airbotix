@@ -7,6 +7,7 @@ import OtpInput from '../components/OtpInput';
 import CountdownResend from '../components/CountdownResend';
 import ErrorBanner from '../components/ErrorBanner';
 import LanguageToggle from '../components/LanguageToggle';
+import { trackEvent } from '@/utils/analytics';
 
 const Verify: React.FC = () => {
   const { t } = useTranslation();
@@ -34,6 +35,13 @@ const Verify: React.FC = () => {
       navigate(ROUTES.LOGIN, { replace: true });
     }
   }, [navigate]);
+
+  // Page view event for verify view
+  useEffect(() => {
+    trackEvent('teacher_auth_verify_view', {
+      language: (navigator.language || '').toLowerCase(),
+    })
+  }, [])
 
   // Redirect if already authenticated
   useEffect(() => {

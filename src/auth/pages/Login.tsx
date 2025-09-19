@@ -6,6 +6,7 @@ import { ROUTES } from '@/constants/auth';
 import EmailForm from '../components/EmailForm';
 import ErrorBanner from '../components/ErrorBanner';
 import LanguageToggle from '../components/LanguageToggle';
+import { trackEvent, extractEmailDomain } from '@/utils/analytics';
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
@@ -32,6 +33,13 @@ const Login: React.FC = () => {
     }
   }, [authState, navigate]);
 
+  // Page view event for login view
+  useEffect(() => {
+    trackEvent('teacher_auth_login_view', {
+      language: (navigator.language || '').toLowerCase(),
+    })
+  }, [])
+
   const handleEmailSubmit = async (email: string) => {
     clearError();
 
@@ -39,8 +47,16 @@ const Login: React.FC = () => {
       // Store email in session storage for verify page
       sessionStorage.setItem('pendingEmail', email);
       await requestOtp(email);
+      trackEvent('teacher_auth_otp_request_success', {
+        cooldown_seconds: 60,
+        email_domain: extractEmailDomain(email),
+      })
     } catch (error) {
       console.error('Failed to request OTP:', error);
+      trackEvent('teacher_auth_otp_request_fail', {
+        error_code: 'REQUEST_FAILED',
+        email_domain: extractEmailDomain(email),
+      })
     }
   };
 

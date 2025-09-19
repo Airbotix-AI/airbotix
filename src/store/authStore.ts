@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { AuthStore, AuthState } from '@/types/auth';
 import { authAPI, getStoredUser, isAuthenticated } from '@/services/api';
 import toast from 'react-hot-toast';
+import { trackEvent, extractEmailDomain } from '@/utils/analytics';
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
@@ -64,6 +65,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       get().startCooldown(60);
 
       toast.success('Verification code sent to your email');
+      trackEvent('teacher_auth_otp_request_success', {
+        cooldown_seconds: 60,
+        email_domain: extractEmailDomain(email),
+      })
     } catch (error) {
       const errorMessage = (error as Error).message;
       set({
@@ -71,6 +76,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         error: errorMessage,
       });
       toast.error(`Failed to send code: ${errorMessage}`);
+      trackEvent('teacher_auth_otp_request_fail', {
+        error_code: errorMessage,
+      })
     }
   },
 
@@ -93,6 +101,11 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       localStorage.setItem('airbotix_user', JSON.stringify(user));
 
       toast.success('Login successful!');
+      trackEvent('teacher_auth_login_success', {
+        role: 'teacher',
+        has_avatar: Boolean(user.avatar),
+        first_login: !user.lastLoginAt,
+      })
 
       // Redirect to dashboard after successful login
       setTimeout(() => {
@@ -107,6 +120,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         user: null,
       });
       toast.error(`Login failed: ${errorMessage}`);
+      trackEvent('teacher_auth_login_fail', {
+        error_code: errorMessage,
+      })
     }
   },
 
@@ -126,6 +142,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       localStorage.removeItem('airbotix_user');
 
       toast.success('Logged out successfully');
+      trackEvent('teacher_auth_logout')
 
       // Redirect to home page
       window.location.pathname = '/';
