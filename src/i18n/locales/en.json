@@ -15,7 +15,11 @@
     "blog": "Blog",
     "login": "Login",
     "dashboard": "Dashboard",
-    "logout": "Logout"
+    "logout": "Logout",
+    "faq": "FAQ",
+    "bookWorkshop": "Book Workshop",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "auth": {
     "login": {
