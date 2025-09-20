@@ -8,6 +8,7 @@
 
 ### 认证系统
 - [教师认证系统 PRD](./teacher-auth-system-prd.md) - 基于邮箱 + OTP 的教师登录注册系统
+ - [GA4 集成 PRD](./google-analytics-prd.md) - 网站与教师认证流程的 GA4 埋点方案
 
 ### 管理系统
 - [超级管理系统 PRD](./super-admin-mangement-system-prd.md) - 超级管理员管理系统需求
