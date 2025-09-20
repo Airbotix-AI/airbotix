@@ -6,6 +6,7 @@ type EventParams = Record<string, unknown>
 
 const GA_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID
 const GA_ENABLED = import.meta.env.VITE_ENABLE_GA === 'true'
+const IS_DEV = import.meta.env.DEV === true
 
 let isInitialized = false
 
@@ -40,6 +41,12 @@ export function initAnalytics(): void {
     custom_map: {},
   })
 
+  // Enable debug mode in development for easier DebugView linking
+  if (IS_DEV) {
+    // @ts-ignore
+    window.gtag('set', 'debug_mode', true)
+  }
+
   isInitialized = true
 }
 
@@ -56,13 +63,19 @@ export function trackPageView(currentUrl?: string): void {
     return path || '/'
   })()
 
-  const params = {
+  const params: Record<string, unknown> = {
     page_location: url,
     page_path: pagePath,
     page_title: document.title,
     referrer: document.referrer || undefined,
     env: import.meta.env.MODE,
     language: navigator.language,
+  }
+
+  if (IS_DEV) {
+    params.debug_mode = true
+    // eslint-disable-next-line no-console
+    console.debug('[GA] page_view', params)
   }
 
   // @ts-ignore
@@ -73,12 +86,18 @@ export function trackEvent(eventName: string, params?: EventParams): void {
   if (!isInitialized) return
 
   const safeParams = sanitizeParams(params)
-  // @ts-ignore
-  window.gtag('event', eventName, {
+  const payload: Record<string, unknown> = {
     ...safeParams,
     env: import.meta.env.MODE,
     app_name: 'airbotix-web',
-  })
+  }
+  if (IS_DEV) {
+    payload.debug_mode = true
+    // eslint-disable-next-line no-console
+    console.debug('[GA] event', eventName, payload)
+  }
+  // @ts-ignore
+  window.gtag('event', eventName, payload)
 }
 
 function sanitizeParams(input?: EventParams): EventParams {
