@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { AuthStore, AuthState } from '@/types/auth';
-import { authAPI, getStoredUser } from '@/services/api';
+import { authAPI, getStoredUser, refreshToken as refreshAuthToken } from '@/services/api';
 import toast from 'react-hot-toast';
 import { trackEvent, extractEmailDomain } from '@/utils/analytics';
 
@@ -167,7 +167,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   // Refresh token
   refreshToken: async (): Promise<boolean> => {
     try {
-      const success = await authAPI.refreshToken();
+      const success = await refreshAuthToken();
       if (success) {
         // Optionally refresh user data
         try {
