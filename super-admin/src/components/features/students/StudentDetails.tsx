@@ -147,7 +147,7 @@ function StudentHeader({
           <div className="space-y-2 flex-1">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <CardTitle className="text-2xl sm:text-3xl">{studentDetails.full_name}</CardTitle>
-              <Badge variant={STUDENT_STATUS_COLORS[studentDetails.status] as 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning'}>
+              <Badge variant={STUDENT_STATUS_COLORS[studentDetails.status]}>
                 {STUDENT_STATUS_LABELS[studentDetails.status]}
               </Badge>
             </div>
@@ -372,7 +372,7 @@ function EnrollmentHistoryCard({ studentDetails }: { studentDetails: StudentDeta
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <h4 className="font-medium">{enrollment.workshop?.title || 'Untitled Workshop'}</h4>
-                    <Badge variant={WORKSHOP_STATUS_COLORS[enrollment.workshop?.status as keyof typeof WORKSHOP_STATUS_COLORS] as 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning'}>
+                    <Badge variant={WORKSHOP_STATUS_COLORS[enrollment.workshop?.status || 'draft']}>
                       {WORKSHOP_STATUS_LABELS[enrollment.workshop?.status] || enrollment.workshop?.status}
                     </Badge>
                   </div>

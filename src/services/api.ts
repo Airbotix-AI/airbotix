@@ -1,4 +1,4 @@
-import axios, { AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { API_BASE_URL, API_ENDPOINTS, STORAGE_KEYS, AUTH_METHODS } from '@/constants/auth';
 import { AuthResponse, ApiError, User } from '@/types/auth';
 import toast from 'react-hot-toast';
@@ -81,15 +81,15 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<ApiError>) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
 
     // Check if error is 401 and we haven't already retried
     if (
       error.response?.status === 401 &&
       originalRequest &&
-      !(originalRequest as unknown as { _retry?: boolean })._retry
+      originalRequest && !originalRequest._retry
     ) {
-      (originalRequest as unknown as { _retry?: boolean })._retry = true;
+      originalRequest._retry = true;
 
       try {
         const refreshed = await refreshToken();
@@ -202,7 +202,7 @@ export const authAPI = {
   async logout(): Promise<void> {
     try {
       const authMethod = getAuthMethod();
-      const requestData: Partial<{ refreshToken: string }> = {};
+      const requestData: { refreshToken?: string } = {};
 
       // Include refresh token for Bearer auth
       if (authMethod === AUTH_METHODS.BEARER) {
@@ -227,7 +227,7 @@ export const authAPI = {
 export const refreshToken = async (): Promise<boolean> => {
   try {
     const authMethod = getAuthMethod();
-    const requestData: Partial<{ refreshToken: string }> = {};
+    const requestData: { refreshToken?: string } = {};
 
     if (authMethod === AUTH_METHODS.BEARER) {
       const refreshToken = storage.get(STORAGE_KEYS.REFRESH_TOKEN);

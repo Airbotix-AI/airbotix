@@ -67,8 +67,8 @@ export const handlers: HttpHandler[] = [
   }),
 
   // Verify OTP
-  http.post(`${API_BASE_URL}/auth/verify-otp`, async ({ request }: ResolverCtx) => {
-    const body = await request.json() as { email: string; code: string };
+  http.post(`${API_BASE_URL}/auth/verify-otp`, async ({ request: _request }) => {
+    const body = await _request.json() as { email: string; code: string };
     const { email, code } = body;
 
     if (!email || !code) {
@@ -159,7 +159,7 @@ export const handlers: HttpHandler[] = [
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    const authMethod = request.headers.get('X-Auth-Method');
+    const authMethod = _request.headers.get('X-Auth-Method');
 
     return HttpResponse.json({
       success: true,
@@ -254,7 +254,7 @@ export const handlers: HttpHandler[] = [
   }),
 
   // Refresh token
-  http.post(`${API_BASE_URL}/auth/refresh`, async () => {
+  http.post(`${API_BASE_URL}/auth/refresh`, async ({ request: _request }) => {
     // For development, always return success without complex token logic
     // This prevents infinite refresh loops in development environment
     return HttpResponse.json({

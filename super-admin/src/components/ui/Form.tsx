@@ -26,11 +26,10 @@ const FormItemContext = createContext<FormItemContextValue>({} as FormItemContex
 // FORM COMPONENTS
 // ============================================================================
 
-const Form = <T extends FieldValues>({ 
-  children, 
-  className,
-  ..._formProps 
-}: { children: React.ReactNode; className?: string } & UseFormReturn<T>) => {
+const Form = <T extends FieldValues>(
+  props: { children: React.ReactNode; className?: string } & UseFormReturn<T>
+) => {
+  const { children, className } = props
   // Intentionally ignore React Hook Form methods to avoid passing them to the DOM
   return <div className={className}>{children}</div>
 }

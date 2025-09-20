@@ -215,6 +215,7 @@ export function useStudentsList(initialFilters: StudentSearchFilters = {}) {
       const optimisticStudent: Student = {
         id: `temp-${Date.now()}`,
         full_name: newStudent.full_name,
+        parent_name: newStudent.parent_name,
         date_of_birth: newStudent.date_of_birth,
         school_name: newStudent.school_name,
         grade_level: newStudent.grade_level,
@@ -593,8 +594,9 @@ export function useStudentForm(initialData?: Student) {
         form.reset()
       }
     },
-    onError: (error: unknown) => {
-      setError((error as Error)?.message || 'An error occurred while saving the student')
+    onError: (error) => {
+      const message = (error as { message?: string })?.message || 'An error occurred while saving the student'
+      setError(message)
     }
   })
 
@@ -616,7 +618,7 @@ export function useStudentForm(initialData?: Student) {
   }, [form])
 
   return {
-    form: form as UseFormReturn<StudentFormData>,
+    form: form as unknown as UseFormReturn<StudentFormData>,
     loading: mutation.isPending,
     error,
     submitForm,

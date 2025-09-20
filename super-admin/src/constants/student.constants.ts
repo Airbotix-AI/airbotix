@@ -42,7 +42,7 @@ export const STUDENT_STATUS_LABELS = {
 /**
  * Student status colors for UI components
  */
-export const STUDENT_STATUS_COLORS = {
+export const STUDENT_STATUS_COLORS: Record<typeof STUDENT_STATUS[keyof typeof STUDENT_STATUS], 'green' | 'gray' | 'red' | 'blue'> = {
   [STUDENT_STATUS.ACTIVE]: 'green',
   [STUDENT_STATUS.INACTIVE]: 'gray',
   [STUDENT_STATUS.SUSPENDED]: 'red',
@@ -216,7 +216,7 @@ export const WORKSHOP_STATUS_LABELS = {
 /**
  * Workshop status colors for UI components
  */
-export const WORKSHOP_STATUS_COLORS = {
+export const WORKSHOP_STATUS_COLORS: Record<typeof WORKSHOP_STATUS[keyof typeof WORKSHOP_STATUS], 'gray' | 'green' | 'purple' | 'blue' | 'red'> = {
   [WORKSHOP_STATUS.DRAFT]: 'gray',
   [WORKSHOP_STATUS.COMPLETED]: 'green',
   [WORKSHOP_STATUS.ARCHIVED]: 'purple',

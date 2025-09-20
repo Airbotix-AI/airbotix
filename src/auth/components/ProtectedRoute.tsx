@@ -48,7 +48,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   if (!requireAuth && isAuthenticated) {
     // User is authenticated but trying to access public-only route (like login)
-    const from = (location.state as { from?: string } | null)?.from;
+    type LocationState = { from?: string } | null
+    const state = location.state as LocationState
+    const from = state?.from
     return <Navigate to={from || ROUTES.DASHBOARD} replace />;
   }
 

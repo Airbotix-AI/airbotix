@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { AuthStore, AuthState } from '@/types/auth';
-import { authAPI, getStoredUser, refreshToken as refreshTokenAPI } from '@/services/api';
+import { authAPI, getStoredUser } from '@/services/api';
 import toast from 'react-hot-toast';
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
@@ -150,7 +150,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   // Refresh token
   refreshToken: async (): Promise<boolean> => {
     try {
-      const success = await refreshTokenAPI();
+      const success = await (authAPI as unknown as { refreshToken: () => Promise<boolean> }).refreshToken();
       if (success) {
         // Optionally refresh user data
         try {
