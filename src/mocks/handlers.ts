@@ -251,7 +251,7 @@ export const handlers = [
   }),
 
   // Refresh token
-  http.post(`${API_BASE_URL}/auth/refresh`, async ({ request }) => {
+  http.post(`${API_BASE_URL}/auth/refresh`, async ({ request: _request }) => {
     // For development, always return success without complex token logic
     // This prevents infinite refresh loops in development environment
     return HttpResponse.json({

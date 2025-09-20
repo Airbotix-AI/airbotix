@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ALT_TEXTS, LOGO_SIZES, RESPONSIVE_LOGOS } from '../constants/assets'
 import { useAuthStore } from '@/store/authStore'
@@ -10,7 +10,6 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { t } = useTranslation()
   const { user, isAuthenticated, logout } = useAuthStore()
-  const navigate = useNavigate()
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)

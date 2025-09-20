@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { AuthStore, AuthState } from '@/types/auth';
-import { authAPI, getStoredUser, isAuthenticated } from '@/services/api';
+import { authAPI, getStoredUser } from '@/services/api';
 import toast from 'react-hot-toast';
 import { trackEvent, extractEmailDomain } from '@/utils/analytics';
 
@@ -103,7 +103,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       toast.success('Login successful!');
       trackEvent('teacher_auth_login_success', {
         role: 'teacher',
-        has_avatar: Boolean(user.avatar),
+        has_avatar: false,
         first_login: !user.lastLoginAt,
       })
 

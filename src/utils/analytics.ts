@@ -32,9 +32,9 @@ export function initAnalytics(): void {
   loadGtag(GA_ID)
 
   // basic config
-  // @ts-ignore - gtag injected at runtime
+  // @ts-expect-error - gtag injected at runtime
   window.gtag('js', new Date())
-  // @ts-ignore
+  // @ts-expect-error
   window.gtag('config', GA_ID, {
     send_page_view: false,
     app_name: 'airbotix-web',
@@ -43,7 +43,7 @@ export function initAnalytics(): void {
 
   // Enable debug mode in development for easier DebugView linking
   if (IS_DEV) {
-    // @ts-ignore
+    // @ts-expect-error
     window.gtag('set', 'debug_mode', true)
   }
 
@@ -78,7 +78,7 @@ export function trackPageView(currentUrl?: string): void {
     console.debug('[GA] page_view', params)
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   window.gtag('event', 'page_view', params)
 }
 
@@ -96,7 +96,7 @@ export function trackEvent(eventName: string, params?: EventParams): void {
     // eslint-disable-next-line no-console
     console.debug('[GA] event', eventName, payload)
   }
-  // @ts-ignore
+  // @ts-expect-error
   window.gtag('event', eventName, payload)
 }
 
