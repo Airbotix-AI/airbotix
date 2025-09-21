@@ -9,12 +9,10 @@ import Book from './pages/Book'
 import Media from './pages/Media'
 import BlogList from './pages/Blog/BlogList'
 import BlogDetail from './pages/Blog/BlogDetail'
-import AnalyticsListener from '@/components/AnalyticsListener'
 
 function App() {
   return (
     <Layout>
-      <AnalyticsListener />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/workshops" element={<Workshops />} />

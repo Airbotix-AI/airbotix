@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import Header from './Header'
 import Footer from './Footer'
-import CookieConsent from './CookieConsent'
+// Minimal GA per requirement: no consent banner
 
 interface LayoutProps {
   children: ReactNode
