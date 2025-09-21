@@ -1,7 +1,5 @@
 // Minimal GA: inject gtag with measurement ID only
 
-type EventParams = Record<string, unknown>
-
 // Fallback to known Measurement ID to ensure GA works even if env is missing
 const GA_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID || 'G-0GZNJGRQRB'
 const GA_ENABLED = true
@@ -47,7 +45,9 @@ export function initAnalytics(): void {
 
 export function trackPageView(): void {}
 
-export function trackEvent(): void {}
+export function trackEvent(_eventName: string, _params?: Record<string, unknown>): void {
+  // No-op in minimal GA setup
+}
 
 // remove unused to satisfy lint
 
