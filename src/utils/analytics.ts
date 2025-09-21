@@ -2,7 +2,8 @@
 
 type EventParams = Record<string, unknown>
 
-const GA_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID
+// Fallback to known Measurement ID to ensure GA works even if env is missing
+const GA_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID || 'G-0GZNJGRQRB'
 const GA_ENABLED = true
 const IS_DEV = import.meta.env.DEV === true
 
