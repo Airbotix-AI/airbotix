@@ -227,16 +227,17 @@ const StudentsList = ({
   // SEARCH AND FILTER HANDLERS
   // ============================================================================
 
-  const handleSearchChange = useCallback((...args: unknown[]) => {
-    const term = String(args[0] ?? '')
-    if (term.length >= 2) {
-      setFilters({ search: term, page: 1 })
-    } else if (term.length === 0) {
-      setFilters({ search: undefined, page: 1 })
-    }
-  }, [setFilters])
-
-  const debouncedSearch = useMemo(() => debounce(handleSearchChange, 300), [handleSearchChange])
+  const debouncedSearch = useCallback(
+    debounce((...args: unknown[]) => {
+      const term = String(args[0] ?? '')
+      if (term.length >= 2) {
+        setFilters({ search: term, page: 1 })
+      } else if (term.length === 0) {
+        setFilters({ search: undefined, page: 1 })
+      }
+    }, 300),
+    [setFilters]
+  )
 
   useEffect(() => {
     debouncedSearch(searchTerm)
