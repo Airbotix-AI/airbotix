@@ -23,7 +23,11 @@ export interface ApiError {
   error: {
     code: string;
     message: string;
+<<<<<<< HEAD
     details?: Record<string, unknown> | unknown[];
+=======
+    details?: unknown;
+>>>>>>> 61e6a79 (Fix(lint code): fix lint code errors for homepage)
   };
   timestamp: string;
   path: string;

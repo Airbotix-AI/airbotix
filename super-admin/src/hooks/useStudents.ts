@@ -594,9 +594,14 @@ export function useStudentForm(initialData?: Student) {
         form.reset()
       }
     },
+<<<<<<< HEAD
     onError: (error) => {
       const message = (error as { message?: string })?.message || 'An error occurred while saving the student'
       setError(message)
+=======
+    onError: (error: unknown) => {
+      setError((error as Error)?.message || 'An error occurred while saving the student')
+>>>>>>> 61e6a79 (Fix(lint code): fix lint code errors for homepage)
     }
   })
 

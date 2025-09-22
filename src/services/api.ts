@@ -87,9 +87,15 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       originalRequest &&
+<<<<<<< HEAD
       originalRequest && !originalRequest._retry
     ) {
       originalRequest._retry = true;
+=======
+      !(originalRequest as unknown as { _retry?: boolean })._retry
+    ) {
+      (originalRequest as unknown as { _retry?: boolean })._retry = true;
+>>>>>>> 61e6a79 (Fix(lint code): fix lint code errors for homepage)
 
       try {
         const refreshed = await refreshToken();
@@ -202,7 +208,11 @@ export const authAPI = {
   async logout(): Promise<void> {
     try {
       const authMethod = getAuthMethod();
+<<<<<<< HEAD
       const requestData: { refreshToken?: string } = {};
+=======
+      const requestData: Partial<{ refreshToken: string }> = {};
+>>>>>>> 61e6a79 (Fix(lint code): fix lint code errors for homepage)
 
       // Include refresh token for Bearer auth
       if (authMethod === AUTH_METHODS.BEARER) {
@@ -227,7 +237,11 @@ export const authAPI = {
 export const refreshToken = async (): Promise<boolean> => {
   try {
     const authMethod = getAuthMethod();
+<<<<<<< HEAD
     const requestData: { refreshToken?: string } = {};
+=======
+    const requestData: Partial<{ refreshToken: string }> = {};
+>>>>>>> 61e6a79 (Fix(lint code): fix lint code errors for homepage)
 
     if (authMethod === AUTH_METHODS.BEARER) {
       const refreshToken = storage.get(STORAGE_KEYS.REFRESH_TOKEN);

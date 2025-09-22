@@ -254,8 +254,12 @@ const StudentForm = ({
       await onSubmit(studentData)
     } catch (error) {
       console.error('Form submission error:', error)
+<<<<<<< HEAD
       const message = (error as { message?: string })?.message || STUDENT_ERROR_MESSAGES.VALIDATION_ERROR
       setSubmitError(message)
+=======
+      setSubmitError((error as Error)?.message || STUDENT_ERROR_MESSAGES.VALIDATION_ERROR)
+>>>>>>> 61e6a79 (Fix(lint code): fix lint code errors for homepage)
     } finally {
       setIsSubmitting(false)
     }
