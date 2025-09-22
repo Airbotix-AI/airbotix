@@ -252,7 +252,7 @@ const StudentForm = ({
     try {
       const studentData = formDataToStudentData(data)
       await onSubmit(studentData)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Form submission error:', error)
       setSubmitError((error as Error)?.message || STUDENT_ERROR_MESSAGES.VALIDATION_ERROR)
     } finally {
@@ -362,7 +362,7 @@ const StudentForm = ({
               placeholder="Student's full name"
             />
             <StandardField
-              name={STUDENT_FORM_FIELDS.PARENT_NAME as keyof StudentFormSchema}
+              name={STUDENT_FORM_FIELDS.PARENT_NAME as any}
               label="Parent/Guardian Name"
               required
               placeholder="Parent or guardian full name"
