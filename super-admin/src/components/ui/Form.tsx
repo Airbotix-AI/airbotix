@@ -29,31 +29,10 @@ const FormItemContext = createContext<FormItemContextValue>({} as FormItemContex
 const Form = <T extends FieldValues>({ 
   children, 
   className,
-  ...formProps 
+  ..._formProps 
 }: { children: React.ReactNode; className?: string } & UseFormReturn<T>) => {
-  // Extract only DOM-appropriate props and ignore React Hook Form methods
-  const {
-    // React Hook Form methods that should NOT be passed to DOM
-    handleSubmit,
-    watch,
-    getValues,
-    getFieldState,
-    setError,
-    clearErrors,
-    setValue,
-    trigger,
-    formState,
-    reset,
-    resetField,
-    setFocus,
-    unregister,
-    control,
-    register,
-    subscribe,
-    ...domProps
-  } = formProps as any
-
-  return <div className={className} {...domProps}>{children}</div>
+  // Intentionally ignore React Hook Form methods to avoid passing them to the DOM
+  return <div className={className}>{children}</div>
 }
 
 interface FormFieldProps<T extends FieldValues = FieldValues> {

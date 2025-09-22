@@ -19,7 +19,7 @@ import type { UserRole } from '../../types/student.types'
 interface NavigationItem {
   route: string
   title: string
-  icon: React.ComponentType<any>
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   current?: boolean
   badge?: string | number
   allowedRoles?: UserRole[]

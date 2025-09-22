@@ -24,7 +24,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useStudentsList } from '../hooks/useStudents'
 
 // Types
-import type { Student, StudentFormData, UserRole, StudentSearchFilters } from '../types/student.types'
+import type { Student, StudentFormData, UserRole, StudentSearchFilters, StudentStatus, SkillLevel, GradeLevel } from '../types/student.types'
 
 // Constants
 import { USER_ROLES } from '../constants/userRoles'
@@ -127,13 +127,13 @@ const parseFiltersFromParams = (searchParams: URLSearchParams): StudentSearchFil
   if (search) filters.search = search
   
   const status = searchParams.get('status')
-  if (status) filters.status = status as any
+  if (status) filters.status = status as StudentStatus
   
   const skillLevel = searchParams.get('skill_level')
-  if (skillLevel) filters.skill_level = skillLevel as any
+  if (skillLevel) filters.skill_level = skillLevel as SkillLevel
   
   const gradeLevel = searchParams.get('grade_level')
-  if (gradeLevel) filters.grade_level = gradeLevel as any
+  if (gradeLevel) filters.grade_level = gradeLevel as GradeLevel
   
   const schoolName = searchParams.get('school_name')
   if (schoolName) filters.school_name = schoolName
@@ -145,10 +145,10 @@ const parseFiltersFromParams = (searchParams: URLSearchParams): StudentSearchFil
   if (limit) filters.limit = parseInt(limit, 10)
   
   const sortBy = searchParams.get('sort_by')
-  if (sortBy) filters.sort_by = sortBy as any
+  if (sortBy) filters.sort_by = sortBy as StudentSearchFilters['sort_by']
   
   const sortOrder = searchParams.get('sort_order')
-  if (sortOrder) filters.sort_order = sortOrder as any
+  if (sortOrder) filters.sort_order = sortOrder as StudentSearchFilters['sort_order']
   
   return filters
 }
