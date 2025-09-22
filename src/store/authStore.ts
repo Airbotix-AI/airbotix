@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { AuthStore, AuthState } from '@/types/auth';
-import { authAPI, getStoredUser, isAuthenticated } from '@/services/api';
+import { authAPI, getStoredUser } from '@/services/api';
 import toast from 'react-hot-toast';
 
 export const useAuthStore = create<AuthStore>((set, get) => ({

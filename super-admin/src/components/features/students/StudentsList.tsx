@@ -15,7 +15,7 @@
  * @version 1.0.0
  */
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useStudentsList, useStudentSearch, useStudentSelection } from '../../../hooks/useStudents'
 import { formatDate, debounce, cn } from '../../../utils'
 import type { Student, StudentSearchFilters, UserRole } from '../../../types/student.types'
@@ -221,23 +221,22 @@ const StudentsList = ({
   const permissions = getPermissionLevel(role)
   
   // Ensure students is always an array
-  const studentsArray = Array.isArray(students) ? students : []
+  const studentsArray = useMemo(() => Array.isArray(students) ? students : [], [students])
 
   // ============================================================================
   // SEARCH AND FILTER HANDLERS
   // ============================================================================
 
-  const debouncedSearch = useCallback(
-    debounce((...args: unknown[]) => {
-      const term = String(args[0] ?? '')
-      if (term.length >= 2) {
-        setFilters({ search: term, page: 1 })
-      } else if (term.length === 0) {
-        setFilters({ search: undefined, page: 1 })
-      }
-    }, 300),
-    [setFilters]
-  )
+  const handleSearchChange = useCallback((...args: unknown[]) => {
+    const term = String(args[0] ?? '')
+    if (term.length >= 2) {
+      setFilters({ search: term, page: 1 })
+    } else if (term.length === 0) {
+      setFilters({ search: undefined, page: 1 })
+    }
+  }, [setFilters])
+
+  const debouncedSearch = useMemo(() => debounce(handleSearchChange, 300), [handleSearchChange])
 
   useEffect(() => {
     debouncedSearch(searchTerm)
@@ -260,9 +259,9 @@ const StudentsList = ({
       
       // Only allow certain columns for sorting
       const validSortColumns = ['full_name', 'created_at', 'updated_at', 'date_of_birth'] as const
-      if (validSortColumns.includes(column as any)) {
+      if (validSortColumns.includes(column as unknown as typeof validSortColumns[number])) {
         setFilters({
-          sort_by: column as any,
+          sort_by: column as 'full_name' | 'created_at' | 'updated_at' | 'date_of_birth',
           sort_order: newOrder
         })
       }

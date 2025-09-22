@@ -289,9 +289,9 @@ const StudentModals = ({
         closeModal('editStudent')
       }
       onSuccess()
-    } catch (error: any) {
+    } catch (error) {
       console.error('Form submission error:', error)
-      throw new Error(error?.message || STUDENT_ERROR_MESSAGES.VALIDATION_ERROR)
+      throw new Error((error as Error)?.message || STUDENT_ERROR_MESSAGES.VALIDATION_ERROR)
     }
   }, [modals, selectedStudent, createStudent, updateStudent, closeModal, onSuccess])
   
@@ -303,9 +303,9 @@ const StudentModals = ({
       console.log(STUDENT_SUCCESS_MESSAGES.DELETE_SUCCESS)
       closeModal('deleteConfirm')
       onSuccess()
-    } catch (error: any) {
+    } catch (error) {
       console.error('Delete error:', error)
-      throw new Error(error?.message || STUDENT_ERROR_MESSAGES.DELETE_ERROR)
+      throw new Error((error as Error)?.message || STUDENT_ERROR_MESSAGES.DELETE_ERROR)
     }
   }, [selectedStudent, deleteStudent, closeModal, onSuccess])
   

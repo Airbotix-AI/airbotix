@@ -597,7 +597,7 @@ export async function bulkImportStudents(
               error: createResult.error || 'Unknown error',
               index
             })
-          } else if (!Array.isArray(createResult.data)) {
+      } else if (!Array.isArray(createResult.data)) {
             // createNewStudent returns a single Student, not an array
             results.success.push(createResult.data)
           }
@@ -697,7 +697,7 @@ export async function exportStudentsToCSV(
       ...students.map(student => [
         `"${student.id}"`,
         `"${student.full_name}"`,
-        `"${(student as any).parent_name || ''}"`,
+        `"${student.parent_name || ''}"`,
         `"${student.date_of_birth}"`,
         `"${student.school_name}"`,
         `"${student.grade_level}"`,
