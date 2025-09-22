@@ -34,7 +34,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           isAuthenticated: true,
           authState: 'success',
         });
-      } catch (error) {
+      } catch {
         // If server call fails, clear auth state
         set({
           user: null,
