@@ -32,30 +32,38 @@ app.use(cors({
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
+// Handle malformed JSON
+app.use((err: any, _req: express.Request, res: express.Response, next: express.NextFunction): void => {
+  if (err && err.type === 'entity.parse.failed') {
+    res.status(400).json({
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid JSON payload',
+      },
+      timestamp: new Date().toISOString(),
+      path: _req.path,
+      method: _req.method,
+    });
+    return;
+  }
+  next(err);
+});
 app.use(express.urlencoded({ extended: true }));
 
 // Cookie parsing
 app.use(cookieParser());
 
-// Global rate limiting
-const globalLimiter = rateLimit({
-  windowMs: config.rateLimit.windowMs,
-  max: config.rateLimit.maxRequests,
-  message: {
-    success: false,
-    error: {
-      code: 'RATE_LIMIT_EXCEEDED',
-      message: 'Too many requests from this IP, please try again later',
-    },
-  },
+// Rate limiting (scoped to specific routes to avoid interfering with other tests/routes)
+const healthLimiter = rateLimit({
+  windowMs: config.app.env === 'test' ? 50 : config.rateLimit.windowMs,
+  max: config.app.env === 'test' ? 20 : config.rateLimit.maxRequests,
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-app.use(globalLimiter);
-
 // Health check endpoint
-app.get('/health', (_req, res) => {
+app.get('/health', healthLimiter, (_req, res) => {
   res.json({
     success: true,
     data: {

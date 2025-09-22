@@ -17,7 +17,7 @@ export class UserService {
   async findByIdOrThrow(id: string): Promise<User> {
     const user = await this.userRepository.findById(id);
     if (!user) {
-      throw AppError.notFound(ErrorCode.USER_NOT_FOUND, 'User not found');
+      throw AppError.notFound(ErrorCode.USER_NOT_FOUND, ErrorCode.USER_NOT_FOUND);
     }
     return user;
   }
@@ -44,7 +44,7 @@ export class UserService {
   async deleteUser(id: string): Promise<void> {
     const user = await this.userRepository.findById(id);
     if (!user) {
-      throw AppError.notFound(ErrorCode.USER_NOT_FOUND, 'User not found');
+      throw AppError.notFound(ErrorCode.USER_NOT_FOUND, ErrorCode.USER_NOT_FOUND);
     }
 
     await this.userRepository.delete(id);

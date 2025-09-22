@@ -26,7 +26,7 @@ export class MemoryOtpRepository implements OtpRepository {
 
   async findByEmail(email: string): Promise<OtpRecord | null> {
     for (const otp of this.otps.values()) {
-      if (otp.email === email && !otp.isUsed) {
+      if (otp.email === email) {
         return otp;
       }
     }

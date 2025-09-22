@@ -42,7 +42,7 @@ export class OtpService {
       });
       throw AppError.badRequest(
         ErrorCode.OTP_NOT_FOUND,
-        'No OTP found for this email'
+        ErrorCode.OTP_NOT_FOUND
       );
     }
 
@@ -55,7 +55,7 @@ export class OtpService {
       });
       throw AppError.badRequest(
         ErrorCode.OTP_EXPIRED,
-        'OTP has expired'
+        ErrorCode.OTP_EXPIRED
       );
     }
 
@@ -66,7 +66,7 @@ export class OtpService {
       });
       throw AppError.badRequest(
         ErrorCode.OTP_INVALID,
-        'OTP has already been used'
+        ErrorCode.OTP_INVALID
       );
     }
 
@@ -79,7 +79,7 @@ export class OtpService {
       });
       throw AppError.badRequest(
         ErrorCode.OTP_MAX_ATTEMPTS_EXCEEDED,
-        'Too many verification attempts'
+        ErrorCode.OTP_MAX_ATTEMPTS_EXCEEDED
       );
     }
 
@@ -94,7 +94,7 @@ export class OtpService {
       });
       throw AppError.badRequest(
         ErrorCode.OTP_INVALID,
-        'Invalid OTP code'
+        ErrorCode.OTP_INVALID
       );
     }
 

@@ -1,6 +1,5 @@
 import { OtpService } from '../../src/services/otp.service';
 import { MemoryOtpRepository } from '../../src/repositories/memory/memory-otp.repository';
-import { CryptoUtil } from '../../src/utils/crypto.util';
 import { ErrorCode } from '../../src/types/errors';
 import { config } from '../../src/config/env';
 

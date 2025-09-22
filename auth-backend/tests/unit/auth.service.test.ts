@@ -180,7 +180,7 @@ describe('AuthService', () => {
 
   describe('refreshTokens', () => {
     let validRefreshToken: string;
-    let userId: string;
+    // userId removed: not needed for refresh token tests
 
     beforeEach(async () => {
       const email = 'test@example.com';
@@ -193,7 +193,6 @@ describe('AuthService', () => {
 
       const result = await authService.verifyOtpAndLogin(email, otpCode, clientIp);
       validRefreshToken = result.tokens.refreshToken;
-      userId = result.user.id;
     });
 
     it('should successfully refresh tokens with valid refresh token', async () => {

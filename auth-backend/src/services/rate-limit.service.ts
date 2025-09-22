@@ -27,15 +27,11 @@ export class RateLimitService {
       // Create new rate limit record
       record = await this.rateLimitRepository.create({
         key,
-        count: 1,
+        count: 0,
         resetTime: new Date(now.getTime() + windowMs),
       });
 
-      return {
-        allowed: true,
-        remaining: maxRequests - 1,
-        resetTime: record.resetTime,
-      };
+      // fall through to increment below for first request
     }
 
     // Check if the window has expired
@@ -55,8 +51,11 @@ export class RateLimitService {
       };
     }
 
-    // Check if rate limit is exceeded
-    if (record.count >= maxRequests) {
+    // Increment counter first to avoid race conditions with concurrent calls
+    record = await this.rateLimitRepository.increment(key);
+
+    // Check if rate limit is exceeded after increment
+    if (record.count > maxRequests) {
       const retryAfter = Math.ceil((record.resetTime.getTime() - now.getTime()) / 1000);
 
       logger.warn('Rate limit exceeded', {
@@ -73,9 +72,6 @@ export class RateLimitService {
         retryAfter,
       };
     }
-
-    // Increment counter
-    record = await this.rateLimitRepository.increment(key);
 
     return {
       allowed: true,
@@ -94,7 +90,7 @@ export class RateLimitService {
     if (!result.allowed) {
       throw AppError.tooManyRequests(
         ErrorCode.RATE_LIMIT_EXCEEDED,
-        'Too many requests',
+        ErrorCode.RATE_LIMIT_EXCEEDED,
         {
           retryAfter: result.retryAfter,
           resetTime: result.resetTime,
@@ -118,7 +114,7 @@ export class RateLimitService {
 
       throw AppError.tooManyRequests(
         ErrorCode.OTP_COOLDOWN_ACTIVE,
-        `Please wait ${remainingSeconds} seconds before requesting another OTP`,
+        ErrorCode.OTP_COOLDOWN_ACTIVE,
         {
           retryAfter: remainingSeconds,
           resetTime: record.resetTime,

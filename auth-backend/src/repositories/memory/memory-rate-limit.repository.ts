@@ -3,15 +3,11 @@ import { RateLimitRecord } from '../../types/auth';
 import { RateLimitRepository } from '../rate-limit.repository';
 
 export class MemoryRateLimitRepository implements RateLimitRepository {
+  // Keyed by rate limit key to ensure a single record per key
   private records: Map<string, RateLimitRecord> = new Map();
 
   async findByKey(key: string): Promise<RateLimitRecord | null> {
-    for (const record of this.records.values()) {
-      if (record.key === key) {
-        return record;
-      }
-    }
-    return null;
+    return this.records.get(key) || null;
   }
 
   async create(data: {
@@ -27,7 +23,7 @@ export class MemoryRateLimitRepository implements RateLimitRepository {
       createdAt: new Date(),
     };
 
-    this.records.set(record.id, record);
+    this.records.set(record.key, record);
     return record;
   }
 
@@ -43,26 +39,21 @@ export class MemoryRateLimitRepository implements RateLimitRepository {
     return this.create({
       key,
       count: 1,
-      resetTime: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
+      resetTime: new Date(Date.now() + 15 * 60 * 1000), // default 15 minutes
     });
   }
 
   async delete(key: string): Promise<void> {
-    for (const [id, record] of this.records.entries()) {
-      if (record.key === key) {
-        this.records.delete(id);
-        break;
-      }
-    }
+    this.records.delete(key);
   }
 
   async deleteExpired(): Promise<number> {
     const now = new Date();
     let deletedCount = 0;
 
-    for (const [id, record] of this.records.entries()) {
+    for (const [k, record] of this.records.entries()) {
       if (record.resetTime < now) {
-        this.records.delete(id);
+        this.records.delete(k);
         deletedCount++;
       }
     }

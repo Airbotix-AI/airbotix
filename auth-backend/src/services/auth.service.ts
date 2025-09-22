@@ -78,7 +78,7 @@ export class AuthService {
     if (!tokenRecord) {
       throw AppError.unauthorized(
         ErrorCode.TOKEN_INVALID,
-        'Invalid refresh token'
+        ErrorCode.TOKEN_INVALID
       );
     }
 
@@ -87,7 +87,7 @@ export class AuthService {
       await this.refreshTokenRepository.delete(tokenRecord.id);
       throw AppError.unauthorized(
         ErrorCode.TOKEN_EXPIRED,
-        'Refresh token has expired'
+        ErrorCode.TOKEN_EXPIRED
       );
     }
 

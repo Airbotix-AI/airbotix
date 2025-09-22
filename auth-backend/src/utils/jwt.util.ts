@@ -1,11 +1,12 @@
 import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 import { config } from '../config/env';
 import { JwtPayload } from '../types/auth';
 
 export class JwtUtil {
   static generateAccessToken(payload: Omit<JwtPayload, 'type'>): string {
     return jwt.sign(
-      { ...payload, type: 'access' },
+      { ...payload, type: 'access', jti: uuidv4() },
       config.jwt.secret,
       { expiresIn: config.jwt.accessExpiresIn } as jwt.SignOptions
     );
@@ -13,7 +14,7 @@ export class JwtUtil {
 
   static generateRefreshToken(payload: Omit<JwtPayload, 'type'>): string {
     return jwt.sign(
-      { ...payload, type: 'refresh' },
+      { ...payload, type: 'refresh', jti: uuidv4() },
       config.jwt.secret,
       { expiresIn: config.jwt.refreshExpiresIn } as jwt.SignOptions
     );

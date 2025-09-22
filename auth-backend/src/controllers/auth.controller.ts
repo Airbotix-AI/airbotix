@@ -102,6 +102,7 @@ export class AuthController {
     res.json({
       success: true,
       message: 'Logged out successfully',
+      data: {},
     });
   };
 
