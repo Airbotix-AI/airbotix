@@ -388,7 +388,7 @@ export async function updateExistingStudent(
     }
 
     // Prepare update object with only provided fields
-    const updateData: Record<string, any> = {}
+    const updateData: Partial<Record<string, string | null>> = {}
     
     if (data.full_name !== undefined) updateData[STUDENT_TABLE_COLUMNS.FULL_NAME] = data.full_name
     if (data.date_of_birth !== undefined) updateData[STUDENT_TABLE_COLUMNS.DATE_OF_BIRTH] = data.date_of_birth

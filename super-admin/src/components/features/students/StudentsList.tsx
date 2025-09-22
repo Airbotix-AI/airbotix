@@ -229,7 +229,7 @@ const StudentsList = ({
 
   const debouncedSearch = useCallback(
     debounce((...args: unknown[]) => {
-      const term = args[0] as string
+      const term = String(args[0] ?? '')
       if (term.length >= 2) {
         setFilters({ search: term, page: 1 })
       } else if (term.length === 0) {

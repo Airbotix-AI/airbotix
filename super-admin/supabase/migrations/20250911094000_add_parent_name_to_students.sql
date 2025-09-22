@@ -28,3 +28,4 @@ COMMENT ON COLUMN public.students.parent_name IS 'Primary parent/guardian full n
 COMMIT;
 
 
+
