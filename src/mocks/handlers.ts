@@ -1,8 +1,9 @@
-import { http, HttpResponse } from 'msw';
+import { http, HttpResponse, type HttpHandler } from 'msw';
 import { API_BASE_URL } from '@/constants/auth';
 
 // Mock data storage
-const mockUsers: Record<string, any> = {};
+interface MockUser { id: string; email: string; lastLoginAt: string }
+const mockUsers: Record<string, MockUser> = {};
 const mockOtps: Record<string, { code: string; expiresAt: number; attempts: number }> = {};
 const mockTokens: Record<string, { userId: string; expiresAt: number }> = {};
 
@@ -15,9 +16,11 @@ const generateId = () => Math.random().toString(36).substr(2, 9);
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 const generateToken = () => 'mock_token_' + Math.random().toString(36).substr(2, 20);
 
-export const handlers = [
+type ResolverCtx = { request: Request }
+
+export const handlers: HttpHandler[] = [
   // Request OTP
-  http.post(`${API_BASE_URL}/auth/request-otp`, async ({ request }) => {
+  http.post(`${API_BASE_URL}/auth/request-otp`, async ({ request }: ResolverCtx) => {
     const body = await request.json() as { email: string };
     const { email } = body;
 
@@ -64,7 +67,7 @@ export const handlers = [
   }),
 
   // Verify OTP
-  http.post(`${API_BASE_URL}/auth/verify-otp`, async ({ request }) => {
+  http.post(`${API_BASE_URL}/auth/verify-otp`, async ({ request }: ResolverCtx) => {
     const body = await request.json() as { email: string; code: string };
     const { email, code } = body;
 
@@ -183,7 +186,7 @@ export const handlers = [
   }),
 
   // Get user profile
-  http.get(`${API_BASE_URL}/auth/me`, async ({ request }) => {
+  http.get(`${API_BASE_URL}/auth/me`, async ({ request }: ResolverCtx) => {
     let token: string | undefined;
 
     // Check for Bearer token first
@@ -227,7 +230,7 @@ export const handlers = [
     }
 
     // Find user by ID
-    const user = Object.values(mockUsers).find(u => u.id === tokenData.userId);
+    const user = Object.values(mockUsers).find((u) => u.id === tokenData.userId);
     if (!user) {
       return HttpResponse.json({
         success: false,
@@ -251,7 +254,7 @@ export const handlers = [
   }),
 
   // Refresh token
-  http.post(`${API_BASE_URL}/auth/refresh`, async ({ request }) => {
+  http.post(`${API_BASE_URL}/auth/refresh`, async () => {
     // For development, always return success without complex token logic
     // This prevents infinite refresh loops in development environment
     return HttpResponse.json({
@@ -264,7 +267,7 @@ export const handlers = [
   }),
 
   // Logout
-  http.post(`${API_BASE_URL}/auth/logout`, async ({ request }) => {
+  http.post(`${API_BASE_URL}/auth/logout`, async ({ request }: ResolverCtx) => {
     const body = await request.json() as { refreshToken?: string };
     const { refreshToken } = body;
 

@@ -593,8 +593,8 @@ export function useStudentForm(initialData?: Student) {
         form.reset()
       }
     },
-    onError: (error: any) => {
-      setError(error?.message || 'An error occurred while saving the student')
+    onError: (error: unknown) => {
+      setError((error as Error)?.message || 'An error occurred while saving the student')
     }
   })
 

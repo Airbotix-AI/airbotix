@@ -51,7 +51,7 @@ const FormField = <T extends FieldValues = FieldValues>({
   )
 }
 
-interface FormItemProps extends React.HTMLAttributes<HTMLDivElement> {}
+type FormItemProps = React.HTMLAttributes<HTMLDivElement>
 
 const FormItem = forwardRef<HTMLDivElement, FormItemProps>(
   ({ className, ...props }, ref) => {
@@ -92,7 +92,7 @@ const FormLabel = forwardRef<HTMLLabelElement, FormLabelProps>(
 )
 FormLabel.displayName = 'FormLabel'
 
-interface FormControlProps extends React.HTMLAttributes<HTMLDivElement> {}
+type FormControlProps = React.HTMLAttributes<HTMLDivElement>
 
 const FormControl = forwardRef<HTMLDivElement, FormControlProps>(
   ({ ...props }, ref) => {
@@ -111,7 +111,7 @@ const FormControl = forwardRef<HTMLDivElement, FormControlProps>(
 )
 FormControl.displayName = 'FormControl'
 
-interface FormDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
+type FormDescriptionProps = React.HTMLAttributes<HTMLParagraphElement>
 
 const FormDescription = forwardRef<HTMLParagraphElement, FormDescriptionProps>(
   ({ className, ...props }, ref) => {

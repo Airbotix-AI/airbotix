@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('✅ Profile fetched successfully:', data)
       setProfile(data)
       
-    } catch (error) {
+    } catch {
       console.error('💥 Error fetching profile, will use temporary profile')
       
       // Get current user info to create temporary profile
