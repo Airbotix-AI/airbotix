@@ -11,6 +11,7 @@ import Book from './pages/Book';
 import Media from './pages/Media';
 import BlogList from './pages/Blog/BlogList';
 import BlogDetail from './pages/Blog/BlogDetail';
+import FAQ from './pages/FAQ';
 
 // Auth pages
 import Login from './auth/pages/Login';
@@ -69,6 +70,7 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/book" element={<Book />} />
               <Route path="/media" element={<Media />} />
+              <Route path="/faq" element={<FAQ />} />
               <Route path="/blog" element={<BlogList />} />
               <Route path="/blog/:slug" element={<BlogDetail />} />
             </Routes>
