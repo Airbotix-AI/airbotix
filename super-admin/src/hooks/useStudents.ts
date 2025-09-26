@@ -72,6 +72,11 @@ const studentFormSchema = z.object({
   grade_level: z
     .string()
     .regex(VALIDATION_RULES.GRADE_LEVEL_REGEX, 'Please select a valid grade level'),
+  parent_name: z
+    .string()
+    .min(2, 'Parent name must be at least 2 characters')
+    .max(255, 'Parent name cannot exceed 255 characters')
+    .trim(),
   parent_email: z
     .string()
     .email('Please enter a valid email address')
@@ -218,6 +223,7 @@ export function useStudentsList(initialFilters: StudentSearchFilters = {}) {
         date_of_birth: newStudent.date_of_birth,
         school_name: newStudent.school_name,
         grade_level: newStudent.grade_level,
+        parent_name: (newStudent as StudentFormData).parent_name,
         parent_email: newStudent.parent_email,
         parent_phone: newStudent.parent_phone,
         emergency_contact_name: newStudent.emergency_contact_name || null,
@@ -544,6 +550,7 @@ export function useStudentForm(initialData?: Student) {
       date_of_birth: initialData.date_of_birth,
       school_name: initialData.school_name,
       grade_level: initialData.grade_level,
+      parent_name: (initialData as Student).parent_name,
       parent_email: initialData.parent_email,
       parent_phone: initialData.parent_phone,
       emergency_contact_name: initialData.emergency_contact_name || '',
@@ -556,6 +563,7 @@ export function useStudentForm(initialData?: Student) {
       date_of_birth: '',
       school_name: '',
       grade_level: '',
+      parent_name: '',
       parent_email: '',
       parent_phone: '',
       emergency_contact_name: '',
