@@ -7,19 +7,26 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 // Security checks
 if (!supabaseUrl) {
   throw new Error(
-    '❌ Missing VITE_SUPABASE_URL environment variable. ' +
+    'Missing VITE_SUPABASE_URL environment variable. ' +
     'Please check your .env.local file and ensure it contains VITE_SUPABASE_URL.'
   )
 }
 
 if (!supabaseAnonKey) {
   throw new Error(
-    '❌ Missing VITE_SUPABASE_ANON_KEY environment variable. ' +
+    'Missing VITE_SUPABASE_ANON_KEY environment variable. ' +
     'Please check your .env.local file and ensure it contains VITE_SUPABASE_ANON_KEY.'
   )
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    // Persist session across reloads
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+  },
+})
 
 // Database types
 export interface Database {

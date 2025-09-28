@@ -16,6 +16,7 @@ import { PERMISSIONS } from '@/constants/permissions'
 // Pages
 const Dashboard = lazy(() => import('@/pages/Dashboard'))
 const Login = lazy(() => import('@/pages/Login'))
+const AuthCallback = lazy(() => import('@/pages/AuthCallback'))
 const Students = lazy(() => import('@/pages/Students'))
 const Teachers = lazy(() => import('@/pages/Teachers'))
 const Workshops = lazy(() => import('@/pages/Workshops'))
@@ -74,6 +75,7 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path={ROUTES.LOGIN} element={<Login />} />
+          <Route path="/admin/auth/callback" element={<AuthCallback />} />
           <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />
           
           {/* Protected Admin Routes */}
