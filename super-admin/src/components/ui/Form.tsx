@@ -28,32 +28,10 @@ const FormItemContext = createContext<FormItemContextValue>({} as FormItemContex
 
 const Form = <T extends FieldValues>({ 
   children, 
-  className,
-  ...formProps 
+  className
 }: { children: React.ReactNode; className?: string } & UseFormReturn<T>) => {
-  // Extract only DOM-appropriate props and ignore React Hook Form methods
-  const {
-    // React Hook Form methods that should NOT be passed to DOM
-    handleSubmit,
-    watch,
-    getValues,
-    getFieldState,
-    setError,
-    clearErrors,
-    setValue,
-    trigger,
-    formState,
-    reset,
-    resetField,
-    setFocus,
-    unregister,
-    control,
-    register,
-    subscribe,
-    ...domProps
-  } = formProps as any
-
-  return <div className={className} {...domProps}>{children}</div>
+  // Intentionally ignore React Hook Form methods to avoid passing them to the DOM
+  return <div className={className}>{children}</div>
 }
 
 interface FormFieldProps<T extends FieldValues = FieldValues> {
@@ -72,7 +50,7 @@ const FormField = <T extends FieldValues = FieldValues>({
   )
 }
 
-interface FormItemProps extends React.HTMLAttributes<HTMLDivElement> {}
+type FormItemProps = React.HTMLAttributes<HTMLDivElement>
 
 const FormItem = forwardRef<HTMLDivElement, FormItemProps>(
   ({ className, ...props }, ref) => {
@@ -113,7 +91,7 @@ const FormLabel = forwardRef<HTMLLabelElement, FormLabelProps>(
 )
 FormLabel.displayName = 'FormLabel'
 
-interface FormControlProps extends React.HTMLAttributes<HTMLDivElement> {}
+type FormControlProps = React.HTMLAttributes<HTMLDivElement>
 
 const FormControl = forwardRef<HTMLDivElement, FormControlProps>(
   ({ ...props }, ref) => {
@@ -132,7 +110,7 @@ const FormControl = forwardRef<HTMLDivElement, FormControlProps>(
 )
 FormControl.displayName = 'FormControl'
 
-interface FormDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
+type FormDescriptionProps = React.HTMLAttributes<HTMLParagraphElement>
 
 const FormDescription = forwardRef<HTMLParagraphElement, FormDescriptionProps>(
   ({ className, ...props }, ref) => {

@@ -43,13 +43,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription }
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('🔐 Auth state change:', event, session?.user?.email)
+      console.log('Auth state change:', event, session?.user?.email)
       setUser(session?.user ?? null)
       if (session?.user) {
-        console.log('👤 User logged in, fetching profile...')
+        console.log('User logged in, fetching profile...')
         fetchProfile(session.user.id)
       } else {
-        console.log('👋 User logged out')
+        console.log('User logged out')
         setProfile(null)
       }
       setLoading(false)
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      console.log('📊 Fetching profile for user:', userId)
+      console.log('Fetching profile for user:', userId)
       // Firstly, try direct query
       const { data, error } = await supabase
         .from('profiles')
@@ -69,37 +69,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (error) {
-        console.error('❌ Profile fetch error:', error.message, 'Code:', error.code)
+        console.error('Profile fetch error:', error.message, 'Code:', error.code)
         
         // If it's a permission issue (PGRST301) or not found (PGRST116)
         if (error.code === 'PGRST301') {
-          console.log('🔒 RLS policy denied access - this might be normal for new users')
+          console.log('RLS policy denied access - this might be normal for new users')
         } else if (error.code === 'PGRST116') {
-          console.log('👤 Profile not found in database')
+          console.log('Profile not found in database')
         }
         
         throw error
       }
       
-      console.log('✅ Profile fetched successfully:', data)
+      console.log('Profile fetched successfully:', data)
       setProfile(data)
       
-    } catch (error) {
-      console.error('💥 Error fetching profile, will use temporary profile')
-      
-      // Get current user info to create temporary profile
-      const currentUser = await supabase.auth.getUser()
-      if (currentUser.data.user) {
-        const tempProfile = {
-          id: userId,
-          email: currentUser.data.user.email || '',
-          full_name: currentUser.data.user.user_metadata?.full_name || currentUser.data.user.email || '',
-          role: 'super_admin', // Temporary setting to super_admin for testing
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+    } catch (err: unknown) {
+      if (typeof err === 'object' && err !== null) {
+        const e = err as { message?: string; code?: string }
+        console.error('Error fetching profile:', e.message)
+        
+        // If profile doesn't exist, try to create it automatically
+        if (e.code === 'PGRST116') {
+        console.log('Profile not found, attempting to create...')
+        try {
+          const currentUser = await supabase.auth.getUser()
+          if (currentUser.data.user) {
+            const { data: newProfile, error: insertError } = await supabase
+              .from('profiles')
+              .insert({
+                id: userId,
+                email: currentUser.data.user.email || '',
+                full_name: currentUser.data.user.user_metadata?.full_name || currentUser.data.user.email || '',
+                role: 'teacher' // Default role for new users
+              })
+              .select()
+              .single()
+
+            if (insertError) {
+              console.error('Failed to create profile:', insertError.message)
+              setProfile(null)
+            } else {
+              console.log('Profile created successfully:', newProfile)
+              setProfile(newProfile)
+            }
+          }
+        } catch (insertError) {
+          console.error('Failed to create profile:', insertError)
+          setProfile(null)
         }
-        console.log('🚀 Using temporary profile for:', tempProfile.email)
-        setProfile(tempProfile)
+        } else {
+          // For other errors, don't create temporary profile
+          console.log('Access denied or other error, user needs proper role assignment')
+          setProfile(null)
+        }
+      } else {
+        console.error('Error fetching profile (unknown error type):', err)
+        setProfile(null)
       }
     }
   }

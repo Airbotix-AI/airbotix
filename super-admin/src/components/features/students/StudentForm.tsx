@@ -198,7 +198,7 @@ const formDataToStudentData = (formData: StudentFormSchema): StudentFormData => 
   parent_phone: formData[STUDENT_FORM_FIELDS.PARENT_PHONE],
   emergency_contact_name: formData[STUDENT_FORM_FIELDS.EMERGENCY_CONTACT_NAME] || undefined,
   emergency_contact_phone: formData[STUDENT_FORM_FIELDS.EMERGENCY_CONTACT_PHONE] || undefined,
-  skill_level: formData[STUDENT_FORM_FIELDS.SKILL_LEVEL] as any,
+  skill_level: formData[STUDENT_FORM_FIELDS.SKILL_LEVEL],
   special_requirements: formData[STUDENT_FORM_FIELDS.SPECIAL_REQUIREMENTS] || undefined,
   medical_notes: formData[STUDENT_FORM_FIELDS.MEDICAL_NOTES] || undefined
 })
@@ -231,7 +231,7 @@ const StudentForm = ({
       [STUDENT_FORM_FIELDS.PARENT_PHONE]: '',
       [STUDENT_FORM_FIELDS.EMERGENCY_CONTACT_NAME]: '',
       [STUDENT_FORM_FIELDS.EMERGENCY_CONTACT_PHONE]: '',
-      [STUDENT_FORM_FIELDS.SKILL_LEVEL]: '' as any,
+      [STUDENT_FORM_FIELDS.SKILL_LEVEL]: '' as unknown as typeof STUDENT_SKILL_LEVELS[keyof typeof STUDENT_SKILL_LEVELS],
       [STUDENT_FORM_FIELDS.SPECIAL_REQUIREMENTS]: '',
       [STUDENT_FORM_FIELDS.MEDICAL_NOTES]: ''
     },
@@ -252,9 +252,9 @@ const StudentForm = ({
     try {
       const studentData = formDataToStudentData(data)
       await onSubmit(studentData)
-    } catch (error: any) {
+    } catch (error) {
       console.error('Form submission error:', error)
-      setSubmitError(error?.message || STUDENT_ERROR_MESSAGES.VALIDATION_ERROR)
+      setSubmitError((error as Error)?.message || STUDENT_ERROR_MESSAGES.VALIDATION_ERROR)
     } finally {
       setIsSubmitting(false)
     }
@@ -362,7 +362,7 @@ const StudentForm = ({
               placeholder="Student's full name"
             />
             <StandardField
-              name={STUDENT_FORM_FIELDS.PARENT_NAME as any}
+              name={STUDENT_FORM_FIELDS.PARENT_NAME as keyof StudentFormSchema}
               label="Parent/Guardian Name"
               required
               placeholder="Parent or guardian full name"

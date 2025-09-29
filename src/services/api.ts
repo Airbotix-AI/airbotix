@@ -87,9 +87,9 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       originalRequest &&
-      !(originalRequest as any)._retry
+      !(originalRequest as unknown as { _retry?: boolean })._retry
     ) {
-      (originalRequest as any)._retry = true;
+      (originalRequest as unknown as { _retry?: boolean })._retry = true;
 
       try {
         const refreshed = await refreshToken();
@@ -202,7 +202,7 @@ export const authAPI = {
   async logout(): Promise<void> {
     try {
       const authMethod = getAuthMethod();
-      const requestData: any = {};
+      const requestData: Partial<{ refreshToken: string }> = {};
 
       // Include refresh token for Bearer auth
       if (authMethod === AUTH_METHODS.BEARER) {
@@ -227,7 +227,7 @@ export const authAPI = {
 export const refreshToken = async (): Promise<boolean> => {
   try {
     const authMethod = getAuthMethod();
-    const requestData: any = {};
+    const requestData: Partial<{ refreshToken: string }> = {};
 
     if (authMethod === AUTH_METHODS.BEARER) {
       const refreshToken = storage.get(STORAGE_KEYS.REFRESH_TOKEN);

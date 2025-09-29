@@ -24,9 +24,10 @@ const queryConfig = {
       gcTime: 10 * 60 * 1000,
       
       // Retry failed requests up to 3 times
-      retry: (failureCount: number, error: any) => {
+      retry: (failureCount: number, error: { status?: number } | unknown) => {
         // Don't retry on 4xx errors (client errors)
-        if (error?.status >= 400 && error?.status < 500) {
+        const status = (error as { status?: number })?.status
+        if (typeof status === 'number' && status >= 400 && status < 500) {
           return false
         }
         // Retry up to 3 times for other errors
@@ -95,7 +96,9 @@ export const clearAllCache = () => {
 /**
  * Utility function to prefetch student data
  */
-export const prefetchStudents = (filters?: any) => {
+import type { StudentSearchFilters } from '../types/student.types'
+
+export const prefetchStudents = (filters?: StudentSearchFilters) => {
   return queryClient.prefetchQuery({
     queryKey: [QUERY_KEYS.STUDENTS, 'list', filters],
     queryFn: () => import('../services/student.service').then(service => 

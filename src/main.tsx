@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import App from './App.tsx';
 import './index.css';
 import './i18n';
+import { initAnalytics } from '@/utils/analytics';
 
 // Enable MSW in development
 async function enableMocking() {
@@ -17,6 +18,7 @@ async function enableMocking() {
 }
 
 enableMocking().then(() => {
+  initAnalytics()
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
       <HashRouter>

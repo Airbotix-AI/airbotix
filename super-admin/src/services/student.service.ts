@@ -388,7 +388,7 @@ export async function updateExistingStudent(
     }
 
     // Prepare update object with only provided fields
-    const updateData: Record<string, any> = {}
+    const updateData: Partial<Record<string, string | null>> = {}
     
     if (data.full_name !== undefined) updateData[STUDENT_TABLE_COLUMNS.FULL_NAME] = data.full_name
     if (data.date_of_birth !== undefined) updateData[STUDENT_TABLE_COLUMNS.DATE_OF_BIRTH] = data.date_of_birth
@@ -597,7 +597,7 @@ export async function bulkImportStudents(
               error: createResult.error || 'Unknown error',
               index
             })
-          } else if (!Array.isArray(createResult.data)) {
+      } else if (!Array.isArray(createResult.data)) {
             // createNewStudent returns a single Student, not an array
             results.success.push(createResult.data)
           }
@@ -697,7 +697,7 @@ export async function exportStudentsToCSV(
       ...students.map(student => [
         `"${student.id}"`,
         `"${student.full_name}"`,
-        `"${(student as any).parent_name || ''}"`,
+        `"${student.parent_name || ''}"`,
         `"${student.date_of_birth}"`,
         `"${student.school_name}"`,
         `"${student.grade_level}"`,
