@@ -84,11 +84,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('Profile fetched successfully:', data)
       setProfile(data)
       
-    } catch (error: any) {
-      console.error('Error fetching profile:', error.message)
-      
-      // If profile doesn't exist, try to create it automatically
-      if (error.code === 'PGRST116') {
+    } catch (err: unknown) {
+      if (typeof err === 'object' && err !== null) {
+        const e = err as { message?: string; code?: string }
+        console.error('Error fetching profile:', e.message)
+        
+        // If profile doesn't exist, try to create it automatically
+        if (e.code === 'PGRST116') {
         console.log('Profile not found, attempting to create...')
         try {
           const currentUser = await supabase.auth.getUser()
@@ -116,9 +118,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.error('Failed to create profile:', insertError)
           setProfile(null)
         }
+        } else {
+          // For other errors, don't create temporary profile
+          console.log('Access denied or other error, user needs proper role assignment')
+          setProfile(null)
+        }
       } else {
-        // For other errors, don't create temporary profile
-        console.log('Access denied or other error, user needs proper role assignment')
+        console.error('Error fetching profile (unknown error type):', err)
         setProfile(null)
       }
     }

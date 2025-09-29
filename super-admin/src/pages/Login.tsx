@@ -61,7 +61,7 @@ export default function Login() {
           text: 'Check your email for the login link!'
         })
       }
-    } catch (error) {
+    } catch {
       setMessage({ 
         type: 'error', 
         text: 'An unexpected error occurred. Please try again.' 
