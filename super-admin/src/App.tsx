@@ -20,6 +20,8 @@ const AuthCallback = lazy(() => import('@/pages/AuthCallback'))
 const Students = lazy(() => import('@/pages/Students'))
 const Teachers = lazy(() => import('@/pages/Teachers'))
 const Workshops = lazy(() => import('@/pages/Workshops'))
+const WorkshopForm = lazy(() => import('@/pages/WorkshopForm'))
+const WorkshopPreview = lazy(() => import('@/pages/WorkshopPreview'))
 const Courses = lazy(() => import('@/pages/Courses'))
 const Content = lazy(() => import('@/pages/Content'))
 
@@ -169,6 +171,42 @@ function App() {
                   <TeacherAccess>
                     <Suspense fallback={<RouteLoadingFallback />}>
                       <Workshops />
+                    </Suspense>
+                  </TeacherAccess>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="workshops/new"
+              element={
+                <ProtectedRoute requiredPermission={PERMISSIONS.VIEW_WORKSHOPS}>
+                  <TeacherAccess>
+                    <Suspense fallback={<RouteLoadingFallback />}>
+                      <WorkshopForm />
+                    </Suspense>
+                  </TeacherAccess>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="workshops/:id/edit"
+              element={
+                <ProtectedRoute requiredPermission={PERMISSIONS.VIEW_WORKSHOPS}>
+                  <TeacherAccess>
+                    <Suspense fallback={<RouteLoadingFallback />}>
+                      <WorkshopForm />
+                    </Suspense>
+                  </TeacherAccess>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="workshops/:id/preview"
+              element={
+                <ProtectedRoute requiredPermission={PERMISSIONS.VIEW_WORKSHOPS}>
+                  <TeacherAccess>
+                    <Suspense fallback={<RouteLoadingFallback />}>
+                      <WorkshopPreview />
                     </Suspense>
                   </TeacherAccess>
                 </ProtectedRoute>

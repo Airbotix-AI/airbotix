@@ -37,6 +37,11 @@ const ProtectedRoute = ({
 }: ProtectedRouteProps) => {
   const { user, loading, profile, hasPermission, hasRole } = useAuth()
 
+  const isBypassAuth = import.meta.env.VITE_BYPASS_AUTH === 'true'
+  if (isBypassAuth) {
+    return <>{children}</>
+  }
+
   // Show loading spinner while checking authentication
   if (loading) {
     return (
