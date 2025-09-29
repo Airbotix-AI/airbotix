@@ -4,9 +4,9 @@
 import { useState, useCallback, useEffect } from 'react'
 import { workshopService } from '@/services'
 import type {
-  NewWorkshop,
+  Workshop,
   WorkshopFormData,
-} from '@/types'
+} from '@/types/workshop'
 import {
   WORKSHOP_VALIDATION_MESSAGES,
   WORKSHOP_SUCCESS_MESSAGES,
@@ -60,8 +60,8 @@ export interface UseWorkshopFormReturn extends UseWorkshopFormState {
   validate: () => boolean
   validateField: (field: keyof WorkshopFormData) => boolean
   validateFieldOnBlur: (field: keyof WorkshopFormData) => void
-  submit: () => Promise<NewWorkshop | null>
-  loadWorkshop: (workshop: NewWorkshop) => void
+  submit: () => Promise<Workshop | null>
+  loadWorkshop: (workshop: Workshop) => void
   
   // Utility functions
   clearErrors: () => void
@@ -564,7 +564,7 @@ export function useWorkshopForm(initialData?: Partial<WorkshopFormData>): UseWor
     setState(prev => ({ ...prev, submitSuccess: null }))
   }, [])
 
-  const loadWorkshop = useCallback((workshop: NewWorkshop) => {
+  const loadWorkshop = useCallback((workshop: Workshop) => {
     setState(prev => ({
       ...prev,
       formData: {
@@ -592,7 +592,7 @@ export function useWorkshopForm(initialData?: Partial<WorkshopFormData>): UseWor
     }))
   }, [])
 
-  const submit = useCallback(async (): Promise<NewWorkshop | null> => {
+  const submit = useCallback(async (): Promise<Workshop | null> => {
     // Validate form
     if (!validate()) {
       setState(prev => ({ ...prev, submitError: 'Please fix all validation errors' }))
@@ -617,7 +617,7 @@ export function useWorkshopForm(initialData?: Partial<WorkshopFormData>): UseWor
         endDate: new Date(state.formData.endDate + 'T00:00:00'),
       }
 
-      const result = await workshopService.create({ workshop: workshopData })
+      const result = await workshopService.create(workshopData)
 
       if (!result.success || !result.data) {
         throw new Error(result.error || WORKSHOP_ERROR_MESSAGES.WORKSHOP_CREATE_FAILED)
@@ -630,7 +630,7 @@ export function useWorkshopForm(initialData?: Partial<WorkshopFormData>): UseWor
         isDirty: false,
       }))
 
-      return result.data
+      return result.data.workshop
     } catch (error) {
       console.error('Error submitting workshop:', error)
       setState(prev => ({

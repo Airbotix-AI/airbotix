@@ -4,15 +4,16 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { workshopService } from '@/services'
 import type {
-  NewWorkshop,
-  NewWorkshopStatus,
+  Workshop,
+  WorkshopStatus,
   WorkshopFilters,
-} from '@/types'
+  WorkshopsResponse,
+} from '@/types/workshop'
 import { WORKSHOP_ERROR_MESSAGES } from '@/constants/workshop'
 
 // Hook state interface
 export interface UseWorkshopsState {
-  workshops: NewWorkshop[]
+  workshops: Workshop[]
   total: number
   page: number
   limit: number
@@ -29,7 +30,7 @@ export interface UseWorkshopsReturn extends UseWorkshopsState {
   
   // Filtering and search
   setFilters: (filters: Partial<WorkshopFilters>) => void
-  setStatus: (status: NewWorkshopStatus | null) => void
+  setStatus: (status: WorkshopStatus | null) => void
   setSearch: (search: string) => void
   setDateRange: (startDate?: string, endDate?: string) => void
   setSorting: (sortBy: 'title' | 'startDate' | 'endDate' | 'createdAt', sortOrder: 'asc' | 'desc') => void
@@ -39,8 +40,8 @@ export interface UseWorkshopsReturn extends UseWorkshopsState {
   setLimit: (limit: number) => void
   
   // Workshop operations with optimistic updates
-  createWorkshop: (workshopData: any) => Promise<NewWorkshop | null>
-  updateWorkshop: (id: string, updateData: any) => Promise<NewWorkshop | null>
+  createWorkshop: (workshopData: any) => Promise<Workshop | null>
+  updateWorkshop: (id: string, updateData: any) => Promise<Workshop | null>
   deleteWorkshop: (id: string) => Promise<boolean>
   archiveWorkshop: (id: string) => Promise<boolean>
   restoreWorkshop: (id: string) => Promise<boolean>
@@ -72,7 +73,7 @@ export function useWorkshops(initialFilters: Partial<WorkshopFilters> = {}): Use
   })
 
   // Optimistic update helper
-  const optimisticUpdate = useCallback((id: string, updates: Partial<NewWorkshop>) => {
+  const optimisticUpdate = useCallback((id: string, updates: Partial<Workshop>) => {
     setState(prev => ({
       ...prev,
       workshops: prev.workshops.map(workshop =>
@@ -82,7 +83,7 @@ export function useWorkshops(initialFilters: Partial<WorkshopFilters> = {}): Use
   }, [])
 
   // Optimistic add helper
-  const optimisticAdd = useCallback((newWorkshop: NewWorkshop) => {
+  const optimisticAdd = useCallback((newWorkshop: Workshop) => {
     setState(prev => ({
       ...prev,
       workshops: [newWorkshop, ...prev.workshops],
@@ -104,23 +105,20 @@ export function useWorkshops(initialFilters: Partial<WorkshopFilters> = {}): Use
     setState(prev => ({ ...prev, loading: true, error: null }))
 
     try {
-      const result = await workshopService.getAll(filters)
-
+      const result = await workshopService.list(filters)
       if (!result.success || !result.data) {
         throw new Error(result.error || WORKSHOP_ERROR_MESSAGES.WORKSHOPS_LOAD_FAILED)
       }
-
-      if (result.data) {
-        setState(prev => ({
-          ...prev,
-          workshops: append ? [...prev.workshops, ...result.data!.workshops] : result.data!.workshops,
-          total: result.data!.total,
-          page: result.data!.page,
-          limit: result.data!.limit,
-          loading: false,
-          error: null,
-        }))
-      }
+      const payload = result.data as WorkshopsResponse
+      setState(prev => ({
+        ...prev,
+        workshops: append ? [...prev.workshops, ...payload.workshops] : payload.workshops,
+        total: payload.total,
+        page: payload.page,
+        limit: payload.limit,
+        loading: false,
+        error: null,
+      }))
     } catch (error) {
       console.error('Error fetching workshops:', error)
       setState(prev => ({
@@ -153,7 +151,7 @@ export function useWorkshops(initialFilters: Partial<WorkshopFilters> = {}): Use
   }, [state.filters, fetchWorkshops])
 
   // Set status filter
-  const setStatus = useCallback((status: NewWorkshopStatus | null) => {
+  const setStatus = useCallback((status: WorkshopStatus | null) => {
     setFilters({ status: status || undefined })
   }, [setFilters])
 
@@ -183,10 +181,10 @@ export function useWorkshops(initialFilters: Partial<WorkshopFilters> = {}): Use
   }, [setFilters])
 
   // Create workshop with optimistic update
-  const createWorkshop = useCallback(async (workshopData: any): Promise<NewWorkshop | null> => {
+  const createWorkshop = useCallback(async (workshopData: any): Promise<Workshop | null> => {
     try {
       // Optimistic add
-      const tempWorkshop: NewWorkshop = {
+      const tempWorkshop: Workshop = {
         id: `temp-${Date.now()}`,
         ...workshopData,
         createdAt: new Date(),
@@ -207,11 +205,11 @@ export function useWorkshops(initialFilters: Partial<WorkshopFilters> = {}): Use
       setState(prev => ({
         ...prev,
         workshops: prev.workshops.map(workshop =>
-          workshop.id === tempWorkshop.id ? result.data! : workshop
+          workshop.id === tempWorkshop.id ? result.data!.workshop : workshop
         ),
       }))
 
-      return result.data
+      return result.data!.workshop
     } catch (error) {
       console.error('Error creating workshop:', error)
       throw error
@@ -219,7 +217,7 @@ export function useWorkshops(initialFilters: Partial<WorkshopFilters> = {}): Use
   }, [optimisticAdd, optimisticRemove])
 
   // Update workshop with optimistic update
-  const updateWorkshop = useCallback(async (id: string, updateData: any): Promise<NewWorkshop | null> => {
+  const updateWorkshop = useCallback(async (id: string, updateData: any): Promise<Workshop | null> => {
     try {
       // Store original workshop for rollback
       const originalWorkshop = state.workshops.find(w => w.id === id)
@@ -231,7 +229,7 @@ export function useWorkshops(initialFilters: Partial<WorkshopFilters> = {}): Use
       optimisticUpdate(id, updateData)
 
       // Actual API call
-      const result = await workshopService.update(id, { workshop: updateData })
+      const result = await workshopService.update(id, updateData)
 
       if (!result.success || !result.data) {
         // Revert optimistic update
@@ -239,7 +237,7 @@ export function useWorkshops(initialFilters: Partial<WorkshopFilters> = {}): Use
         throw new Error(result.error || WORKSHOP_ERROR_MESSAGES.WORKSHOP_UPDATE_FAILED)
       }
 
-      return result.data
+      return result.data!.workshop
     } catch (error) {
       console.error('Error updating workshop:', error)
       throw error
@@ -259,7 +257,7 @@ export function useWorkshops(initialFilters: Partial<WorkshopFilters> = {}): Use
       optimisticRemove(id)
 
       // Actual API call
-      const result = await workshopService.delete(id)
+      const result = await workshopService.remove(id)
 
       if (!result.success) {
         // Revert optimistic update

@@ -6,16 +6,14 @@ import {
   Filter, 
   Edit, 
   Trash2, 
-  Eye, 
   Calendar, 
-  Archive,
-  RotateCcw,
   Grid,
   List,
   ChevronLeft,
   ChevronRight,
   SortAsc,
-  SortDesc
+  SortDesc,
+  ChevronDown
 } from 'lucide-react'
 import { useWorkshops } from '@/hooks'
 import { 
@@ -43,6 +41,9 @@ export default function Workshops() {
     return () => window.removeEventListener('resize', onResize)
   }, [])
   const [showFilters, setShowFilters] = useState(false)
+  const [editingStatusId, setEditingStatusId] = useState<string | null>(null)
+  const [statusDraft, setStatusDraft] = useState<NewWorkshopStatus>('draft')
+  
   const [sortField, setSortField] = useState<'title' | 'startDate' | 'endDate' | 'createdAt'>('createdAt')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   
@@ -67,9 +68,8 @@ export default function Workshops() {
     setDateRange,
     setSorting,
     setPage,
+    updateWorkshop,
     deleteWorkshop,
-    archiveWorkshop,
-    restoreWorkshop,
     hasMore,
     isEmpty,
     isFiltered
@@ -135,23 +135,7 @@ export default function Workshops() {
     }
   }, [deleteWorkshop])
 
-  const handleArchive = useCallback(async (id: string) => {
-    try {
-      await archiveWorkshop(id)
-      // Success handled by hook
-    } catch (error) {
-      console.error('Error archiving workshop:', error)
-    }
-  }, [archiveWorkshop])
-
-  const handleRestore = useCallback(async (id: string) => {
-    try {
-      await restoreWorkshop(id)
-      // Success handled by hook
-    } catch (error) {
-      console.error('Error restoring workshop:', error)
-    }
-  }, [restoreWorkshop])
+  
 
   // Handle edit
   const handleEdit = useCallback((id: string) => {
@@ -167,6 +151,22 @@ export default function Workshops() {
     }
     return statusClasses[status] || 'bg-gray-100 text-gray-800'
   }
+
+  const handleStartEditStatus = useCallback((id: string, current: NewWorkshopStatus) => {
+    setEditingStatusId(id)
+    setStatusDraft(current)
+  }, [])
+
+  const handleChangeStatus = useCallback(async (id: string, next: NewWorkshopStatus) => {
+    try {
+      setStatusDraft(next)
+      await updateWorkshop(id, { status: next })
+    } catch (e) {
+      console.error('Error updating status:', e)
+    } finally {
+      setEditingStatusId(null)
+    }
+  }, [updateWorkshop])
 
   // Format date for display
   const formatDate = (date: Date | string) => {
@@ -419,22 +419,39 @@ export default function Workshops() {
                     <td className="px-6 py-4 hidden md:table-cell">
                       <div className="text-sm text-gray-900">{workshop.duration}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(workshop.status)}`}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {editingStatusId === workshop.id ? (
+                      <div className="relative inline-block">
+                        <select
+                          autoFocus
+                          value={statusDraft}
+                          onChange={(e) => handleChangeStatus(workshop.id, e.target.value as NewWorkshopStatus)}
+                          onBlur={() => setEditingStatusId(null)}
+                          className="appearance-none text-sm bg-white border border-gray-300 rounded-md pl-3 pr-8 py-1.5 shadow-sm"
+                          title="Change status"
+                        >
+                          <option value="draft">{WORKSHOP_STATUS_LABELS['draft']}</option>
+                          <option value="completed">{WORKSHOP_STATUS_LABELS['completed']}</option>
+                          <option value="archived">{WORKSHOP_STATUS_LABELS['archived']}</option>
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => handleStartEditStatus(workshop.id, workshop.status)}
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(workshop.status)} hover:opacity-80`}
+                        title="Click to change status"
+                      >
                         {WORKSHOP_STATUS_LABELS[workshop.status]}
-                      </span>
-                    </td>
+                      </button>
+                    )}
+                  </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
                       {formatDate(workshop.createdAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex flex-wrap items-center gap-2">
-                        <button 
-                          className="text-primary hover:text-primary/80" 
-                          title="Preview Workshop"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
+                        
                         <button 
                           onClick={() => handleEdit(workshop.id)}
                           className="text-gray-400 hover:text-gray-600" 
@@ -442,23 +459,7 @@ export default function Workshops() {
                         >
                           <Edit className="h-4 w-4" />
                         </button>
-                        {workshop.status === 'archived' ? (
-                          <button 
-                            onClick={() => handleRestore(workshop.id)}
-                            className="text-green-400 hover:text-green-600" 
-                            title="Restore Workshop"
-                          >
-                            <RotateCcw className="h-4 w-4" />
-                          </button>
-                        ) : (
-                          <button 
-                            onClick={() => handleArchive(workshop.id)}
-                            className="text-orange-400 hover:text-orange-600" 
-                            title="Archive Workshop"
-                          >
-                            <Archive className="h-4 w-4" />
-                          </button>
-                        )}
+                        
                         <button 
                           onClick={() => handleDelete(workshop.id)}
                           className="text-red-400 hover:text-red-600" 
@@ -508,12 +509,7 @@ export default function Workshops() {
               
               <div className="flex items-center justify-between pt-3 sm:pt-4 border-t border-gray-200">
                 <div className="flex items-center gap-2">
-                  <button 
-                    className="text-primary hover:text-primary/80" 
-                    title="Preview Workshop"
-                  >
-                    <Eye className="h-4 w-4" />
-                  </button>
+                  
                   <button 
                     onClick={() => handleEdit(workshop.id)}
                     className="text-gray-400 hover:text-gray-600" 
@@ -521,23 +517,7 @@ export default function Workshops() {
                   >
                     <Edit className="h-4 w-4" />
                   </button>
-                  {workshop.status === 'archived' ? (
-                    <button 
-                      onClick={() => handleRestore(workshop.id)}
-                      className="text-green-400 hover:text-green-600" 
-                      title="Restore Workshop"
-                    >
-                      <RotateCcw className="h-4 w-4" />
-                    </button>
-                  ) : (
-                    <button 
-                      onClick={() => handleArchive(workshop.id)}
-                      className="text-orange-400 hover:text-orange-600" 
-                      title="Archive Workshop"
-                    >
-                      <Archive className="h-4 w-4" />
-                    </button>
-                  )}
+                  
                   <button 
                     onClick={() => handleDelete(workshop.id)}
                     className="text-red-400 hover:text-red-600" 
@@ -554,6 +534,8 @@ export default function Workshops() {
           ))}
         </div>
       )}
+
+      
 
       {/* Empty State */}
       {isEmpty && !loading && (

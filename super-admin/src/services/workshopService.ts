@@ -1,627 +1,252 @@
-// Workshop API Service
-// Comprehensive CRUD operations with filtering, search, pagination, and error handling
-
-import { supabase } from '@/lib/supabase'
+import { supabase, type Database } from '@/lib/supabase'
 import type {
-  NewWorkshop,
-  NewWorkshopStatus,
+  Workshop,
   WorkshopFilters,
   WorkshopsResponse,
+  WorkshopResponse,
   CreateWorkshopRequest,
   UpdateWorkshopRequest,
-} from '@/types'
-import { WORKSHOP_ERROR_MESSAGES } from '@/constants/workshop'
+  WorkshopStatus,
+} from '@/types/workshop'
 
-// API Response wrapper for consistent error handling
-interface ApiResult<T> {
-  data: T | null
-  error: string | null
-  success: boolean
+// Centralized constants (no magic strings)
+const TABLE = 'workshops' as const
+
+const COLUMNS = {
+  id: 'id',
+  slug: 'slug',
+  title: 'title',
+  subtitle: 'subtitle',
+  overview: 'overview',
+  duration: 'duration',
+  targetAudience: 'target_audience',
+  startDate: 'start_date',
+  endDate: 'end_date',
+  status: 'status',
+  highlights: 'highlights',
+  syllabus: 'syllabus',
+  materials: 'materials',
+  assessment: 'assessment',
+  learningOutcomes: 'learning_outcomes',
+  media: 'media',
+  seo: 'seo',
+  source: 'source',
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+} as const
+
+const STATUSES: Record<WorkshopStatus, WorkshopStatus> = {
+  draft: 'draft',
+  completed: 'completed',
+  archived: 'archived',
 }
 
-// Workshop Service Class
-export class WorkshopService {
-  private static readonly TABLE_NAME = 'workshops'
-  private static readonly DEFAULT_PAGE_SIZE = 20
-  private static readonly MAX_PAGE_SIZE = 100
+type DbWorkshopRow = Database['public']['Tables']['workshops']['Row']
+type DbWorkshopInsert = Database['public']['Tables']['workshops']['Insert']
+type DbWorkshopUpdate = Database['public']['Tables']['workshops']['Update']
 
-  /**
-   * Create a new workshop
-   */
-  static async createWorkshop(workshopData: CreateWorkshopRequest): Promise<ApiResult<NewWorkshop>> {
-    try {
-      // Validate required fields
-      const validationError = this.validateWorkshopData(workshopData.workshop)
-      if (validationError) {
+export interface ApiResponse<T> {
+  success: boolean
+  data?: T
+  error?: string
+}
+
+function mapRowToWorkshop(row: DbWorkshopRow): Workshop {
         return {
-          data: null,
-          error: validationError,
-          success: false,
-        }
-      }
-
-      // Generate slug from title
-      const slug = this.generateSlug(workshopData.workshop.title)
-
-      // Prepare data for database
-      const dbData = this.transformWorkshopToDb(workshopData.workshop, slug)
-
-      const { data, error } = await supabase
-        .from(this.TABLE_NAME)
-        .insert([dbData])
-        .select()
-        .single()
-
-      if (error) {
-        console.error('Workshop creation error:', error)
-        return {
-          data: null,
-          error: WORKSHOP_ERROR_MESSAGES.WORKSHOP_CREATE_FAILED,
-          success: false,
-        }
-      }
-
-      return {
-        data: this.transformDbToWorkshop(data),
-        error: null,
-        success: true,
-      }
-    } catch (error) {
-      console.error('Unexpected error creating workshop:', error)
-      return {
-        data: null,
-        error: WORKSHOP_ERROR_MESSAGES.NETWORK_ERROR,
-        success: false,
-      }
-    }
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    subtitle: row.subtitle ?? undefined,
+    overview: row.overview,
+    duration: row.duration,
+    targetAudience: row.target_audience,
+    startDate: new Date(row.start_date),
+    endDate: new Date(row.end_date),
+    status: row.status,
+    highlights: row.highlights as unknown as string[],
+    syllabus: row.syllabus as unknown as Workshop['syllabus'],
+    materials: row.materials as unknown as Workshop['materials'],
+    assessment: row.assessment as unknown as Workshop['assessment'],
+    learningOutcomes: row.learning_outcomes as unknown as string[],
+    media: row.media as unknown as Workshop['media'],
+    seo: row.seo as unknown as Workshop['seo'],
+    source: row.source,
+    createdAt: new Date(row.created_at),
+    updatedAt: new Date(row.updated_at),
   }
+}
 
-  /**
-   * Get a single workshop by ID
-   */
-  static async getWorkshop(id: string): Promise<ApiResult<NewWorkshop>> {
-    try {
-      const { data, error } = await supabase
-        .from(this.TABLE_NAME)
-        .select('*')
-        .eq('id', id)
-        .single()
-
-      if (error) {
-        console.error('Workshop fetch error:', error)
+function mapCreateToDb(input: CreateWorkshopRequest['workshop']): DbWorkshopInsert {
         return {
-          data: null,
-          error: WORKSHOP_ERROR_MESSAGES.WORKSHOP_LOAD_FAILED,
-          success: false,
-        }
-      }
-
-      if (!data) {
-        return {
-          data: null,
-          error: 'Workshop not found',
-          success: false,
-        }
-      }
-
-      return {
-        data: this.transformDbToWorkshop(data),
-        error: null,
-        success: true,
-      }
-    } catch (error) {
-      console.error('Unexpected error fetching workshop:', error)
-      return {
-        data: null,
-        error: WORKSHOP_ERROR_MESSAGES.NETWORK_ERROR,
-        success: false,
-      }
-    }
+    slug: input.slug,
+    title: input.title,
+    subtitle: input.subtitle ?? null,
+    overview: input.overview,
+    duration: input.duration,
+    target_audience: input.targetAudience,
+    start_date: toIsoDate(input.startDate),
+    end_date: toIsoDate(input.endDate),
+    status: input.status,
+    highlights: input.highlights as unknown as any,
+    syllabus: input.syllabus as unknown as any,
+    materials: input.materials as unknown as any,
+    assessment: input.assessment as unknown as any,
+    learning_outcomes: input.learningOutcomes as unknown as any,
+    media: input.media as unknown as any,
+    seo: input.seo as unknown as any,
+    source: input.source,
   }
+}
 
-  /**
-   * Get workshops with filtering, search, and pagination
-   */
-  static async getWorkshops(filters: WorkshopFilters = {}): Promise<ApiResult<WorkshopsResponse>> {
-    try {
-      const {
-        status,
-        startDate,
-        endDate,
-        search,
-        sortBy = 'created_at',
-        sortOrder = 'desc',
-        page = 1,
-        limit = this.DEFAULT_PAGE_SIZE,
-      } = filters
+function mapUpdateToDb(input: UpdateWorkshopRequest['workshop']): DbWorkshopUpdate {
+  const update: DbWorkshopUpdate = {}
+  if (input.slug !== undefined) update.slug = input.slug
+  if (input.title !== undefined) update.title = input.title
+  if (input.subtitle !== undefined) update.subtitle = input.subtitle ?? null
+  if (input.overview !== undefined) update.overview = input.overview
+  if (input.duration !== undefined) update.duration = input.duration
+  if (input.targetAudience !== undefined) update.target_audience = input.targetAudience
+  if (input.startDate !== undefined) update.start_date = toIsoDate(input.startDate)
+  if (input.endDate !== undefined) update.end_date = toIsoDate(input.endDate)
+  if (input.status !== undefined) update.status = input.status
+  if (input.highlights !== undefined) update.highlights = input.highlights as unknown as any
+  if (input.syllabus !== undefined) update.syllabus = input.syllabus as unknown as any
+  if (input.materials !== undefined) update.materials = input.materials as unknown as any
+  if (input.assessment !== undefined) update.assessment = input.assessment as unknown as any
+  if (input.learningOutcomes !== undefined) update.learning_outcomes = input.learningOutcomes as unknown as any
+  if (input.media !== undefined) update.media = input.media as unknown as any
+  if (input.seo !== undefined) update.seo = input.seo as unknown as any
+  if (input.source !== undefined) update.source = input.source
+  return update
+}
 
-      // Validate pagination parameters
-      const validatedLimit = Math.min(Math.max(limit, 1), this.MAX_PAGE_SIZE)
-      const validatedPage = Math.max(page, 1)
-      const offset = (validatedPage - 1) * validatedLimit
+function toIsoDate(value: string | Date): string {
+  return typeof value === 'string' ? value : value.toISOString().slice(0, 10)
+}
 
-      // Build query
+function buildSort(sortBy?: WorkshopFilters['sortBy'], sortOrder?: WorkshopFilters['sortOrder']): string | undefined {
+  const direction = sortOrder === 'asc' ? true : false
+  switch (sortBy) {
+    case 'title':
+      return `${COLUMNS.title}.${direction ? 'asc' : 'desc'}`
+    case 'startDate':
+      return `${COLUMNS.startDate}.${direction ? 'asc' : 'desc'}`
+    case 'endDate':
+      return `${COLUMNS.endDate}.${direction ? 'asc' : 'desc'}`
+    case 'createdAt':
+      return `${COLUMNS.createdAt}.${direction ? 'asc' : 'desc'}`
+    default:
+      return `${COLUMNS.createdAt}.desc`
+  }
+}
+
+export const workshopService = {
+  async list(filters: WorkshopFilters = {}): Promise<ApiResponse<WorkshopsResponse>> {
+    const page = Math.max(1, filters.page ?? 1)
+    const limit = Math.max(1, Math.min(100, filters.limit ?? 20))
+    const from = (page - 1) * limit
+    const to = from + limit - 1
+
       let query = supabase
-        .from(this.TABLE_NAME)
+      .from(TABLE)
         .select('*', { count: 'exact' })
 
-      // Apply filters
-      if (status) {
-        query = query.eq('status', status)
-      }
-
-      if (startDate) {
-        query = query.gte('start_date', startDate)
-      }
-
-      if (endDate) {
-        query = query.lte('end_date', endDate)
-      }
-
-      if (search) {
-        query = query.or(`title.ilike.%${search}%,overview.ilike.%${search}%,target_audience.ilike.%${search}%`)
-      }
-
-      // Apply sorting - convert camelCase to snake_case for database
-      const dbSortBy = this.convertToDbFieldName(sortBy)
-      query = query.order(dbSortBy, { ascending: sortOrder === 'asc' })
-
-      // Apply pagination
-      query = query.range(offset, offset + validatedLimit - 1)
-
-      const { data, error, count } = await query
-
-      if (error) {
-        console.error('Workshops fetch error:', error)
-        return {
-          data: null,
-          error: WORKSHOP_ERROR_MESSAGES.WORKSHOPS_LOAD_FAILED,
-          success: false,
-        }
-      }
-
-      const workshops = data?.map(this.transformDbToWorkshop) || []
-
-      return {
-        data: {
-          workshops,
-          total: count || 0,
-          page: validatedPage,
-          limit: validatedLimit,
-        },
-        error: null,
-        success: true,
-      }
-    } catch (error) {
-      console.error('Unexpected error fetching workshops:', error)
-      return {
-        data: null,
-        error: WORKSHOP_ERROR_MESSAGES.NETWORK_ERROR,
-        success: false,
-      }
-    }
-  }
-
-  /**
-   * Update an existing workshop
-   */
-  static async updateWorkshop(id: string, updateData: UpdateWorkshopRequest): Promise<ApiResult<NewWorkshop>> {
-    try {
-      // Validate update data
-      if (updateData.workshop && Object.keys(updateData.workshop).length === 0) {
-        return {
-          data: null,
-          error: 'No update data provided',
-          success: false,
-        }
-      }
-
-      // Prepare update data with proper field mapping
-      const dbUpdateData: any = {
-        updated_at: new Date().toISOString(),
-      }
-
-      // Map camelCase fields to snake_case database fields
-      if (updateData.workshop?.title) {
-        dbUpdateData.title = updateData.workshop.title
-        dbUpdateData.slug = this.generateSlug(updateData.workshop.title)
-      }
-      if (updateData.workshop?.subtitle !== undefined) {
-        dbUpdateData.subtitle = updateData.workshop.subtitle
-      }
-      if (updateData.workshop?.overview) {
-        dbUpdateData.overview = updateData.workshop.overview
-      }
-      if (updateData.workshop?.duration) {
-        dbUpdateData.duration = updateData.workshop.duration
-      }
-      if (updateData.workshop?.targetAudience) {
-        dbUpdateData.target_audience = updateData.workshop.targetAudience
-      }
-      if (updateData.workshop?.startDate) {
-        dbUpdateData.start_date = updateData.workshop.startDate.toISOString().split('T')[0]
-      }
-      if (updateData.workshop?.endDate) {
-        dbUpdateData.end_date = updateData.workshop.endDate.toISOString().split('T')[0]
-      }
-      if (updateData.workshop?.status) {
-        dbUpdateData.status = updateData.workshop.status
-      }
-      if (updateData.workshop?.highlights) {
-        dbUpdateData.highlights = updateData.workshop.highlights
-      }
-      if (updateData.workshop?.syllabus) {
-        dbUpdateData.syllabus = updateData.workshop.syllabus
-      }
-      if (updateData.workshop?.materials) {
-        dbUpdateData.materials = updateData.workshop.materials
-      }
-      if (updateData.workshop?.assessment) {
-        dbUpdateData.assessment = updateData.workshop.assessment
-      }
-      if (updateData.workshop?.learningOutcomes) {
-        dbUpdateData.learning_outcomes = updateData.workshop.learningOutcomes
-      }
-      if (updateData.workshop?.media) {
-        dbUpdateData.media = updateData.workshop.media
-      }
-      if (updateData.workshop?.seo) {
-        dbUpdateData.seo = updateData.workshop.seo
-      }
-      if (updateData.workshop?.source) {
-        dbUpdateData.source = updateData.workshop.source
-      }
-
-      const { data, error } = await supabase
-        .from(this.TABLE_NAME)
-        .update(dbUpdateData)
-        .eq('id', id)
-        .select()
-        .single()
-
-      if (error) {
-        console.error('Workshop update error:', error)
-        return {
-          data: null,
-          error: WORKSHOP_ERROR_MESSAGES.WORKSHOP_UPDATE_FAILED,
-          success: false,
-        }
-      }
-
-      return {
-        data: this.transformDbToWorkshop(data),
-        error: null,
-        success: true,
-      }
-    } catch (error) {
-      console.error('Unexpected error updating workshop:', error)
-      return {
-        data: null,
-        error: WORKSHOP_ERROR_MESSAGES.NETWORK_ERROR,
-        success: false,
-      }
-    }
-  }
-
-  /**
-   * Delete a workshop
-   */
-  static async deleteWorkshop(id: string): Promise<ApiResult<boolean>> {
-    try {
-      const { error } = await supabase
-        .from(this.TABLE_NAME)
-        .delete()
-        .eq('id', id)
-
-      if (error) {
-        console.error('Workshop deletion error:', error)
-        return {
-          data: null,
-          error: WORKSHOP_ERROR_MESSAGES.WORKSHOP_DELETE_FAILED,
-          success: false,
-        }
-      }
-
-      return {
-        data: true,
-        error: null,
-        success: true,
-      }
-    } catch (error) {
-      console.error('Unexpected error deleting workshop:', error)
-      return {
-        data: null,
-        error: WORKSHOP_ERROR_MESSAGES.NETWORK_ERROR,
-        success: false,
-      }
-    }
-  }
-
-  /**
-   * Archive a workshop (soft delete by changing status)
-   */
-  static async archiveWorkshop(id: string): Promise<ApiResult<NewWorkshop>> {
-    return this.updateWorkshop(id, {
-      workshop: { status: 'archived' as NewWorkshopStatus },
-    })
-  }
-
-  /**
-   * Restore an archived workshop
-   */
-  static async restoreWorkshop(id: string): Promise<ApiResult<NewWorkshop>> {
-    return this.updateWorkshop(id, {
-      workshop: { status: 'completed' as NewWorkshopStatus },
-    })
-  }
-
-  /**
-   * Get workshops by status
-   */
-  static async getWorkshopsByStatus(status: NewWorkshopStatus): Promise<ApiResult<NewWorkshop[]>> {
-    const result = await this.getWorkshops({ status })
-    return {
-      data: result.data?.workshops || null,
-      error: result.error,
-      success: result.success,
-    }
-  }
-
-  /**
-   * Search workshops by title or content
-   */
-  static async searchWorkshops(searchTerm: string): Promise<ApiResult<NewWorkshop[]>> {
-    const result = await this.getWorkshops({ search: searchTerm })
-    return {
-      data: result.data?.workshops || null,
-      error: result.error,
-      success: result.success,
-    }
-  }
-
-  /**
-   * Get workshops within date range
-   */
-  static async getWorkshopsByDateRange(startDate: string, endDate: string): Promise<ApiResult<NewWorkshop[]>> {
-    const result = await this.getWorkshops({ startDate, endDate })
-    return {
-      data: result.data?.workshops || null,
-      error: result.error,
-      success: result.success,
-    }
-  }
-
-  /**
-   * Check if workshop slug is unique
-   */
-  static async isSlugUnique(slug: string, excludeId?: string): Promise<ApiResult<boolean>> {
-    try {
-      let query = supabase
-        .from(this.TABLE_NAME)
-        .select('id')
-        .eq('slug', slug)
-
-      if (excludeId) {
-        query = query.neq('id', excludeId)
-      }
-
-      const { data, error } = await query
-
-      if (error) {
-        console.error('Slug uniqueness check error:', error)
-        return {
-          data: null,
-          error: 'Failed to check slug uniqueness',
-          success: false,
-        }
-      }
-
-      return {
-        data: data?.length === 0,
-        error: null,
-        success: true,
-      }
-    } catch (error) {
-      console.error('Unexpected error checking slug uniqueness:', error)
-      return {
-        data: null,
-        error: WORKSHOP_ERROR_MESSAGES.NETWORK_ERROR,
-        success: false,
-      }
-    }
-  }
-
-  /**
-   * Transform database row to Workshop interface
-   */
-  private static transformDbToWorkshop(dbRow: any): NewWorkshop {
-    return {
-      id: dbRow.id,
-      slug: dbRow.slug,
-      title: dbRow.title,
-      subtitle: dbRow.subtitle,
-      overview: dbRow.overview,
-      duration: dbRow.duration,
-      targetAudience: dbRow.target_audience,
-      startDate: new Date(dbRow.start_date),
-      endDate: new Date(dbRow.end_date),
-      status: dbRow.status,
-      highlights: dbRow.highlights || [],
-      syllabus: dbRow.syllabus || [],
-      materials: dbRow.materials || { hardware: [], software: [], onlineResources: [] },
-      assessment: dbRow.assessment || [],
-      learningOutcomes: dbRow.learning_outcomes || [],
-      media: dbRow.media || { video: { src: '' }, photos: [] },
-      seo: dbRow.seo || { title: '', description: '' },
-      source: dbRow.source,
-      createdAt: new Date(dbRow.created_at),
-      updatedAt: new Date(dbRow.updated_at),
-    }
-  }
-
-  /**
-   * Transform Workshop interface to database format
-   */
-  private static transformWorkshopToDb(workshop: Omit<NewWorkshop, 'id' | 'createdAt' | 'updatedAt'>, slug: string): any {
-    return {
-      slug,
-      title: workshop.title,
-      subtitle: workshop.subtitle,
-      overview: workshop.overview,
-      duration: workshop.duration,
-      target_audience: workshop.targetAudience,
-      start_date: workshop.startDate.toISOString().split('T')[0],
-      end_date: workshop.endDate.toISOString().split('T')[0],
-      status: workshop.status,
-      highlights: workshop.highlights,
-      syllabus: workshop.syllabus,
-      materials: workshop.materials,
-      assessment: workshop.assessment,
-      learning_outcomes: workshop.learningOutcomes,
-      media: workshop.media,
-      seo: workshop.seo,
-      source: workshop.source,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    }
-  }
-
-  /**
-   * Generate URL-friendly slug from title
-   */
-  private static generateSlug(title: string): string {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim()
-  }
-
-  /**
-   * Convert camelCase field names to snake_case for database
-   */
-  private static convertToDbFieldName(fieldName: string): string {
-    const fieldMap: Record<string, string> = {
-      'title': 'title',
-      'startDate': 'start_date',
-      'endDate': 'end_date',
-      'createdAt': 'created_at',
-      'updatedAt': 'updated_at',
-    }
-    
-    return fieldMap[fieldName] || fieldName
-  }
-
-  /**
-   * Validate workshop data
-   */
-  private static validateWorkshopData(workshop: any): string | null {
-    if (!workshop.title || workshop.title.trim().length === 0) {
-      return 'Title is required'
+    if (filters.status) {
+      query = query.eq(COLUMNS.status, filters.status)
     }
 
-    if (!workshop.overview || workshop.overview.trim().length === 0) {
-      return 'Overview is required'
+    if (filters.startDate) {
+      query = query.gte(COLUMNS.startDate, filters.startDate)
+    }
+    if (filters.endDate) {
+      query = query.lte(COLUMNS.endDate, filters.endDate)
     }
 
-    if (!workshop.duration || workshop.duration.trim().length === 0) {
-      return 'Duration is required'
+    if (filters.search && filters.search.trim().length > 0) {
+      const term = `%${filters.search.trim()}%`
+      query = query.or(
+        `${COLUMNS.title}.ilike.${term},${COLUMNS.overview}.ilike.${term}`
+      )
     }
 
-    if (!workshop.targetAudience || workshop.targetAudience.trim().length === 0) {
-      return 'Target audience is required'
+    const orderExpr = buildSort(filters.sortBy, filters.sortOrder)
+    if (orderExpr) {
+      const [col, dir] = orderExpr.split('.')
+      query = query.order(col as any, { ascending: dir === 'asc' })
     }
 
-    if (!workshop.startDate || !workshop.endDate) {
-      return 'Start date and end date are required'
+    query = query.range(from, to)
+
+    const { data, error, count } = await query
+    if (error) {
+      return { success: false, error: error.message }
     }
 
-    if (new Date(workshop.endDate) <= new Date(workshop.startDate)) {
-      return 'End date must be after start date'
+    const workshops = (data ?? []).map(mapRowToWorkshop)
+    const result: WorkshopsResponse = {
+      workshops,
+      total: count ?? workshops.length,
+      page,
+      limit,
     }
+    return { success: true, data: result }
+  },
 
-    if (!workshop.status || !['draft', 'completed', 'archived'].includes(workshop.status)) {
-      return 'Valid status is required'
-    }
+  async getById(id: string): Promise<ApiResponse<WorkshopResponse>> {
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select('*')
+      .eq(COLUMNS.id, id)
+      .single()
 
-    if (!workshop.highlights || workshop.highlights.length === 0) {
-      return 'At least one highlight is required'
-    }
+    if (error) return { success: false, error: error.message }
+    const workshop = mapRowToWorkshop(data as DbWorkshopRow)
+    return { success: true, data: { workshop } }
+  },
 
-    if (!workshop.syllabus || workshop.syllabus.length === 0) {
-      return 'At least one syllabus day is required'
-    }
+  async create(payload: CreateWorkshopRequest['workshop']): Promise<ApiResponse<WorkshopResponse>> {
+    const insertRow = mapCreateToDb(payload)
+    const { data, error } = await supabase
+      .from(TABLE)
+      .insert(insertRow)
+      .select('*')
+      .single()
 
-    if (!workshop.materials || !workshop.materials.hardware || workshop.materials.hardware.length === 0) {
-      return 'At least one hardware item is required'
-    }
+    if (error) return { success: false, error: error.message }
+    return { success: true, data: { workshop: mapRowToWorkshop(data as DbWorkshopRow) } }
+  },
 
-    if (!workshop.materials || !workshop.materials.software || workshop.materials.software.length === 0) {
-      return 'At least one software item is required'
-    }
+  async update(id: string, payload: UpdateWorkshopRequest['workshop']): Promise<ApiResponse<WorkshopResponse>> {
+    const updateRow = mapUpdateToDb(payload)
+    const { data, error } = await supabase
+      .from(TABLE)
+      .update(updateRow)
+      .eq(COLUMNS.id, id)
+      .select('*')
+      .single()
 
-    if (!workshop.materials || !workshop.materials.onlineResources || workshop.materials.onlineResources.length === 0) {
-      return 'At least one online resource is required'
-    }
+    if (error) return { success: false, error: error.message }
+    return { success: true, data: { workshop: mapRowToWorkshop(data as DbWorkshopRow) } }
+  },
 
-    if (!workshop.assessment || workshop.assessment.length === 0) {
-      return 'At least one assessment item is required'
-    }
+  async remove(id: string): Promise<ApiResponse<{ id: string }>> {
+    const { error } = await supabase
+      .from(TABLE)
+      .delete()
+      .eq(COLUMNS.id, id)
 
-    if (!workshop.learningOutcomes || workshop.learningOutcomes.length === 0) {
-      return 'At least one learning outcome is required'
-    }
+    if (error) return { success: false, error: error.message }
+    return { success: true, data: { id } }
+  },
 
-    if (!workshop.media || !workshop.media.video || !workshop.media.video.src) {
-      return 'Video is required'
-    }
+  async archive(id: string): Promise<ApiResponse<WorkshopResponse>> {
+    return this.update(id, { status: STATUSES.archived })
+  },
 
-    if (!workshop.media || !workshop.media.photos || workshop.media.photos.length === 0) {
-      return 'At least one photo is required'
-    }
-
-    if (!workshop.seo || !workshop.seo.title || workshop.seo.title.trim().length === 0) {
-      return 'SEO title is required'
-    }
-
-    if (!workshop.seo || !workshop.seo.description || workshop.seo.description.trim().length === 0) {
-      return 'SEO description is required'
-    }
-
-    if (!workshop.source || workshop.source.trim().length === 0) {
-      return 'Source is required'
-    }
-
-    return null
-  }
+  async restore(id: string): Promise<ApiResponse<WorkshopResponse>> {
+    // Restore to draft by default
+    return this.update(id, { status: STATUSES.draft })
+  },
 }
 
-// Export convenience functions for direct use
-export const workshopService = {
-    create: (...args: Parameters<typeof WorkshopService.createWorkshop>) =>
-      WorkshopService.createWorkshop(...args),
-    getById: (...args: Parameters<typeof WorkshopService.getWorkshop>) =>
-      WorkshopService.getWorkshop(...args),
-    getAll: (...args: Parameters<typeof WorkshopService.getWorkshops>) =>
-      WorkshopService.getWorkshops(...args),
-    update: (...args: Parameters<typeof WorkshopService.updateWorkshop>) =>
-      WorkshopService.updateWorkshop(...args),
-    delete: (...args: Parameters<typeof WorkshopService.deleteWorkshop>) =>
-      WorkshopService.deleteWorkshop(...args),
-    archive: (...args: Parameters<typeof WorkshopService.archiveWorkshop>) =>
-      WorkshopService.archiveWorkshop(...args),
-    restore: (...args: Parameters<typeof WorkshopService.restoreWorkshop>) =>
-      WorkshopService.restoreWorkshop(...args),
-    getByStatus: (...args: Parameters<typeof WorkshopService.getWorkshopsByStatus>) =>
-      WorkshopService.getWorkshopsByStatus(...args),
-    search: (...args: Parameters<typeof WorkshopService.searchWorkshops>) =>
-      WorkshopService.searchWorkshops(...args),
-    getByDateRange: (...args: Parameters<typeof WorkshopService.getWorkshopsByDateRange>) =>
-      WorkshopService.getWorkshopsByDateRange(...args),
-    isSlugUnique: (...args: Parameters<typeof WorkshopService.isSlugUnique>) =>
-      WorkshopService.isSlugUnique(...args),
-  }
-
-// Export the service class for advanced usage
-export default WorkshopService
+export type { WorkshopsResponse, WorkshopResponse }

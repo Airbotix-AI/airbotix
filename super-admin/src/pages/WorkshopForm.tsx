@@ -18,6 +18,7 @@ import {
   ChevronUp
 } from 'lucide-react'
 import { useWorkshopForm } from '@/hooks'
+import WorkshopPreview from '@/pages/WorkshopPreview'
 import { workshopService } from '@/services'
 import { WORKSHOP_STATUS_LABELS } from '@/constants/workshop'
 import { BasicInfo, ContentModules, MediaAssets, SEOSettings, FormProgress } from '@/components/workshop'
@@ -64,6 +65,7 @@ export default function WorkshopForm() {
   const [activeSection, setActiveSection] = useState<string>('basic')
   const [isProgressCollapsed, setIsProgressCollapsed] = useState(false)
   const [isStatusCollapsed, setIsStatusCollapsed] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
 
   // Load workshop data if editing
   useEffect(() => {
@@ -71,25 +73,88 @@ export default function WorkshopForm() {
       const fetchWorkshop = async () => {
         const result = await workshopService.getById(id)
         if (result.success && result.data) {
-          loadWorkshop(result.data)
+          loadWorkshop(result.data.workshop)
         }
       }
       fetchWorkshop()
     }
   }, [isEditing, id, loadWorkshop])
 
-  // Handle form submission
+  // Handle form submission (create or update by mode)
   const handleSubmit = async () => {
-    const result = await submit()
-    if (result) {
-      navigate('/admin/workshops')
+    // ensure validation passes
+    const createdOrUpdated = async () => {
+      // Build payload consistent with service expectations
+      const slug = formData.title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim()
+
+      const payload = {
+        ...formData,
+        slug,
+        startDate: new Date(formData.startDate + 'T00:00:00'),
+        endDate: new Date(formData.endDate + 'T00:00:00'),
+      }
+
+      if (isEditing && id) {
+        // Update existing row
+        const res = await workshopService.update(id, payload)
+        if (!res.success || !res.data) throw new Error(res.error || 'Update failed')
+        return res.data.workshop
+      }
+
+      // Create new row
+      const res = await workshopService.create(payload)
+      if (!res.success || !res.data) throw new Error(res.error || 'Create failed')
+      return res.data.workshop
+    }
+
+    try {
+      const saved = await createdOrUpdated()
+      if (saved) navigate('/admin/workshops')
+    } catch (e) {
+      console.error(e)
+      alert(e instanceof Error ? e.message : 'Save failed')
     }
   }
 
   // Handle preview
   const handlePreview = () => {
-    // TODO: Implement preview functionality
-    alert('Preview functionality will be implemented soon!')
+    // Build a transient workshop object from current form data
+    const tempWorkshop = {
+      id: id || 'preview',
+      slug: formData.title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim(),
+      title: formData.title,
+      subtitle: formData.subtitle || '',
+      overview: formData.overview,
+      duration: formData.duration,
+      targetAudience: formData.targetAudience,
+      startDate: new Date(formData.startDate + 'T00:00:00'),
+      endDate: new Date(formData.endDate + 'T00:00:00'),
+      status: formData.status,
+      highlights: formData.highlights,
+      syllabus: formData.syllabus,
+      materials: formData.materials,
+      assessment: formData.assessment,
+      learningOutcomes: formData.learningOutcomes,
+      media: formData.media,
+      seo: formData.seo,
+      source: formData.source,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    // Open in modal dialog for instant preview
+    setShowPreview(true)
+    // store in history state as well for refresh safety (optional)
+    navigate(location.pathname, { replace: true, state: { workshop: tempWorkshop } })
   }
 
   // Handle cancel
@@ -461,6 +526,13 @@ export default function WorkshopForm() {
           </div>
         </div>
       </div>
+
+      {showPreview && (
+        <WorkshopPreview
+          asDialog
+          onClose={() => setShowPreview(false)}
+        />
+      )}
     </div>
   )
 }
