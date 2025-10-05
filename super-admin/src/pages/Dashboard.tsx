@@ -5,6 +5,7 @@ import DashboardMetrics from '@/components/dashboard/DashboardMetrics'
 import TodayOverview from '@/components/dashboard/TodayOverview'
 import WeeklyView from '@/components/dashboard/WeeklyView'
 import { useDashboardData } from '@/hooks/useDashboardData'
+import logger from '@/utils/logger'
 
 // Mock activities data - In a real app, this would come from an API
 const mockActivities: DashboardActivity[] = [
@@ -83,7 +84,7 @@ export default function Dashboard() {
         data={undefined} // Mock data would be passed here
         loading={false}
         error={undefined}
-        onRefresh={() => console.log('Refresh today overview')}
+        onRefresh={() => logger.info('Refresh today overview')}
       />
 
       {/* Weekly View */}
@@ -91,7 +92,7 @@ export default function Dashboard() {
         data={undefined} // Mock data would be passed here
         loading={false}
         error={undefined}
-        onRefresh={() => console.log('Refresh weekly view')}
+        onRefresh={() => logger.info('Refresh weekly view')}
       />
 
       {/* Recent Activity */}

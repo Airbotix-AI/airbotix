@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 // import { supabase } from '@/lib/supabase' // Uncomment when implementing real Supabase queries
 import { DashboardData, DashboardState, DashboardActions } from '@/types/dashboard'
 import { TREND_DIRECTIONS } from '@/constants/dashboard'
+import logger from '@/utils/logger'
 
 // Mock data for development - replace with real Supabase queries
 const mockDashboardData: DashboardData = {
@@ -94,7 +95,7 @@ export function useDashboardData() {
         lastRefresh: new Date()
       }))
     } catch (error) {
-      console.error('Error fetching dashboard data:', error)
+      logger.error('Error fetching dashboard data:', error)
       setState(prev => ({
         ...prev,
         loading: false,
@@ -137,7 +138,7 @@ export function useDashboardData() {
           .subscribe()
         */
       } catch (error) {
-        console.error('Error setting up real-time subscription:', error)
+        logger.error('Error setting up real-time subscription:', error)
       }
     }
 

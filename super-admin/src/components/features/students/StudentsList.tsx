@@ -18,6 +18,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useStudentsList, useStudentSearch, useStudentSelection } from '../../../hooks/useStudents'
 import { formatDate, debounce, cn } from '../../../utils'
+import logger from '@/utils/logger'
 import type { Student, StudentSearchFilters, UserRole } from '../../../types/student.types'
 import {
   STUDENT_STATUS,
@@ -296,7 +297,7 @@ const StudentsList = ({
       setStudentToDelete(null)
       // Success feedback would be handled by the hook's mutation
     } catch (error) {
-      console.error('Delete error:', error)
+      logger.error('Delete error:', error)
       // Error feedback would be handled by the hook's mutation
     }
   }, [deleteStudent, studentToDelete])
@@ -314,7 +315,7 @@ const StudentsList = ({
       setBulkDeleteDialogOpen(false)
       deselectAll()
     } catch (error) {
-      console.error('Bulk delete error:', error)
+      logger.error('Bulk delete error:', error)
     }
   }, [selectedStudents, deleteStudent, hasSelection, deselectAll])
 

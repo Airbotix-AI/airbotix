@@ -18,6 +18,7 @@ import { useForm, UseFormReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { supabase } from '../lib/supabase'
+import logger from '@/utils/logger'
 import {
   fetchAllStudents,
   fetchStudentById,
@@ -193,7 +194,7 @@ export function useStudentsList(initialFilters: StudentSearchFilters = {}) {
           table: DATABASE_TABLES.STUDENTS
         },
         (payload) => {
-          console.log('Student table update:', payload)
+          logger.debug('Student table update:', payload)
           // Invalidate and refetch students list
           queryClient.invalidateQueries({ queryKey: studentQueryKeys.lists() })
           queryClient.invalidateQueries({ queryKey: studentQueryKeys.statistics() })
@@ -403,7 +404,7 @@ export function useStudentDetails(studentId: string) {
           filter: `id=eq.${studentId}`
         },
         (payload) => {
-          console.log('Student detail update:', payload)
+          logger.debug('Student detail update:', payload)
           queryClient.invalidateQueries({ queryKey: studentQueryKeys.detail(studentId) })
         }
       )

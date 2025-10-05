@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
+import logger from '@/utils/logger'
 
 export default function AuthCallback() {
   const navigate = useNavigate()
@@ -13,9 +14,9 @@ export default function AuthCallback() {
     handledRef.current = true
 
     const processCallback = async () => {
-      console.log('[AuthCallback] location.href:', window.location.href)
-      console.log('[AuthCallback] hash:', window.location.hash)
-      console.log('[AuthCallback] search:', window.location.search)
+      logger.debug('[AuthCallback] location.href:', window.location.href)
+      logger.debug('[AuthCallback] hash:', window.location.hash)
+      logger.debug('[AuthCallback] search:', window.location.search)
 
       // Surface errors from the hash if present
       const hash = window.location.hash.startsWith('#') ? window.location.hash.substring(1) : window.location.hash
@@ -35,10 +36,10 @@ export default function AuthCallback() {
         // 1) Check current session immediately
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
         if (sessionError) {
-          console.warn('[AuthCallback] getSession error:', sessionError.message)
+          logger.warn('[AuthCallback] getSession error:', sessionError.message)
         }
         if (sessionData.session) {
-          console.log('[AuthCallback] session present, redirecting to /admin')
+          logger.info('[AuthCallback] session present, redirecting to /admin')
           navigate('/admin', { replace: true })
           return
         }
@@ -46,7 +47,7 @@ export default function AuthCallback() {
         // 2) Fallback: wait for auth state change (e.g., SIGNED_IN)
         setMessage('Finalizing authentication...')
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-          console.log('[AuthCallback] onAuthStateChange:', event, !!session)
+          logger.info('[AuthCallback] onAuthStateChange:', event, !!session)
           if (session) {
             subscription.unsubscribe()
             navigate('/admin', { replace: true })
@@ -60,12 +61,12 @@ export default function AuthCallback() {
           if (data.session) {
             navigate('/admin', { replace: true })
           } else {
-            console.warn('[AuthCallback] No session established after timeout')
+            logger.warn('[AuthCallback] No session established after timeout')
             setMessage('Authentication failed. Please try logging in again.')
           }
         }, 5000)
       } catch (err) {
-        console.error('[AuthCallback] Unexpected error:', err)
+        logger.error('[AuthCallback] Unexpected error:', err)
         setMessage('Authentication error. Please try again.')
       }
     }

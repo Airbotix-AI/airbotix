@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { APP_STRINGS } from '@/constants/strings'
+import { ENV } from '@/constants/strings'
+import logger from '@/utils/logger'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -18,7 +20,7 @@ export default function Login() {
     if (redirectedRef.current) return
     if (!loading && user) {
       if (location.pathname !== '/admin') {
-        console.log('User authenticated, redirecting to admin dashboard')
+        logger.info('User authenticated, redirecting to admin dashboard')
         redirectedRef.current = true
         navigate('/admin', { replace: true })
       }
@@ -44,12 +46,12 @@ export default function Login() {
     setMessage(null)
 
     try {
-      console.log('[Login] Sending magic link to:', email)
+      logger.info('[Login] Sending magic link to:', email)
       const { error } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: {
           // Use a dedicated callback route to finalize auth
-          emailRedirectTo: `${window.location.origin}/admin/auth/callback`
+          emailRedirectTo: `${ENV.APP_URL || window.location.origin}/admin/auth/callback`
         }
       })
 

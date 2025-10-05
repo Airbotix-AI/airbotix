@@ -65,11 +65,8 @@ super-admin/
    ```
 
 3. Create environment variables:
-   ```bash
-   # Create .env file with:
-   VITE_SUPABASE_URL=https://nbnuacfkmxwyvlnjycnt.supabase.co
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+   - Copy `.env.example` to `.env.local` and fill required values.
+   - For production, use `.env.production.example` as a reference and set values in Vercel Project Settings.
 
 4. Start the development server:
    ```bash
@@ -77,6 +74,23 @@ super-admin/
    ```
 
 The application will be available at `http://localhost:3001`
+
+### Environment Variables
+
+Required:
+
+```env
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+VITE_APP_URL=http://localhost:3001
+VITE_ENV=development
+```
+
+Server-only (Vercel):
+
+```
+SUPABASE_SERVICE_ROLE_KEY=
+```
 
 ### Available Scripts
 

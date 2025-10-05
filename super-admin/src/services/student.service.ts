@@ -15,6 +15,7 @@
  */
 
 import { supabase } from '../lib/supabase'
+import logger from '@/utils/logger'
 import type {
   Student,
   StudentFormData,
@@ -158,7 +159,7 @@ export async function fetchAllStudents(
     const { data, error, count } = await query
 
     if (error) {
-      console.error('Error fetching students:', error)
+      logger.error('Error fetching students:', error)
       return {
         data: null,
         error: STUDENT_ERROR_MESSAGES.FETCH_ERROR,
@@ -173,7 +174,7 @@ export async function fetchAllStudents(
     }
 
   } catch (error) {
-    console.error('Unexpected error in fetchAllStudents:', error)
+    logger.error('Unexpected error in fetchAllStudents:', error)
     return {
       data: null,
       error: STUDENT_ERROR_MESSAGES.SERVER_ERROR,
@@ -216,7 +217,7 @@ export async function fetchStudentById(id: string): Promise<StudentApiResponse> 
         }
       }
       
-      console.error('Error fetching student by ID:', error)
+      logger.error('Error fetching student by ID:', error)
       return {
         data: null,
         error: STUDENT_ERROR_MESSAGES.FETCH_ERROR
@@ -229,7 +230,7 @@ export async function fetchStudentById(id: string): Promise<StudentApiResponse> 
     }
 
   } catch (error) {
-    console.error('Unexpected error in fetchStudentById:', error)
+    logger.error('Unexpected error in fetchStudentById:', error)
     return {
       data: null,
       error: STUDENT_ERROR_MESSAGES.SERVER_ERROR
@@ -307,7 +308,7 @@ export async function createNewStudent(data: StudentFormData): Promise<StudentAp
       .single()
 
     if (error) {
-      console.error('Error creating student:', error)
+      logger.error('Error creating student:', error)
       return {
         data: null,
         error: STUDENT_ERROR_MESSAGES.CREATE_ERROR
@@ -321,7 +322,7 @@ export async function createNewStudent(data: StudentFormData): Promise<StudentAp
     }
 
   } catch (error) {
-    console.error('Unexpected error in createNewStudent:', error)
+    logger.error('Unexpected error in createNewStudent:', error)
     return {
       data: null,
       error: STUDENT_ERROR_MESSAGES.SERVER_ERROR
@@ -412,7 +413,7 @@ export async function updateExistingStudent(
       .single()
 
     if (error) {
-      console.error('Error updating student:', error)
+      logger.error('Error updating student:', error)
       return {
         data: null,
         error: STUDENT_ERROR_MESSAGES.UPDATE_ERROR
@@ -426,7 +427,7 @@ export async function updateExistingStudent(
     }
 
   } catch (error) {
-    console.error('Unexpected error in updateExistingStudent:', error)
+    logger.error('Unexpected error in updateExistingStudent:', error)
     return {
       data: null,
       error: STUDENT_ERROR_MESSAGES.SERVER_ERROR
@@ -476,7 +477,7 @@ export async function deleteStudentRecord(id: string): Promise<StudentApiRespons
       .eq(STUDENT_TABLE_COLUMNS.ID, id)
 
     if (error) {
-      console.error('Error deleting student:', error)
+      logger.error('Error deleting student:', error)
       return {
         data: null,
         error: STUDENT_ERROR_MESSAGES.DELETE_ERROR
@@ -490,7 +491,7 @@ export async function deleteStudentRecord(id: string): Promise<StudentApiRespons
     }
 
   } catch (error) {
-    console.error('Unexpected error in deleteStudentRecord:', error)
+    logger.error('Unexpected error in deleteStudentRecord:', error)
     return {
       data: null,
       error: STUDENT_ERROR_MESSAGES.SERVER_ERROR
@@ -618,7 +619,7 @@ export async function bulkImportStudents(
     return results
 
   } catch (error) {
-    console.error('Unexpected error in bulkImportStudents:', error)
+    logger.error('Unexpected error in bulkImportStudents:', error)
     return {
       success: [],
       errors: [{
@@ -721,7 +722,7 @@ export async function exportStudentsToCSV(
     return new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
 
   } catch (error) {
-    console.error('Error exporting students to CSV:', error)
+    logger.error('Error exporting students to CSV:', error)
     // Return empty CSV with headers only on error
     const headers = ['Error']
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
@@ -813,7 +814,7 @@ export async function getStudentStatistics(): Promise<ServiceResponse<StudentSta
     }
 
   } catch (error) {
-    console.error('Error fetching student statistics:', error)
+    logger.error('Error fetching student statistics:', error)
     return {
       data: null,
       error: STUDENT_ERROR_MESSAGES.SERVER_ERROR,
