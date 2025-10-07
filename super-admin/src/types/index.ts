@@ -1,6 +1,31 @@
 // Central export for all types
 export type { UserProfile } from './User'
 export type { UserRole } from '../constants/userRoles'
+// Workshop Management Types (New PRD-compliant interface)
+export type {
+  Workshop as NewWorkshop,
+  WorkshopStatus as NewWorkshopStatus,
+  SyllabusDay,
+  WorkshopMaterials,
+  AssessmentItem,
+  WorkshopVideo,
+  WorkshopPhoto,
+  WorkshopMedia,
+  WorkshopSEO,
+  CreateWorkshopRequest,
+  UpdateWorkshopRequest,
+  WorkshopResponse,
+  WorkshopsResponse,
+  WorkshopFilters,
+  WorkshopFormData,
+  WorkshopFormErrors,
+  WorkshopFormState,
+  WorkshopListItem,
+  WorkshopPreviewProps,
+  WorkshopCardProps,
+  WorkshopFormSectionProps,
+  WorkshopValidationRules,
+} from './workshop'
 
 // Import UserRole for internal use
 import type { UserRole } from '../constants/userRoles'
@@ -70,8 +95,9 @@ export interface Teacher {
 
 export type TeacherStatus = 'active' | 'inactive' | 'on_leave'
 
-// Workshop Management Types
-export interface Workshop {
+// Legacy Workshop Types (Deprecated - use new Workshop interface from ./workshop)
+// These are kept for backward compatibility during migration
+export interface LegacyWorkshop {
   id: string
   title: string
   description: string
@@ -84,14 +110,17 @@ export interface Workshop {
   enrolled_count: number
   price: number
   location: string
-  status: WorkshopStatus
+  status: LegacyWorkshopStatus
   materials?: string[]
   requirements?: string[]
   created_at: string
   updated_at: string
 }
+export type LegacyWorkshopStatus = 'scheduled' | 'ongoing' | 'completed' | 'cancelled'
 
-export type WorkshopStatus = 'scheduled' | 'ongoing' | 'completed' | 'cancelled'
+// Temporary type aliases for backward compatibility during migration
+export type Workshop = LegacyWorkshop
+export type WorkshopStatus = LegacyWorkshopStatus
 
 // Course Management Types
 export interface Course {
