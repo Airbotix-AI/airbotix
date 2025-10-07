@@ -196,7 +196,6 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
 
   // Use provided data or fallback to mock data
   const metricsData: MetricCardData[] = data ? [
-    // TODO: Map real data when available
     {
       id: METRIC_TYPES.STUDENTS,
       title: 'Total Students',

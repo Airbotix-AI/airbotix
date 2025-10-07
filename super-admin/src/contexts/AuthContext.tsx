@@ -3,6 +3,7 @@ import { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 
 import { PERMISSIONS, ROLE_PERMISSIONS, type Permission } from '../constants/permissions'
+import logger from '@/utils/logger'
 
 interface Profile {
   id: string
@@ -43,13 +44,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription }
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth state change:', event, session?.user?.email)
+      logger.info('Auth state change:', event, session?.user?.email)
       setUser(session?.user ?? null)
       if (session?.user) {
-        console.log('User logged in, fetching profile...')
+        logger.info('User logged in, fetching profile...')
         fetchProfile(session.user.id)
       } else {
-        console.log('User logged out')
+        logger.info('User logged out')
         setProfile(null)
       }
       setLoading(false)
@@ -60,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      console.log('Fetching profile for user:', userId)
+      logger.info('Fetching profile for user:', userId)
       // Firstly, try direct query
       const { data, error } = await supabase
         .from('profiles')
@@ -69,29 +70,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (error) {
-        console.error('Profile fetch error:', error.message, 'Code:', error.code)
+        logger.error('Profile fetch error:', error.message, 'Code:', error.code)
         
         // If it's a permission issue (PGRST301) or not found (PGRST116)
         if (error.code === 'PGRST301') {
-          console.log('RLS policy denied access - this might be normal for new users')
+          logger.warn('RLS policy denied access - this might be normal for new users')
         } else if (error.code === 'PGRST116') {
-          console.log('Profile not found in database')
+          logger.info('Profile not found in database')
         }
         
         throw error
       }
       
-      console.log('Profile fetched successfully:', data)
+      logger.info('Profile fetched successfully:', data)
       setProfile(data)
       
     } catch (err: unknown) {
       if (typeof err === 'object' && err !== null) {
         const e = err as { message?: string; code?: string }
-        console.error('Error fetching profile:', e.message)
+        logger.error('Error fetching profile:', e.message)
         
         // If profile doesn't exist, try to create it automatically
         if (e.code === 'PGRST116') {
-        console.log('Profile not found, attempting to create...')
+        logger.info('Profile not found, attempting to create...')
         try {
           const currentUser = await supabase.auth.getUser()
           if (currentUser.data.user) {
@@ -107,24 +108,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               .single()
 
             if (insertError) {
-              console.error('Failed to create profile:', insertError.message)
+              logger.error('Failed to create profile:', insertError.message)
               setProfile(null)
             } else {
-              console.log('Profile created successfully:', newProfile)
+              logger.info('Profile created successfully:', newProfile)
               setProfile(newProfile)
             }
           }
         } catch (insertError) {
-          console.error('Failed to create profile:', insertError)
+          logger.error('Failed to create profile:', insertError)
           setProfile(null)
         }
         } else {
           // For other errors, don't create temporary profile
-          console.log('Access denied or other error, user needs proper role assignment')
+          logger.warn('Access denied or other error, user needs proper role assignment')
           setProfile(null)
         }
       } else {
-        console.error('Error fetching profile (unknown error type):', err)
+        logger.error('Error fetching profile (unknown error type):', err)
         setProfile(null)
       }
     }

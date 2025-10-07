@@ -29,6 +29,7 @@ import {
   DropdownMenuSeparator 
 } from '@/components/ui/DropdownMenu'
 import { cn } from '@/utils'
+import logger from '@/utils/logger'
 
 interface TopNavigationProps {
   onSidebarToggle: () => void
@@ -64,7 +65,7 @@ export default function TopNavigation({ onSidebarToggle, currentRoute }: TopNavi
     const timeoutId = setTimeout(() => {
       if (searchQuery.length >= SEARCH_CONFIG.MIN_SEARCH_LENGTH) {
         // Implement search logic here
-        console.log('Searching for:', searchQuery)
+        logger.info('Searching for:', searchQuery)
       }
     }, SEARCH_CONFIG.DEBOUNCE_DELAY)
 
@@ -83,30 +84,30 @@ export default function TopNavigation({ onSidebarToggle, currentRoute }: TopNavi
     e.preventDefault()
     if (searchQuery.trim()) {
       // Implement search submission logic
-      console.log('Search submitted:', searchQuery)
+      logger.info('Search submitted:', searchQuery)
     }
   }
 
   const handleUserMenuAction = async (action: string) => {
     switch (action) {
       case USER_MENU_ACTIONS.PROFILE:
-        console.log('Navigate to profile')
+        logger.info('Navigate to profile')
         break
       case USER_MENU_ACTIONS.SETTINGS:
-        console.log('Navigate to settings')
+        logger.info('Navigate to settings')
         break
       case USER_MENU_ACTIONS.LOGOUT:
         try {
           await signOut()
         } catch (error) {
-          console.error('Error signing out:', error)
+          logger.error('Error signing out:', error)
         }
         break
     }
   }
 
   const handleNotificationClick = () => {
-    console.log('Navigate to notifications')
+    logger.info('Navigate to notifications')
   }
 
   const getUserInitials = () => {

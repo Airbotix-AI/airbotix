@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import logger from '@/utils/logger'
 import type { User } from '@supabase/supabase-js'
 
 // Constants following AI coding rules
@@ -34,7 +35,7 @@ export const useAuth = (): UseAuthReturn => {
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (error) {
-          console.error('Error getting session:', error)
+          logger.error('Error getting session:', error)
           setUser(null)
           setUserRole(null)
           setIsLoading(false)
@@ -53,14 +54,14 @@ export const useAuth = (): UseAuthReturn => {
               .single()
             
             if (profileError) {
-              console.error('Error fetching profile:', profileError)
+              logger.error('Error fetching profile:', profileError)
               // Set default role for super admin system
               setUserRole(USER_ROLES.SUPER_ADMIN)
             } else {
               setUserRole(profile?.role ?? USER_ROLES.SUPER_ADMIN)
             }
           } catch (error) {
-            console.error('Error in profile fetch:', error)
+            logger.error('Error in profile fetch:', error)
             setUserRole(USER_ROLES.SUPER_ADMIN)
           }
         } else {
@@ -69,7 +70,7 @@ export const useAuth = (): UseAuthReturn => {
         
         setIsLoading(false)
       } catch (error) {
-        console.error('Error in getInitialSession:', error)
+        logger.error('Error in getInitialSession:', error)
         setUser(null)
         setUserRole(null)
         setIsLoading(false)
@@ -81,7 +82,7 @@ export const useAuth = (): UseAuthReturn => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state change:', event, session?.user?.email)
+        logger.info('Auth state change:', event, session?.user?.email)
         
         setUser(session?.user ?? null)
         
@@ -94,13 +95,13 @@ export const useAuth = (): UseAuthReturn => {
               .single()
             
             if (profileError) {
-              console.error('Error fetching profile on auth change:', profileError)
+              logger.error('Error fetching profile on auth change:', profileError)
               setUserRole(USER_ROLES.SUPER_ADMIN)
             } else {
               setUserRole(profile?.role ?? USER_ROLES.SUPER_ADMIN)
             }
           } catch (error) {
-            console.error('Error in auth change profile fetch:', error)
+            logger.error('Error in auth change profile fetch:', error)
             setUserRole(USER_ROLES.SUPER_ADMIN)
           }
         } else {
@@ -120,13 +121,13 @@ export const useAuth = (): UseAuthReturn => {
       const { error } = await supabase.auth.signOut()
       
       if (error) {
-        console.error('Error signing out:', error)
+        logger.error('Error signing out:', error)
       } else {
         setUser(null)
         setUserRole(null)
       }
     } catch (error) {
-      console.error('Error in signOut:', error)
+      logger.error('Error in signOut:', error)
     } finally {
       setIsLoading(false)
     }

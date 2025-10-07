@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { NAVIGATION_ITEMS, ROLE_LABELS, SIDEBAR_CONFIG } from '@/constants/navigation'
 import { USER_ROLES } from '@/constants/userRoles'
 import { cn } from '@/utils'
+import logger from '@/utils/logger'
 
 interface SidebarProps {
   className?: string
@@ -42,7 +43,7 @@ export default function Sidebar({ className }: SidebarProps) {
     try {
       await signOut()
     } catch (error) {
-      console.error('Error signing out:', error)
+      logger.error('Error signing out:', error)
     }
   }
 

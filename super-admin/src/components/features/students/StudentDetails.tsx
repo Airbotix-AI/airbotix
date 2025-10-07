@@ -25,6 +25,7 @@ import {
 } from '../../../constants/student.constants'
 import type { UserRole } from '../../../types/student.types'
 import { cn } from '../../../utils'
+import logger from '@/utils/logger'
 
 // ============================================================================
 // COMPONENT PROPS INTERFACE
@@ -505,7 +506,7 @@ export function StudentDetails({
           onDelete()
         }
       } catch (error) {
-        console.error('Failed to delete student:', error)
+        logger.error('Failed to delete student:', error)
       }
     }
   }

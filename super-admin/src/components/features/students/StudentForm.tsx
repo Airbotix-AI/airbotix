@@ -19,6 +19,7 @@ import { useState, useCallback } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import logger from '@/utils/logger'
 import { Loader2 } from 'lucide-react'
 import type { Student, StudentFormData } from '../../../types/student.types'
 import {
@@ -253,7 +254,7 @@ const StudentForm = ({
       const studentData = formDataToStudentData(data)
       await onSubmit(studentData)
     } catch (error) {
-      console.error('Form submission error:', error)
+      logger.error('Form submission error:', error)
       setSubmitError((error as Error)?.message || STUDENT_ERROR_MESSAGES.VALIDATION_ERROR)
     } finally {
       setIsSubmitting(false)

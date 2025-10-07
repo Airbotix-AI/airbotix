@@ -1,6 +1,11 @@
 -- User profiles and role-based access control migration
 -- Creates comprehensive RBAC system with proper constraints, indexes, and RLS policies
 
+-- Drop existing profiles table if it exists (from previous migration)
+-- This migration creates a more complete version with RBAC
+DROP TABLE IF EXISTS public.profiles CASCADE;
+DROP TYPE IF EXISTS user_role CASCADE;
+
 -- Create user role enum with proper hierarchy
 CREATE TYPE user_role AS ENUM (
   'super_admin',

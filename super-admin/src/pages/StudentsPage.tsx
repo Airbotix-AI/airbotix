@@ -29,6 +29,7 @@ import type { Student, StudentFormData, UserRole, StudentSearchFilters, StudentS
 // Constants
 import { USER_ROLES } from '../constants/userRoles'
 import { STUDENT_SUCCESS_MESSAGES, STUDENT_ERROR_MESSAGES } from '../constants/student.constants'
+import logger from '@/utils/logger'
 
 // Components
 import StudentsList from '../components/features/students/StudentsList'
@@ -281,16 +282,16 @@ const StudentModals = ({
     try {
       if (modals.addStudent) {
         await createStudent(data)
-        console.log(STUDENT_SUCCESS_MESSAGES.CREATE_SUCCESS)
+        logger.info(STUDENT_SUCCESS_MESSAGES.CREATE_SUCCESS)
         closeModal('addStudent')
       } else if (modals.editStudent && selectedStudent) {
         await updateStudent(selectedStudent.id, data)
-        console.log(STUDENT_SUCCESS_MESSAGES.UPDATE_SUCCESS)
+        logger.info(STUDENT_SUCCESS_MESSAGES.UPDATE_SUCCESS)
         closeModal('editStudent')
       }
       onSuccess()
     } catch (error) {
-      console.error('Form submission error:', error)
+      logger.error('Form submission error:', error)
       throw new Error((error as Error)?.message || STUDENT_ERROR_MESSAGES.VALIDATION_ERROR)
     }
   }, [modals, selectedStudent, createStudent, updateStudent, closeModal, onSuccess])
@@ -300,11 +301,11 @@ const StudentModals = ({
     
     try {
       await deleteStudent(selectedStudent.id)
-      console.log(STUDENT_SUCCESS_MESSAGES.DELETE_SUCCESS)
+      logger.info(STUDENT_SUCCESS_MESSAGES.DELETE_SUCCESS)
       closeModal('deleteConfirm')
       onSuccess()
     } catch (error) {
-      console.error('Delete error:', error)
+      logger.error('Delete error:', error)
       throw new Error((error as Error)?.message || STUDENT_ERROR_MESSAGES.DELETE_ERROR)
     }
   }, [selectedStudent, deleteStudent, closeModal, onSuccess])

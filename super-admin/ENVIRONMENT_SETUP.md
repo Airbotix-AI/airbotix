@@ -1,26 +1,33 @@
 # Environment Setup Guide
 
-## Required Environment Variables
+## Environment Variables
 
-Create a `.env` file in the root of the super-admin folder with the following variables:
+Use `.env.local` for development (ignored by git), and configure production variables in Vercel Project Settings.
 
+See templates: `.env.example` (development) and `.env.production.example` (production).
+
+### Required (client)
 ```env
-# Supabase Configuration
-VITE_SUPABASE_URL=https://fauerqsvboamciwvlvxw.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhdWVycXN2Ym9hbWNpd3Zsdnh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3MjM5MjMsImV4cCI6MjA3MjI5OTkyM30.l72vYLKNZa-qA4LUioliagGu1xwJNDYIO6n2C5biO0k
+VITE_SUPABASE_URL= # Supabase project URL
+VITE_SUPABASE_ANON_KEY= # Supabase anon public key
+```
 
-# Application Configuration (Optional)
-VITE_APP_NAME="Airbotix Super Admin"
-VITE_APP_VERSION="1.0.0"
-VITE_APP_ENVIRONMENT="development"
+### Required (deployment)
+```env
+VITE_APP_URL=http://localhost:3001 # dev
+VITE_ENV=development               # dev | staging | production
+```
 
-# API Configuration (Optional)
-VITE_API_BASE_URL="/api"
+### Optional
+```env
+VITE_API_BASE_URL=/api
+VITE_APP_NAME=Airbotix Super Admin
+VITE_ENABLE_ANALYTICS=false
+```
 
-# Feature Flags (Optional)
-VITE_ENABLE_ANALYTICS="true"
-VITE_ENABLE_NOTIFICATIONS="true"
-VITE_ENABLE_EXPORT_FEATURES="true"
+### Server-only (Vercel only, do not commit)
+```
+SUPABASE_SERVICE_ROLE_KEY= # Service role key, server-side only
 ```
 
 ## Supabase Database Setup
@@ -77,7 +84,11 @@ CREATE TRIGGER on_auth_user_created
 1. **Configure Supabase Authentication**:
    - Go to your Supabase dashboard
    - Navigate to Authentication > Settings
-   - Configure your site URL and redirect URLs
+   - Configure your Site URL and Redirect URLs
+     - Development Site URL: `http://localhost:3001`
+     - Production Site URL: `https://admin.airbotix.ai`
+     - Redirect URL: `<site-url>/admin/auth/callback`
+       - Example: `https://admin.airbotix.ai/admin/auth/callback`
    - Enable email authentication and Google OAuth
 
 2. **Set up Google OAuth** (optional):
