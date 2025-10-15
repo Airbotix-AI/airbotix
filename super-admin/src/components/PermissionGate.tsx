@@ -16,6 +16,12 @@ export function PermissionGate({
 }: PermissionGateProps) {
   const { profile, hasPermission, hasRole } = useAuth()
 
+  const isBypassAuth = import.meta.env.VITE_BYPASS_AUTH === 'true'
+
+  if (isBypassAuth) {
+    return <>{children}</>
+  }
+
   if (!profile) {
     return <>{fallback}</>
   }
